@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+
+<div class="center-div-content">
+  <h1>Home</h1>
+  <div class="balancing-button-container">
+    <a href="/issuer" class="balancing-button">Issuer</a>
+    <a href="/verifier/" class="balancing-button">Verifier</a>
+    <a href="/verifier/settings" class="balancing-button">Verifier Settings</a>
+    <a href="/validate/" class="balancing-button">Validate</a>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Data</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    {% for credential in credentials %}
+    <form action="/validate/" method="post">
+      <input type="hidden" name="identifier" value="{{ credential.identifier }}" />
+      <tr>
+        <td>{{ credential.valid }}</td>
+        <td>{{ credential.view }}</td>
+        <td>
+          <button type="submit" class="activeButton">Toggle Status</button>
+        </td>
+      </tr>
+    </form>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

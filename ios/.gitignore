@@ -1,0 +1,6 @@
+StudentWallet/StudentWallet.xcodeproj/project.xcworkspace/xcuserdata/
+StudentWallet/projectBundle.xcconfig
+# Mac spezifische Dateien
+.DS_Store
+.idea/
+StudentWallet.xcodeproj/xcuserdata/timooeltze.xcuserdatad/

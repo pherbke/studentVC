@@ -1,0 +1,226 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+
+<div class="center-div-content">
+  <h1>Home</h1>
+  <div class="balancing-button-container">
+    <a href="/issuer" class="balancing-button">Issuer</a>
+    <a href="/verifier/" class="balancing-button">Verifier</a>
+    <a href="/verifier/settings" class="balancing-button">Verifier Settings</a>
+    <a href="/validate/" class="balancing-button">Validate</a>
+  </div>
+  <img
+    id="picture"
+    src="data:image/png;base64,{{ img_data }}"
+    style="max-width: 100%"
+  />
+
+  <table style="margin-top: 20px">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <p id="presentation_requested">⏳</p>
+        </td>
+        <td>Presentation Requested</td>
+      </tr>
+      <tr>
+        <td>
+          <p id="key_extraction">⏳</p>
+        </td>
+        <td>Keys Extracted from Credential</td>
+      </tr>
+      <tr>
+        <td>
+          <p id="signature_verification">⏳</p>
+        </td>
+        <td>Holder Key matches Presentation</td>
+      </tr>
+      <tr>
+        <td>
+          <p id="issuer_pub_key_verification">⏳</p>
+        </td>
+        <td>Issuer Public Key is Trusted</td>
+      </tr>
+      <tr>
+        <td>
+          <p id="mandatory_fields_verification">⏳</p>
+        </td>
+        <td>All Mandatory fields were sent</td>
+      </tr>
+      <tr>
+        <td>
+          <p id="credential_validity_status">⏳</p>
+        </td>
+        <td>Credential is not Revoked</td>
+      </tr>
+      <tr>
+        <td>
+          <p id="issuer_bbs_key_verification">⏳</p>
+        </td>
+        <td>BBS Key is Valid</td>
+      </tr>
+      <tr>
+        <td>
+          <p id="verification_result">⏳</p>
+        </td>
+        <td>Signature matches Messages</td>
+      </tr>
+      <tr>
+        <td>
+          <p id="verification_result_all">⏳</p>
+        </td>
+        <td>VERIFICATION RESULT</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- JavaScript included at the end of the body -->
+<script
+  src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+  integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+  crossorigin="anonymous"
+></script>
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+  integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+  crossorigin="anonymous"
+></script>
+
+<script type="text/javascript" charset="utf-8">
+  function updateImagePath(id, condition, allowChangeFromSuccess = true) {
+    // Define the text for each condition
+    const texts = {
+      loading: "⏳",
+      success: "✅",
+      error: "⛔",
+    };
+
+    // Find the element by ID
+    const element = document.getElementById(id);
+
+    // Check if the element exists and is a paragraph
+    if (element && element.tagName === "P") {
+      // Check if the current text is success and allowChangeFromSuccess is false
+      if (element.innerText === texts.success && !allowChangeFromSuccess) {
+        return;
+      }
+
+      // Update the text content if the condition is valid
+      if (texts[condition]) {
+        element.innerText = texts[condition];
+      } else {
+        console.error(
+          "Invalid condition provided. Use 'loading', 'success', or 'error'."
+        );
+      }
+    } else {
+      console.error(`Element with ID "${id}" not found or is not a paragraph.`);
+    }
+  }
+
+  function set_all_loading() {
+    updateImagePath("presentation_requested", "loading");
+    updateImagePath("key_extraction", "loading");
+    updateImagePath("signature_verification", "loading");
+    updateImagePath("issuer_pub_key_verification", "loading");
+    updateImagePath("mandatory_fields_verification", "loading");
+    updateImagePath("credential_validity_status", "loading");
+    updateImagePath("issuer_bbs_key_verification", "loading");
+    updateImagePath("verification_result", "loading");
+    updateImagePath("verification_result_all", "loading");
+  }
+
+  function fail_loading() {
+    updateImagePath("presentation_requested", "error", false);
+    updateImagePath("key_extraction", "error", false);
+    updateImagePath("signature_verification", "error", false);
+    updateImagePath("issuer_pub_key_verification", "error", false);
+    updateImagePath("mandatory_fields_verification", "error", false);
+    updateImagePath("credential_validity_status", "error", false);
+    updateImagePath("issuer_bbs_key_verification", "error", false);
+    updateImagePath("verification_result", "error", false);
+    updateImagePath("verification_result_all", "error", false);
+  }
+
+  $(document).ready(function () {
+    // Connect to the Socket.IO server.
+    // The connection URL has the following format, relative to the current page:
+    //     http[s]://<domain>:<port>[/<namespace>]
+    var socket = io();
+
+    socket.on("presentation_requested", function (msg) {
+      set_all_loading();
+      if (msg.status === "error") {
+        fail_loading();
+        return;
+      }
+      updateImagePath("presentation_requested", "success");
+    });
+
+    socket.on("key_extraction", function (msg) {
+      if (msg.status === "error") {
+        fail_loading();
+        return;
+      }
+      updateImagePath("key_extraction", "success");
+    });
+
+    socket.on("signature_verification", function (msg) {
+      if (msg.status === "error") {
+        fail_loading();
+        return;
+      }
+      updateImagePath("signature_verification", "success");
+    });
+
+    socket.on("issuer_pub_key_verification", function (msg) {
+      if (msg.status === "error") {
+        fail_loading();
+        return;
+      }
+      updateImagePath("issuer_pub_key_verification", "success");
+    });
+
+    socket.on("mandatory_fields_verification", function (msg) {
+      if (msg.status === "error") {
+        fail_loading();
+        return;
+      }
+      updateImagePath("mandatory_fields_verification", "success");
+    });
+
+    socket.on("credential_validity_status", function (msg) {
+      if (msg.status === "error") {
+        fail_loading();
+        return;
+      }
+      updateImagePath("credential_validity_status", "success");
+    });
+
+    socket.on("issuer_bbs_key_verification", function (msg) {
+      if (msg.status === "error") {
+        fail_loading();
+        return;
+      }
+      updateImagePath("issuer_bbs_key_verification", "success");
+    });
+
+    socket.on("verification_result", function (msg) {
+      if (msg.status === "error") {
+        fail_loading();
+        return;
+      }
+      updateImagePath("verification_result", "success");
+      updateImagePath("verification_result_all", "success");
+    });
+  });
+</script>
+
+{% endblock %}

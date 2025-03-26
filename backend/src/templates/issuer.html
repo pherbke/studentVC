@@ -1,0 +1,160 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+
+<div class="center-div-content">
+  <h1>Home</h1>
+  <div class="balancing-button-container">
+    <a href="/issuer" class="balancing-button">Issuer</a>
+    <a href="/verifier/" class="balancing-button">Verifier</a>
+    <a href="/verifier/settings" class="balancing-button">Verifier Settings</a>
+    <a href="/validate/" class="balancing-button">Validate</a>
+  </div>
+  {% if img_data %}
+  <img
+    id="picture"
+    src="data:image/png;base64,{{ img_data }}"
+    style="max-width: 100%"
+  />
+  {% endif %}
+  <form
+    id="myForm"
+    action="/issuer"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="firstName"
+        name="firstName"
+        placeholder="Maxi"
+      />
+
+      <label for="lastName">Last Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="lastName"
+        name="lastName"
+        placeholder="Musterfrau"
+      />
+
+      <label for="profileImage">Profile Image</label>
+      <div class="custom-file-upload">
+        <img
+          src="{{ url_for('static',filename='upload-white.svg') }}"
+          width="100"
+        />
+        <input
+          type="file"
+          class="form-control custom-file-upload"
+          id="profileImage"
+          name="image"
+        />
+      </div>
+
+      <label for="studentId">Student ID</label>
+      <input
+        type="text"
+        class="form-control"
+        id="studentId"
+        name="studentId"
+        placeholder="123456"
+      />
+
+      <label for="studentIdPrefix">Student ID Prefix</label>
+      <input
+        type="text"
+        class="form-control"
+        id="studentIdPrefix"
+        name="studentIdPrefix"
+        placeholder="654321"
+      />
+    </div>
+
+    <h2>Theme Settings</h2>
+    <div class="form-group">
+      <label for="theme_name">Theme Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="theme_name"
+        name="theme[name]"
+        placeholder="Technische Universität Berlin"
+      />
+
+      <label for="theme_icon">Theme Icon</label>
+      <div class="custom-file-upload">
+        <img
+          src="{{ url_for('static',filename='upload-white.svg') }}"
+          width="100"
+        />
+        <input
+          type="file"
+          class="form-control custom-file-upload"
+          id="theme_icon"
+          name="theme[icon]"
+        />
+      </div>
+
+      <label for="bg_color_card">Background Color (Card)</label>
+      <input
+        type="text"
+        class="form-control"
+        id="bg_color_card"
+        name="theme[bgColorCard]"
+        placeholder="C40D1E"
+      />
+
+      <label for="bg_color_section_top">Background Color (Top Section)</label>
+      <input
+        type="text"
+        class="form-control"
+        id="bg_color_section_top"
+        name="theme[bgColorSectionTop]"
+        placeholder="C40D1E"
+      />
+
+      <label for="bg_color_section_bot"
+        >Background Color (Bottom Section)</label
+      >
+      <input
+        type="text"
+        class="form-control"
+        id="bg_color_section_bot"
+        name="theme[bgColorSectionBot]"
+        placeholder="FFFFFF"
+      />
+
+      <label for="fg_color_title">Foreground Color (Title)</label>
+      <input
+        type="text"
+        class="form-control"
+        id="fg_color_title"
+        name="theme[fgColorTitle]"
+        placeholder="FFFFFF"
+      />
+    </div>
+
+    <div class="center-div-content">
+      <button type="submit" class="btn btn-primary">Generate QR-Code</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // This script will fill in the input fields with the placeholder value if the input field is empty
+  const form = document.getElementById("myForm");
+  form.addEventListener("submit", (event) => {
+    // Get all input fields with the class "form-control"
+    const inputs = document.querySelectorAll(".form-control");
+    inputs.forEach((input) => {
+      if (!input.value) {
+        input.value = input.placeholder;
+      }
+    });
+  });
+</script>
+
+{% endblock %}

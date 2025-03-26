@@ -1,0 +1,772 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D99F329D2D2D46F000C1BDC8 /* BBSCoreIOS in Frameworks */ = {isa = PBXBuildFile; productRef = D99F329C2D2D46F000C1BDC8 /* BBSCoreIOS */; };
+		D9FB05382CEB962E00D7373C /* CryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9FB05372CEB962E00D7373C /* CryptoKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D9FFD0AC2CE785CB00A1EA84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D9FFD0932CE785CA00A1EA84 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D9FFD09A2CE785CA00A1EA84;
+			remoteInfo = "Student Wallet";
+		};
+		D9FFD0B62CE785CB00A1EA84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D9FFD0932CE785CA00A1EA84 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D9FFD09A2CE785CA00A1EA84;
+			remoteInfo = "Student Wallet";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D99F32992D2D349F00C1BDC8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0E3BD1612CEA09D700E7B256 /* projectBundle.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = projectBundle.xcconfig; sourceTree = "<group>"; };
+		D913185F2CED20570045AC2F /* Student-Wallet-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Student-Wallet-Info.plist"; sourceTree = "<group>"; };
+		D99F32912D2D340700C1BDC8 /* BBSCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = BBSCore.xcframework; path = "../bbs-core/BBSCoreIOS/artifacts/BBSCore.xcframework"; sourceTree = "<group>"; };
+		D99F32962D2D349200C1BDC8 /* BBSCoreIOS */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = BBSCoreIOS; path = "../bbs-core/BBSCoreIOS"; sourceTree = SOURCE_ROOT; };
+		D9FB05372CEB962E00D7373C /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
+		D9FFD09B2CE785CA00A1EA84 /* Student Wallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Student Wallet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9FFD0AB2CE785CB00A1EA84 /* Student WalletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Student WalletTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9FFD0B52CE785CB00A1EA84 /* Student WalletUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Student WalletUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D9FFD09D2CE785CA00A1EA84 /* StudentWallet */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = StudentWallet;
+			sourceTree = "<group>";
+		};
+		D9FFD0AE2CE785CB00A1EA84 /* StudentWalletTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = StudentWalletTests;
+			sourceTree = "<group>";
+		};
+		D9FFD0B82CE785CB00A1EA84 /* StudentWalletUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = StudentWalletUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D9FFD0982CE785CA00A1EA84 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9FB05382CEB962E00D7373C /* CryptoKit.framework in Frameworks */,
+				D99F329D2D2D46F000C1BDC8 /* BBSCoreIOS in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9FFD0A82CE785CB00A1EA84 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9FFD0B22CE785CB00A1EA84 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D99F32952D2D342300C1BDC8 /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				D99F32962D2D349200C1BDC8 /* BBSCoreIOS */,
+			);
+			path = Lib;
+			sourceTree = "<group>";
+		};
+		D9FB05362CEB962E00D7373C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D99F32912D2D340700C1BDC8 /* BBSCore.xcframework */,
+				D9FB05372CEB962E00D7373C /* CryptoKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D9FFD0922CE785CA00A1EA84 = {
+			isa = PBXGroup;
+			children = (
+				D99F32952D2D342300C1BDC8 /* Lib */,
+				D913185F2CED20570045AC2F /* Student-Wallet-Info.plist */,
+				0E3BD1612CEA09D700E7B256 /* projectBundle.xcconfig */,
+				D9FFD09D2CE785CA00A1EA84 /* StudentWallet */,
+				D9FFD0AE2CE785CB00A1EA84 /* StudentWalletTests */,
+				D9FFD0B82CE785CB00A1EA84 /* StudentWalletUITests */,
+				D9FB05362CEB962E00D7373C /* Frameworks */,
+				D9FFD09C2CE785CA00A1EA84 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D9FFD09C2CE785CA00A1EA84 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D9FFD09B2CE785CA00A1EA84 /* Student Wallet.app */,
+				D9FFD0AB2CE785CB00A1EA84 /* Student WalletTests.xctest */,
+				D9FFD0B52CE785CB00A1EA84 /* Student WalletUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D9FFD09A2CE785CA00A1EA84 /* Student Wallet */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D9FFD0BF2CE785CB00A1EA84 /* Build configuration list for PBXNativeTarget "Student Wallet" */;
+			buildPhases = (
+				D9FFD0972CE785CA00A1EA84 /* Sources */,
+				D9FFD0982CE785CA00A1EA84 /* Frameworks */,
+				D9FFD0992CE785CA00A1EA84 /* Resources */,
+				D99F32992D2D349F00C1BDC8 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D9FFD09D2CE785CA00A1EA84 /* StudentWallet */,
+			);
+			name = "Student Wallet";
+			packageProductDependencies = (
+				D99F329C2D2D46F000C1BDC8 /* BBSCoreIOS */,
+			);
+			productName = "Student Wallet";
+			productReference = D9FFD09B2CE785CA00A1EA84 /* Student Wallet.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D9FFD0AA2CE785CB00A1EA84 /* Student WalletTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D9FFD0C22CE785CB00A1EA84 /* Build configuration list for PBXNativeTarget "Student WalletTests" */;
+			buildPhases = (
+				D9FFD0A72CE785CB00A1EA84 /* Sources */,
+				D9FFD0A82CE785CB00A1EA84 /* Frameworks */,
+				D9FFD0A92CE785CB00A1EA84 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D9FFD0AD2CE785CB00A1EA84 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D9FFD0AE2CE785CB00A1EA84 /* StudentWalletTests */,
+			);
+			name = "Student WalletTests";
+			packageProductDependencies = (
+			);
+			productName = "Student WalletTests";
+			productReference = D9FFD0AB2CE785CB00A1EA84 /* Student WalletTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D9FFD0B42CE785CB00A1EA84 /* Student WalletUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D9FFD0C52CE785CB00A1EA84 /* Build configuration list for PBXNativeTarget "Student WalletUITests" */;
+			buildPhases = (
+				D9FFD0B12CE785CB00A1EA84 /* Sources */,
+				D9FFD0B22CE785CB00A1EA84 /* Frameworks */,
+				D9FFD0B32CE785CB00A1EA84 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D9FFD0B72CE785CB00A1EA84 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D9FFD0B82CE785CB00A1EA84 /* StudentWalletUITests */,
+			);
+			name = "Student WalletUITests";
+			packageProductDependencies = (
+			);
+			productName = "Student WalletUITests";
+			productReference = D9FFD0B52CE785CB00A1EA84 /* Student WalletUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D9FFD0932CE785CA00A1EA84 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1610;
+				TargetAttributes = {
+					D9FFD09A2CE785CA00A1EA84 = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					D9FFD0AA2CE785CB00A1EA84 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = D9FFD09A2CE785CA00A1EA84;
+					};
+					D9FFD0B42CE785CB00A1EA84 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = D9FFD09A2CE785CA00A1EA84;
+					};
+				};
+			};
+			buildConfigurationList = D9FFD0962CE785CA00A1EA84 /* Build configuration list for PBXProject "StudentWallet" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D9FFD0922CE785CA00A1EA84;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D9FFD09C2CE785CA00A1EA84 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D9FFD09A2CE785CA00A1EA84 /* Student Wallet */,
+				D9FFD0AA2CE785CB00A1EA84 /* Student WalletTests */,
+				D9FFD0B42CE785CB00A1EA84 /* Student WalletUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D9FFD0992CE785CA00A1EA84 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9FFD0A92CE785CB00A1EA84 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9FFD0B32CE785CB00A1EA84 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D9FFD0972CE785CA00A1EA84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9FFD0A72CE785CB00A1EA84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9FFD0B12CE785CB00A1EA84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D9FFD0AD2CE785CB00A1EA84 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D9FFD09A2CE785CA00A1EA84 /* Student Wallet */;
+			targetProxy = D9FFD0AC2CE785CB00A1EA84 /* PBXContainerItemProxy */;
+		};
+		D9FFD0B72CE785CB00A1EA84 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D9FFD09A2CE785CA00A1EA84 /* Student Wallet */;
+			targetProxy = D9FFD0B62CE785CB00A1EA84 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D9E2AD252CFF11C000169EC3 /* WalletDebug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0E3BD1612CEA09D700E7B256 /* projectBundle.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = WalletDebug;
+		};
+		D9E2AD262CFF11C000169EC3 /* WalletDebug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"StudentWallet/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Student-Wallet-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Student Wallet";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Scan QR Codes";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited) SKIP_AUTH";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = WalletDebug;
+		};
+		D9E2AD272CFF11C000169EC3 /* WalletDebug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QJTT527279;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.snet.ios.Student-WalletTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Student Wallet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Student Wallet";
+			};
+			name = WalletDebug;
+		};
+		D9E2AD282CFF11C000169EC3 /* WalletDebug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QJTT527279;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.snet.ios.Student-WalletUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Student Wallet";
+			};
+			name = WalletDebug;
+		};
+		D9FFD0BD2CE785CB00A1EA84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0E3BD1612CEA09D700E7B256 /* projectBundle.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D9FFD0BE2CE785CB00A1EA84 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0E3BD1612CEA09D700E7B256 /* projectBundle.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D9FFD0C02CE785CB00A1EA84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"StudentWallet/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Student-Wallet-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Student Wallet";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Scan QR Codes";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D9FFD0C12CE785CB00A1EA84 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"StudentWallet/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Student-Wallet-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Student Wallet";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Scan QR Codes";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D9FFD0C32CE785CB00A1EA84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QJTT527279;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.snet.ios.Student-WalletTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Student Wallet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Student Wallet";
+			};
+			name = Debug;
+		};
+		D9FFD0C42CE785CB00A1EA84 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QJTT527279;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.snet.ios.Student-WalletTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Student Wallet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Student Wallet";
+			};
+			name = Release;
+		};
+		D9FFD0C62CE785CB00A1EA84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QJTT527279;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.snet.ios.Student-WalletUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Student Wallet";
+			};
+			name = Debug;
+		};
+		D9FFD0C72CE785CB00A1EA84 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QJTT527279;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.snet.ios.Student-WalletUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Student Wallet";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D9FFD0962CE785CA00A1EA84 /* Build configuration list for PBXProject "StudentWallet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D9FFD0BD2CE785CB00A1EA84 /* Debug */,
+				D9E2AD252CFF11C000169EC3 /* WalletDebug */,
+				D9FFD0BE2CE785CB00A1EA84 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D9FFD0BF2CE785CB00A1EA84 /* Build configuration list for PBXNativeTarget "Student Wallet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D9FFD0C02CE785CB00A1EA84 /* Debug */,
+				D9E2AD262CFF11C000169EC3 /* WalletDebug */,
+				D9FFD0C12CE785CB00A1EA84 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D9FFD0C22CE785CB00A1EA84 /* Build configuration list for PBXNativeTarget "Student WalletTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D9FFD0C32CE785CB00A1EA84 /* Debug */,
+				D9E2AD272CFF11C000169EC3 /* WalletDebug */,
+				D9FFD0C42CE785CB00A1EA84 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D9FFD0C52CE785CB00A1EA84 /* Build configuration list for PBXNativeTarget "Student WalletUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D9FFD0C62CE785CB00A1EA84 /* Debug */,
+				D9E2AD282CFF11C000169EC3 /* WalletDebug */,
+				D9FFD0C72CE785CB00A1EA84 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D99F329C2D2D46F000C1BDC8 /* BBSCoreIOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BBSCoreIOS;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D9FFD0932CE785CA00A1EA84 /* Project object */;
+}

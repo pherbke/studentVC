@@ -1,0 +1,179 @@
+<mxfile host="65bd71144e">
+    <diagram name="Page-1" id="2YBvvXClWsGukQMizWep">
+        <mxGraphModel dx="703" dy="747" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="aM9ryv3xv72pqoxQDRHE-1" value="Verifier" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="170" y="50" width="100" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="aM9ryv3xv72pqoxQDRHE-5" value="Holder" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeColor=default;fixDash=0;rounded=1;shadow=0;glass=0;size=40;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="50" width="100" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="aM9ryv3xv72pqoxQDRHE-3" value="Select Mandatory fields&lt;br&gt;generate QR-Code" style="html=1;verticalAlign=bottom;startArrow=oval;endArrow=block;startSize=8;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" target="aM9ryv3xv72pqoxQDRHE-1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="90" y="130" as="sourcePoint"/>
+                        <mxPoint x="215" y="130" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-6" value="Scan QR-Code" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="439.7" y="140" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="340.2" y="140"/>
+                        </Array>
+                        <mxPoint x="220.3" y="140" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-7" value="" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="50" width="100" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-10" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+                    <mxGeometry x="85" y="60" width="10" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-12" value="Credential Presentation URI" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" parent="1" edge="1">
+                    <mxGeometry x="0.0018" relative="1" as="geometry">
+                        <mxPoint x="220.3" y="169.8" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="310.2" y="170"/>
+                        </Array>
+                        <mxPoint x="439.7" y="170" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-18" value="Signed BBS proof and values" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="439.75" y="260" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="340.25" y="260"/>
+                        </Array>
+                        <mxPoint x="220.25" y="260" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-27" value="Resolve Presentation URI" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" edge="1">
+                    <mxGeometry x="-0.0027" relative="1" as="geometry">
+                        <mxPoint x="439.4" y="200" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="339.9" y="200"/>
+                        </Array>
+                        <mxPoint x="220" y="200" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-28" value="mandatory fields" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" parent="1" edge="1">
+                    <mxGeometry x="0.0018" relative="1" as="geometry">
+                        <mxPoint x="220" y="229.8" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="309.9" y="230"/>
+                        </Array>
+                        <mxPoint x="439.4" y="230" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-34" value="Verifier" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="170" y="410" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-35" value="Holder" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="410" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-36" value="&lt;span style=&quot;color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px; text-align: start; text-wrap-mode: nowrap;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%22%20style%3D%22shape%3DumlActor%3BverticalLabelPosition%3Dbottom%3BverticalAlign%3Dtop%3Bhtml%3D1%3BoutlineConnect%3D0%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%2285%22%20y%3D%2260%22%20width%3D%2210%22%20height%3D%2220%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="410" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-37" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+                    <mxGeometry x="85" y="420" width="10" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-39" value="Verification Result" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" parent="1" edge="1">
+                    <mxGeometry x="0.0018" relative="1" as="geometry">
+                        <mxPoint x="220.3" y="370" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="310.2" y="370.2"/>
+                        </Array>
+                        <mxPoint x="439.7" y="370.2" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-40" value="Verification" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="185" y="290" width="70" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-41" value="Verifier" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="480" width="100" height="330" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-42" value="Validity Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="480" width="100" height="330" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-43" value="Trusted Public Keys" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="480" width="100" height="320" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-44" value="Verification" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="540" width="380" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-46" value="Public Key and BBS key" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="270" y="610" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="170.5" y="610"/>
+                        </Array>
+                        <mxPoint x="90" y="610" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-48" value="Trusted Status" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" parent="1" source="BD8Erqe6VSDuFWhGxgs_-43" edge="1">
+                    <mxGeometry x="0.0018" relative="1" as="geometry">
+                        <mxPoint x="50.60000000000002" y="650" as="sourcePoint"/>
+                        <Array as="points"/>
+                        <mxPoint x="270" y="650.2" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-49" value="GET: validity URI from credential" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" target="BD8Erqe6VSDuFWhGxgs_-42" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="270" y="700" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="370" y="700"/>
+                        </Array>
+                        <mxPoint x="90" y="700" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-50" value="Validity Status" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" parent="1" source="BD8Erqe6VSDuFWhGxgs_-42" edge="1">
+                    <mxGeometry x="0.0018" relative="1" as="geometry">
+                        <mxPoint x="90" y="740" as="sourcePoint"/>
+                        <Array as="points"/>
+                        <mxPoint x="270" y="740.2" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-51" value="Verification" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="770" width="380" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-52" value="Validity Server" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="800" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-53" value="Verifier" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="800" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-54" value="Trusted Public Keys" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="800" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-56" value="Status Updates" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" target="BD8Erqe6VSDuFWhGxgs_-7" edge="1" source="BD8Erqe6VSDuFWhGxgs_-40">
+                    <mxGeometry x="0.0018" relative="1" as="geometry">
+                        <mxPoint x="170" y="310" as="sourcePoint"/>
+                        <Array as="points"/>
+                        <mxPoint x="30" y="309.78000000000003" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD8Erqe6VSDuFWhGxgs_-57" value="Verification Status" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" parent="1" source="aM9ryv3xv72pqoxQDRHE-1" edge="1">
+                    <mxGeometry x="0.0018" relative="1" as="geometry">
+                        <mxPoint x="210" y="370.08" as="sourcePoint"/>
+                        <Array as="points"/>
+                        <mxPoint x="90" y="370.5" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

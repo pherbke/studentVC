@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Mobile Wallet</string>
+    <string name="title_activity_qr_code_scanning">QrCodeScanningActivity</string>
+</resources>
