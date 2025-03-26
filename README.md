@@ -11,8 +11,10 @@ Student Wallet is a comprehensive digital credential platform enabling secure st
 
 ## Documentation & Demo
 
-- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/NWB76D3fynL6qAB) - Watch the Student Wallet in action
+- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/NWB76D3fynL6qAB) - Watch the Student Wallet in action demonstration
 - [📄 Project Report](docs/Mobile_Wallet-Final_Report.pdf) - Detailed documentation and implementation details
+  
+The full project report is available in the `docs/` directory. You can also access the complete documentation by opening the PDF file locally after cloning the repository.
 
 ## Quick Start
 
