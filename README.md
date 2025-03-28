@@ -15,6 +15,9 @@ This project was completed as part of the Internet of Services Lab (IoSL) course
 
 - [📱 Demo Video](https://tubcloud.tu-berlin.de/s/NWB76D3fynL6qAB) - Watch the Student Wallet in action
 - [📄 Project Report](docs/Mobile_Wallet-Final_Report.pdf) - Detailed documentation and implementation details
+- [🔧 Backend Documentation](backend/README.md) - Setup and usage instructions for the backend server
+- [📱 iOS Documentation](ios/README.md) - Setup and usage instructions for iOS application
+- [📱 Android Documentation](android/README.md) - Setup and usage instructions for Android application
 
 ## Key Features
 
@@ -53,8 +56,7 @@ cd student-wallet
 
 ```bash
 cd backend
-npm install
-npm run dev
+docker compose up --build
 ```
 
 ### Android App Setup
