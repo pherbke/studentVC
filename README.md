@@ -11,8 +11,9 @@ Student Wallet is a comprehensive digital credential platform enabling secure st
 
 ## Project Attribution
 
-Patrick Herbke is a Research Associate at [SNET](https://www.tu.berlin/snet) TU Berlin.
+Patrick Herbke is a Research Associate at [SNET](https://www.tu.berlin/snet) TU Berlin, headed by Prof. Dr. Axel Küpper.
 This project was completed during the Internet of Services Lab (IoSL) course in winter term 2024/25.
+This work was done in collaboration with Christopher Ritter as part of the IDunion project.
 ## Documentation & Demo
 
 - [📱 Demo Video](https://tubcloud.tu-berlin.de/s/NWB76D3fynL6qAB) - Watch the Student Wallet in action demonstration
@@ -135,7 +136,7 @@ npm test
 ## Key Features
 
 - **Secure Storage**: Store academic credentials securely on your mobile device
-- **Zero-Knowledge Proofs**: Selectively disclose credential information
+- **Zero-Knowledge Proofs**: Selectively disclose credential information such as student status, name, course status, ...
 - **Cross-Platform Support**: Available for both Android and iOS
 - **Standards Compliant**: Follows W3C Verifiable Credentials standards
 - **BBS+ Signatures**: Advanced cryptographic security
