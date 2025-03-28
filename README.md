@@ -21,7 +21,7 @@ This project was completed as part of the Internet of Services Lab (IoSL) course
 - **Secure Credential Storage:** Safely store academic credentials on mobile devices.
 - **Zero-Knowledge Proofs:** Enable selective disclosure of credential attributes.
 - **Cross-Platform Support:** Available on Android and [iOS](https://developer.apple.com/documentation/cryptokit/).
-- **Standards Compliance:** Conforms to [W3C Verifiable Credentials standards v2.0] (https://www.w3.org/TR/vc-data-model-2.0/).
+- **Standards Compliance:** Conforms to [W3C Verifiable Credentials standards v2.0](https://www.w3.org/TR/vc-data-model-2.0/).
 - **BBS+ Signatures:** Robust cryptographic signature scheme for secure credential management - [Rust crate](https://docs.rs/bbs/0.4.1/bbs/).
 
 ## Project Structure
@@ -37,10 +37,10 @@ The project consists of four main components:
 
 ### Prerequisites
 
-- Android Studio 4.0+ (for Android development)
-- Xcode 12.0+ (for iOS development)
-- Node.js 14.0+ and npm or yarn (for backend and library)
-- MongoDB (for backend data storage)
+- [Android Studio 4.0+](https://android-developers.googleblog.com/2020/05/android-studio-4.html) (for Android development)
+- [Xcode 12.0+](https://developer.apple.com/documentation/xcode-release-notes/xcode-12_0_1-release-notes) (for iOS development)
+- [Node.js 14.0+](https://nodejs.org/en/blog/release/v14.0.0) and npm or yarn (for backend and library)
+- [MongoDB](https://www.mongodb.com/) (for backend data storage)
 
 ### Clone the Repository
 
@@ -84,7 +84,7 @@ npm test
 
 ## Usage
 
-1. Set up the BBS core library.
+1. Set up the BBS core library. The library builds upon the research of [Camenisch et al.].
 2. Start the backend server.
 3. Run the mobile apps on Android or iOS.
 
