@@ -1,156 +1,101 @@
 # Student Wallet - Verifiable Credentials
 
-[![License: Academic](https://img.shields.io/badge/License-Academic-blue.svg)](https://shields.io/)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android-brightgreen.svg)](https://shields.io/)
 [![Platform: iOS](https://img.shields.io/badge/Platform-iOS-lightgray.svg)](https://shields.io/)
 [![BBS+: Signatures](https://img.shields.io/badge/BBS+-Signatures-orange.svg)](https://shields.io/)
 
 ## Project Overview
 
-Student Wallet is a comprehensive digital credential platform enabling secure storage, management, and verification of academic credentials using verifiable credentials technology. This project implements a cross-platform mobile solution with secure backend services.
+StudentVC is a cross-platform mobile application designed to securely manage, store, and verify academic credentials using Verifiable Credentials (VC) technology. StudentVC leverages BBS+ signatures to ensure cryptographic security and zero-knowledge proof capabilities for selective disclosure of credential attributes - claims.
 
-## Project Attribution
+This project was completed as part of the Internet of Services Lab (IoSL) course during the winter term 2024/25 at [TU Berlin]((https://www.tu.berlin/)). The project was developed by Patrick Herbke, Research Associate at [SNET](https://www.tu.berlin/snet), lead by Prof. Dr. Axel Küpper, in collaboration with Christopher Ritter as parther during the IDunion project.
 
-Patrick Herbke is a Research Associate at [SNET](https://www.tu.berlin/snet) TU Berlin, headed by Prof. Dr. Axel Küpper.
-This project was completed during the Internet of Services Lab (IoSL) course in winter term 2024/25.
-This work was done in collaboration with Christopher Ritter as part of the IDunion project.
 ## Documentation & Demo
 
-- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/NWB76D3fynL6qAB) - Watch the Student Wallet in action demonstration
+- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/NWB76D3fynL6qAB) - Watch the Student Wallet in action
 - [📄 Project Report](docs/Mobile_Wallet-Final_Report.pdf) - Detailed documentation and implementation details
-  
-The full project report is available in the `docs/` directory. You can also access the complete documentation by opening the PDF file locally after cloning the repository.
 
-## Quick Start
+## Key Features
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/student-wallet.git
-cd student-wallet
-
-# Set up and run the backend
-cd backend
-npm install
-npm run dev
-
-# Set up and run the Android app
-cd ../android
-./gradlew installDebug
-
-# Set up and run the iOS app
-cd ../ios
-pod install
-open StudentWallet.xcworkspace
-```
+- **Secure Credential Storage:** Safely store academic credentials on mobile devices.
+- **Zero-Knowledge Proofs:** Enable selective disclosure of credential attributes.
+- **Cross-Platform Support:** Available on Android and [iOS](https://developer.apple.com/documentation/cryptokit/).
+- **Standards Compliance:** Conforms to [W3C Verifiable Credentials standards v2.0] (https://www.w3.org/TR/vc-data-model-2.0/).
+- **BBS+ Signatures:** Robust cryptographic signature scheme for secure credential management - [Rust crate](https://docs.rs/bbs/0.4.1/bbs/).
 
 ## Project Structure
 
 The project consists of four main components:
 
-### Components
+1. **Android Application** (`/android`): [Native Android implementation] (https://developer.android.com/compose) with credential storage and verification.
+2. **iOS Application** (`/ios`): Native iOS implementation with secure credential management.
+3. **Backend Services** (`/backend`): Server-side implementation for credential issuance and verification.
+4. **BBS Core Library** (`/bbs-core`): Core cryptographic library implementing BBS+ signatures.
 
-1. **Android Application** (`/android`)
-   - Native Android implementation of the Student Wallet
-   - Handles credential storage, display, and verification on Android devices
-   
-   **Prerequisites:**
-   - Android Studio 4.0+
-   - JDK 11+
-   - Android SDK 30+
+## Installation & Setup
 
-2. **iOS Application** (`/ios`)
-   - Native iOS implementation of the Student Wallet
-   - Manages credentials on Apple devices with platform-specific optimizations
-   
-   **Prerequisites:**
-   - Xcode 12.0+
-   - CocoaPods
-   - iOS 14.0+
-   - macOS for development
+### Prerequisites
 
-3. **Backend Services** (`/backend`)
-   - Server-side implementation handling credential issuance and verification
-   - Provides API endpoints for mobile applications
-   - Manages user authentication and security
-   
-   **Prerequisites:**
-   - Node.js 14.0+
-   - MongoDB
-   - npm or yarn
+- Android Studio 4.0+ (for Android development)
+- Xcode 12.0+ (for iOS development)
+- Node.js 14.0+ and npm or yarn (for backend and library)
+- MongoDB (for backend data storage)
 
-4. **BBS Core Library** (`/bbs-core`)
-   - Core cryptographic library implementing BBS+ signatures
-   - Provides the foundation for secure credential operations
-   - Enables zero-knowledge proof capabilities
-   
-   **Prerequisites:**
-   - Node.js 14.0+
-   - npm or yarn
-
-## Detailed Setup Instructions
-
-### Android Application
+### Clone the Repository
 
 ```bash
-cd android
-# Install dependencies
-./gradlew build
-# Run the application in debug mode
-./gradlew installDebug
+git clone https://github.com/yourusername/student-wallet.git
+cd student-wallet
 ```
 
-### iOS Application
-
-```bash
-cd ios
-# Install dependencies
-pod install
-# Open the workspace in Xcode
-open StudentWallet.xcworkspace
-```
-
-### Backend Services
+### Backend Setup
 
 ```bash
 cd backend
-# Install dependencies
 npm install
-# Set up environment
-cp .env.example .env
-# Start development server
 npm run dev
 ```
 
-### BBS Core Library
+### Android App Setup
+
+```bash
+cd android
+./gradlew build
+./gradlew installDebug
+```
+
+### iOS App Setup
+
+```bash
+cd ios
+pod install
+open StudentWallet.xcworkspace
+```
+
+### BBS Core Library Setup
 
 ```bash
 cd bbs-core
-# Install dependencies
 npm install
-# Build the library
 npm run build
-# Run tests
 npm test
 ```
 
-## Key Features
+## Usage
 
-- **Secure Storage**: Store academic credentials securely on your mobile device
-- **Zero-Knowledge Proofs**: Selectively disclose credential information such as student status, name, course status, ...
-- **Cross-Platform Support**: Available for both Android and iOS
-- **Standards Compliant**: Follows W3C Verifiable Credentials standards
-- **BBS+ Signatures**: Advanced cryptographic security
-
-## Development Workflow
-
-1. Set up the BBS core library first as it's a dependency for other components
-2. Configure and run the backend services
-3. Deploy mobile applications for testing
+1. Set up the BBS core library.
+2. Start the backend server.
+3. Run the mobile apps on Android or iOS.
 
 ## License
 
-This project is part of academic research at TU Berlin.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
 
-## Contact
+[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-For questions related to this project, please refer to the contact information in the project report.
+## Acknowledgements
+
+This project was developed as part of the Internet of Services Lab (IoSL) at TU Berlin, under the supervision of Prof. Dr. Axel Küpper.
+
+For questions or further information, please contact Patrick Herbke p.herbke#at##tu-berlin.de.
