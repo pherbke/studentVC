@@ -11,7 +11,7 @@ Student Wallet is a comprehensive digital credential platform enabling secure st
 
 ## Project Attribution
 
-Patrick Herbke is a Research Associate at SNET TU Berlin.
+Patrick Herbke is a Research Associate at [SNET](https://www.tu.berlin/snet) TU Berlin.
 This project was completed during the Internet of Services Lab (IoSL) course in winter term 2024/25.
 ## Documentation & Demo
 
