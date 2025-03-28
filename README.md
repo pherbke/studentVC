@@ -28,7 +28,7 @@ This project was completed as part of the Internet of Services Lab (IoSL) course
 
 The project consists of four main components:
 
-1. **Android Application** (`/android`): [Native Android implementation] (https://developer.android.com/compose) with credential storage and verification.
+1. **Android Application** (`/android`): [Native Android implementation](https://developer.android.com/compose) with credential storage and verification.
 2. **iOS Application** (`/ios`): Native iOS implementation with secure credential management.
 3. **Backend Services** (`/backend`): Server-side implementation for credential issuance and verification.
 4. **BBS Core Library** (`/bbs-core`): Core cryptographic library implementing BBS+ signatures.
@@ -84,9 +84,14 @@ npm test
 
 ## Usage
 
-1. Set up the BBS core library. The library builds upon the research of [Camenisch et al.].
+1. Set up the BBS core library. The library builds upon the research of [Camenisch et al.](https://eprint.iacr.org/2016/663.pdf).
 2. Start the backend server.
 3. Run the mobile apps on Android or iOS.
+
+## Open Research 
+- Multi-signatures
+- Archiving, Re-Issuance, Recovery
+- Revocation
 
 ## License
 
