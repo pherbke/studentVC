@@ -13,7 +13,7 @@ This project was completed as part of the Internet of Services Lab (IoSL) course
 
 ## Documentation & Demo
 
-- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/NWB76D3fynL6qAB) - Watch the Student Wallet in action
+- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/TjFbGbmHfp6twQH) - Watch the Student Wallet in action
 - [📄 Project Report](docs/Mobile_Wallet-Final_Report.pdf) - Detailed documentation and implementation details
 - [🔧 Backend Documentation](backend/README.md) - Setup and usage instructions for the backend server
 - [📱 iOS Documentation](ios/README.md) - Setup and usage instructions for iOS application
