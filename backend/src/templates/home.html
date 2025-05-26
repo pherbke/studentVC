@@ -1,10 +1,270 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "base.html" %} 
+{% block title %}{{ tenant_name }} - StudentVC Platform{% endblock %} 
+{% block content %}
 
-<div class="center-div-content">
-  <h1>Home</h1>
-  <div class="balancing-button-container">
-    <a href="/issuer" class="balancing-button">Issuer</a>
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-tenant-primary to-tenant-primary/90 rounded-lg text-white p-8 mb-8">
+  <div class="max-w-4xl mx-auto text-center">
+    <h1 class="text-4xl font-bold mb-4">StudentVC</h1>
+    <p class="text-xl mb-6 opacity-90">Privacy-Preserving Digital Student Credentials</p>
+    <p class="text-lg mb-8 opacity-80 max-w-3xl mx-auto">
+      {{ tenant_full_name }} presents the next generation of academic credential verification - 
+      secure, private, and student-controlled digital certificates that work anywhere.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="/issuer" class="bg-white text-tenant-primary px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center">
+        <i class="fas fa-plus mr-2"></i>
+        Issue Credentials
+      </a>
+      <a href="/verifier/" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-tenant-primary transition-colors inline-flex items-center">
+        <i class="fas fa-shield-check mr-2"></i>
+        Verify Credentials
+      </a>
+    </div>
   </div>
 </div>
 
+<!-- What is StudentVC Section -->
+<div class="mb-12">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-tenant-text mb-4">What is StudentVC?</h2>
+    <p class="text-gray-600 text-lg max-w-4xl mx-auto">
+      StudentVC is a revolutionary digital credential platform that transforms how academic achievements are issued, stored, and verified. 
+      Built on cutting-edge cryptographic technology, it puts students in complete control of their educational records.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center mb-4">
+        <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+          <i class="fas fa-graduation-cap text-xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900">For Students</h3>
+      </div>
+      <ul class="space-y-3 text-gray-600">
+        <li class="flex items-start">
+          <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+          <span>Own and control your academic credentials digitally</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+          <span>Share only the information required for verification</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+          <span>Instant verification without contacting your university</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+          <span>Works with any compatible digital wallet app</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center mb-4">
+        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+          <i class="fas fa-building text-xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900">For Organizations</h3>
+      </div>
+      <ul class="space-y-3 text-gray-600">
+        <li class="flex items-start">
+          <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+          <span>Instantly verify academic credentials without delays</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+          <span>Eliminate credential fraud with cryptographic proof</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+          <span>Request only the specific information you need</span>
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+          <span>Integrate with existing verification systems</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="mb-12">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-tenant-text mb-4">How StudentVC Works</h2>
+    <p class="text-gray-600 text-lg max-w-3xl mx-auto">
+      StudentVC uses advanced cryptographic techniques to ensure credentials are authentic, tamper-proof, and privacy-preserving.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+    <div class="text-center">
+      <div class="bg-tenant-primary text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">Issue</h3>
+      <p class="text-gray-600">Universities issue digital credentials using BBS+ signatures, which enable selective disclosure and privacy protection.</p>
+    </div>
+    
+    <div class="text-center">
+      <div class="bg-tenant-primary text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">Store</h3>
+      <p class="text-gray-600">Students receive credentials in their mobile wallet, maintaining complete control over their academic records.</p>
+    </div>
+    
+    <div class="text-center">
+      <div class="bg-tenant-primary text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">Verify</h3>
+      <p class="text-gray-600">Organizations can instantly verify credentials while students control exactly what information is shared.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Key Features Section -->
+<div class="mb-12">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-tenant-text mb-4">Advanced Security & Privacy Features</h2>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+      <div class="p-4 rounded-full bg-blue-100 text-blue-600 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+        <i class="fas fa-fingerprint text-xl"></i>
+      </div>
+      <h4 class="text-lg font-semibold text-gray-900 mb-2">BBS+ Signatures</h4>
+      <p class="text-gray-600 text-sm">Zero-knowledge cryptographic signatures that enable selective disclosure without revealing unnecessary information.</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+      <div class="p-4 rounded-full bg-green-100 text-green-600 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+        <i class="fas fa-shield-check text-xl"></i>
+      </div>
+      <h4 class="text-lg font-semibold text-gray-900 mb-2">Tamper-Proof</h4>
+      <p class="text-gray-600 text-sm">Cryptographically secured credentials that cannot be forged, altered, or duplicated by unauthorized parties.</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+      <div class="p-4 rounded-full bg-purple-100 text-purple-600 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+        <i class="fas fa-user-shield text-xl"></i>
+      </div>
+      <h4 class="text-lg font-semibold text-gray-900 mb-2">Student Control</h4>
+      <p class="text-gray-600 text-sm">Students decide what information to share and with whom, maintaining privacy while proving credentials.</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+      <div class="p-4 rounded-full bg-orange-100 text-orange-600 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+        <i class="fas fa-globe text-xl"></i>
+      </div>
+      <h4 class="text-lg font-semibold text-gray-900 mb-2">Global Standards</h4>
+      <p class="text-gray-600 text-sm">Built on W3C Verifiable Credentials and OpenID standards for worldwide compatibility and interoperability.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Technical Architecture Section -->
+<div class="bg-tenant-light rounded-lg border border-gray-200 p-8 mb-12">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-tenant-text mb-4">Enterprise-Grade Security Architecture</h2>
+    <p class="text-gray-600 text-lg max-w-4xl mx-auto">
+      StudentVC combines traditional PKI trust models with modern decentralized identity systems, 
+      providing dual-path verification for maximum security and global interoperability.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="text-center">
+      <div class="mx-auto h-12 w-12 bg-tenant-primary rounded-full flex items-center justify-center mb-3">
+        <i class="fas fa-key text-white"></i>
+      </div>
+      <h5 class="font-semibold text-gray-900 mb-2">X.509 Integration</h5>
+      <p class="text-sm text-gray-600">Seamless integration with existing PKI infrastructure and enterprise security systems</p>
+    </div>
+
+    <div class="text-center">
+      <div class="mx-auto h-12 w-12 bg-tenant-primary rounded-full flex items-center justify-center mb-3">
+        <i class="fas fa-link text-white"></i>
+      </div>
+      <h5 class="font-semibold text-gray-900 mb-2">DID Integration</h5>
+      <p class="text-sm text-gray-600">Decentralized identifiers for self-sovereign identity and blockchain compatibility</p>
+    </div>
+
+    <div class="text-center">
+      <div class="mx-auto h-12 w-12 bg-tenant-primary rounded-full flex items-center justify-center mb-3">
+        <i class="fas fa-mobile-alt text-white"></i>
+      </div>
+      <h5 class="font-semibold text-gray-900 mb-2">Mobile Wallets</h5>
+      <p class="text-sm text-gray-600">Compatible with iOS and Android mobile wallet applications for convenient access</p>
+    </div>
+
+    <div class="text-center">
+      <div class="mx-auto h-12 w-12 bg-tenant-primary rounded-full flex items-center justify-center mb-3">
+        <i class="fas fa-sync text-white"></i>
+      </div>
+      <h5 class="font-semibold text-gray-900 mb-2">Real-time Status</h5>
+      <p class="text-sm text-gray-600">Live credential status checking and revocation list management for up-to-date verification</p>
+    </div>
+  </div>
+</div>
+
+<!-- Get Started Section -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+  <h2 class="text-3xl font-bold text-tenant-text mb-4">Ready to Get Started?</h2>
+  <p class="text-gray-600 text-lg mb-6 max-w-2xl mx-auto">
+    Choose your role to begin using StudentVC's privacy-preserving credential platform.
+  </p>
+  
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+    <a href="/issuer" class="block bg-tenant-primary text-tenant-primary-text p-6 rounded-lg hover:bg-opacity-90 transition-colors">
+      <i class="fas fa-university text-3xl mb-4"></i>
+      <h3 class="text-xl font-semibold mb-2">Issue Credentials</h3>
+      <p class="text-sm opacity-90">Universities and educational institutions</p>
+    </a>
+    
+    <a href="/verifier/" class="block bg-white border-2 border-tenant-primary text-tenant-text p-6 rounded-lg hover:bg-tenant-light transition-colors">
+      <i class="fas fa-building text-3xl mb-4"></i>
+      <h3 class="text-xl font-semibold mb-2">Verify Credentials</h3>
+      <p class="text-sm text-gray-600">Employers and organizations</p>
+    </a>
+    
+    <a href="/validate/" class="block bg-gray-100 text-gray-700 p-6 rounded-lg hover:bg-gray-200 transition-colors">
+      <i class="fas fa-cog text-3xl mb-4"></i>
+      <h3 class="text-xl font-semibold mb-2">Manage Status</h3>
+      <p class="text-sm text-gray-600">Credential lifecycle management</p>
+    </a>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+  // Add some interactive animations on load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Animate cards on hover
+    const cards = document.querySelectorAll('.group');
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.05)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+      });
+    });
+
+    // Add fade-in animation to sections
+    const sections = document.querySelectorAll('.grid, .bg-tenant-light');
+    sections.forEach((section, index) => {
+      section.style.opacity = '0';
+      section.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        section.style.opacity = '1';
+        section.style.transform = 'translateY(0)';
+      }, index * 200);
+    });
+  });
+</script>
 {% endblock %}

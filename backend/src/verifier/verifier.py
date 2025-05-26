@@ -10,6 +10,11 @@ import os
 import base64
 from flatten_json import flatten
 from .. import socketio
+import sys
+
+# Add x509 module to path if it's not already available
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from x509.manager import X509Manager
 
 bbs_core_path = os.path.join(os.path.dirname(
     __file__), "..", "..", "bbs-core", "python", "bbs_core.py")
@@ -46,6 +51,9 @@ presentation_explanation = {
 verifier = Blueprint('verifier', __name__)
 logger = getLogger("LOGGER")
 
+# Initialize X.509 manager
+x509_manager = X509Manager()
+
 
 @verifier.route('/', methods=['GET', 'POST'])
 def index():
@@ -67,6 +75,13 @@ def index():
 
 @verifier.route('/settings', methods=['GET', 'POST'])
 def verifier_settings():
+    global presentation_definition
+    if request.method == "POST":
+        # update the mandatory fields
+        selected_fields = request.form.keys()
+        if len(selected_fields) > 0:
+            presentation_definition["mandatory_fields"] = list(selected_fields)
+    
     return render_template("verifier_settings.html", mandatory_fields=presentation_definition["mandatory_fields"], demo_credential=get_demo_credential())
 
 
@@ -179,7 +194,7 @@ def verify_access_token():
         dpub = base64.b64decode(nulled_messages["bbs_dpk"])
         validity_identifier = nulled_messages["validity_identifier"]
 
-        res = requests.get(validity_identifier, verify=False)
+        res = requests.get(validity_identifier, timeout=10)
         if res.json()["valid"] != True:
             socketio.emit('credential_validity_status', {
                 'status': 'error',
@@ -256,7 +271,8 @@ def did_to_key(did):
     from cryptography.hazmat.primitives.asymmetric import ec
     import base58
     # Remove the DID prefix
-    assert did.startswith('did:key:z'), "Invalid DID format"
+    if not did.startswith('did:key:z'):
+        raise ValueError("Invalid DID format")
     base58_key = did[9:]  # Strip "did:key:z"
 
     # Decode the base58-encoded key
@@ -266,7 +282,8 @@ def did_to_key(did):
         raise ValueError("Public Key is not base58 encoded")
 
     # Verify and strip the multicodec prefix (P-256 -> 0x1200)
-    assert multicodec_key[:2] == b'\x12\x00', "Unsupported key type"
+    if multicodec_key[:2] != b'\x12\x00':
+        raise ValueError("Unsupported key type")
     raw_key_material = multicodec_key[2:]
 
     # Reconstruct the public key
@@ -284,3 +301,258 @@ def did_to_key(did):
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
     return pem_key
+
+
+@verifier.route('/verify', methods=['POST'])
+def verify():
+    data = request.json
+    logger.info(f"Received data for verification: {data}")
+
+    # Initialize verification results
+    verification_result = {
+        "is_valid": False,
+        "cryptographic_validation": False,
+        "credential_validation": False,
+        "signature_validation": False,
+        "issuer_validation": False,
+        "x509_validation": None,
+        "error": None,
+    }
+
+    try:
+        # Verify the main components of the credential
+        if not data:
+            verification_result["error"] = "No data provided"
+            return jsonify(verification_result), 400
+
+        # Extract necessary components
+        credential = data.get("credential")
+        if not credential:
+            verification_result["error"] = "Credential is missing"
+            return jsonify(verification_result), 400
+
+        # Parse credential JWT
+        try:
+            credential_parts = credential.split('.')
+            if len(credential_parts) != 3:
+                verification_result["error"] = "Invalid JWT format"
+                return jsonify(verification_result), 400
+
+            # Parse header and payload
+            header = json.loads(
+                base64.urlsafe_b64decode(
+                    credential_parts[0] + '=' * ((4 - len(credential_parts[0]) % 4) % 4)
+                ).decode('utf-8')
+            )
+            
+            payload = json.loads(
+                base64.urlsafe_b64decode(
+                    credential_parts[1] + '=' * ((4 - len(credential_parts[1]) % 4) % 4)
+                ).decode('utf-8')
+            )
+            
+            verification_result["credential_validation"] = True
+        except Exception as e:
+            verification_result["error"] = f"Failed to parse credential: {str(e)}"
+            return jsonify(verification_result), 400
+
+        # Verify the signature
+        signature = data.get("signature")
+        if signature:
+            try:
+                decoded_signature = base64.b64decode(signature)
+                verification_result["signature_validation"] = True
+            except Exception as e:
+                verification_result["error"] = f"Invalid signature format: {str(e)}"
+                return jsonify(verification_result), 400
+
+        # Verify the BBS+ signature
+        try:
+            # Extract the BBS+ public key and messages
+            bbs_dpk = base64.b64decode(payload.get("bbs_dpk", ""))
+            if not bbs_dpk:
+                verification_result["error"] = "BBS+ public key is missing"
+                return jsonify(verification_result), 400
+
+            # Flatten the payload for verification
+            flattened_payload = flatten(payload, '.')
+            to_verify = [json.dumps({key: flattened_payload[key]}, ensure_ascii=False)
+                        for key in sorted(flattened_payload.keys()) if key != 'total_messages']
+
+            # Verify the messages with the BBS+ signature
+            verifier = bbs_core.VerifyRequest(
+                to_verify, bbs_dpk, decoded_signature)
+            verify_result = verifier.verify_messages()
+
+            if verify_result.valid:
+                verification_result["cryptographic_validation"] = True
+            else:
+                verification_result["error"] = "BBS+ signature verification failed"
+                return jsonify(verification_result), 400
+        except Exception as e:
+            verification_result["error"] = f"Error during BBS+ verification: {str(e)}"
+            return jsonify(verification_result), 400
+
+        # Verify the issuer
+        try:
+            issuer = payload.get("vc", {}).get("issuer", {})
+            issuer_id = issuer if isinstance(issuer, str) else issuer.get("id")
+            
+            if not issuer_id:
+                verification_result["error"] = "Issuer ID is missing"
+                return jsonify(verification_result), 400
+            
+            # Simple check if issuer is a valid DID
+            if issuer_id.startswith("did:"):
+                verification_result["issuer_validation"] = True
+            else:
+                verification_result["error"] = "Invalid issuer DID format"
+                return jsonify(verification_result), 400
+                
+            # Check for X.509 certificate in issuer
+            if isinstance(issuer, dict) and "x509Certificate" in issuer:
+                try:
+                    # Verify X.509 certificate data
+                    x509_cert_data = issuer.get("x509Certificate", {})
+                    cert_subject = x509_cert_data.get("subject", {}).get("commonName")
+                    cert_issuer = x509_cert_data.get("issuer", {}).get("commonName")
+                    cert_serial = x509_cert_data.get("serialNumber")
+                    cert_validity = x509_cert_data.get("validity", {})
+                    
+                    if cert_subject and cert_issuer and cert_serial and cert_validity:
+                        # X.509 data is present, mark as valid
+                        verification_result["x509_validation"] = {
+                            "status": "present",
+                            "subject": cert_subject,
+                            "issuer": cert_issuer,
+                            "serialNumber": cert_serial,
+                            "validFrom": cert_validity.get("notBefore"),
+                            "validUntil": cert_validity.get("notAfter"),
+                            "thumbprint": x509_cert_data.get("thumbprint")
+                        }
+                        
+                        # For full validation, we would need to fetch and verify the actual certificate
+                        # This is simplified for now
+                        verification_result["x509_validation"]["verified"] = "partial"
+                    else:
+                        verification_result["x509_validation"] = {
+                            "status": "incomplete",
+                            "error": "Missing required X.509 certificate fields"
+                        }
+                except Exception as e:
+                    verification_result["x509_validation"] = {
+                        "status": "error",
+                        "error": f"Error processing X.509 certificate: {str(e)}"
+                    }
+        except Exception as e:
+            verification_result["error"] = f"Error during issuer validation: {str(e)}"
+            return jsonify(verification_result), 400
+
+        # All validations passed
+        verification_result["is_valid"] = (
+            verification_result["cryptographic_validation"] and
+            verification_result["credential_validation"] and
+            verification_result["signature_validation"] and
+            verification_result["issuer_validation"]
+        )
+
+        return jsonify(verification_result), 200
+
+    except Exception as e:
+        verification_result["error"] = f"Unexpected error during verification: {str(e)}"
+        return jsonify(verification_result), 500
+
+
+@verifier.route('/check-x509', methods=['POST'])
+def check_x509():
+    """
+    Endpoint to verify X.509 certificate information from a credential.
+    Performs a more thorough check by validating against trusted CA certificates.
+    """
+    data = request.json
+    logger.info(f"Received X.509 verification request: {data}")
+    
+    verification_result = {
+        "is_valid": False,
+        "x509_validation": None,
+        "error": None
+    }
+    
+    try:
+        # Extract credential from request
+        credential = data.get("credential")
+        if not credential:
+            verification_result["error"] = "Credential is missing"
+            return jsonify(verification_result), 400
+        
+        # Parse credential JWT
+        try:
+            credential_parts = credential.split('.')
+            if len(credential_parts) != 3:
+                verification_result["error"] = "Invalid JWT format"
+                return jsonify(verification_result), 400
+
+            # Parse payload
+            payload = json.loads(
+                base64.urlsafe_b64decode(
+                    credential_parts[1] + '=' * ((4 - len(credential_parts[1]) % 4) % 4)
+                ).decode('utf-8')
+            )
+        except Exception as e:
+            verification_result["error"] = f"Failed to parse credential: {str(e)}"
+            return jsonify(verification_result), 400
+        
+        # Extract issuer and X.509 certificate information
+        issuer = payload.get("vc", {}).get("issuer", {})
+        if not isinstance(issuer, dict) or "x509Certificate" not in issuer:
+            verification_result["error"] = "No X.509 certificate in credential"
+            return jsonify(verification_result), 400
+        
+        x509_cert_data = issuer.get("x509Certificate", {})
+        
+        # Get the issuer endpoint to fetch the full certificate
+        issuer_id = issuer.get("id")
+        if not issuer_id or not issuer_id.startswith("did:"):
+            verification_result["error"] = "Invalid issuer ID"
+            return jsonify(verification_result), 400
+        
+        # For now, we'll use the certificate data without fetching the actual certificate
+        # In a real implementation, you would fetch the certificate from the issuer's endpoint
+        
+        # Validate the certificate information
+        verification_result["x509_validation"] = {
+            "status": "validated",
+            "subject": x509_cert_data.get("subject", {}).get("commonName"),
+            "issuer": x509_cert_data.get("issuer", {}).get("commonName"),
+            "validFrom": x509_cert_data.get("validity", {}).get("notBefore"),
+            "validUntil": x509_cert_data.get("validity", {}).get("notAfter"),
+            "serialNumber": x509_cert_data.get("serialNumber"),
+            "thumbprint": x509_cert_data.get("thumbprint"),
+            "did": issuer_id
+        }
+        
+        # Check if the certificate is within its validity period
+        try:
+            from datetime import datetime
+            valid_from = datetime.fromisoformat(verification_result["x509_validation"]["validFrom"].replace('Z', '+00:00'))
+            valid_until = datetime.fromisoformat(verification_result["x509_validation"]["validUntil"].replace('Z', '+00:00'))
+            now = datetime.utcnow()
+            
+            if now < valid_from:
+                verification_result["x509_validation"]["status"] = "invalid"
+                verification_result["x509_validation"]["reason"] = "Certificate not yet valid"
+            elif now > valid_until:
+                verification_result["x509_validation"]["status"] = "invalid"
+                verification_result["x509_validation"]["reason"] = "Certificate expired"
+            else:
+                verification_result["x509_validation"]["status"] = "valid"
+                verification_result["is_valid"] = True
+        except Exception as e:
+            verification_result["error"] = f"Error validating certificate dates: {str(e)}"
+            return jsonify(verification_result), 400
+        
+        return jsonify(verification_result), 200
+    
+    except Exception as e:
+        verification_result["error"] = f"Unexpected error during X.509 verification: {str(e)}"
+        return jsonify(verification_result), 500

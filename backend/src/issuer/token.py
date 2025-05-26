@@ -37,7 +37,7 @@ def authenticate_token(f):
                 f"{server_url}/verifyAccessToken",
                 json={"token": token},
                 headers={"Content-Type": "application/json"},
-                verify=False  # TODO remove this line in production
+                timeout=10  # Add a reasonable timeout
             )
             if response.status_code != 200:
                 return jsonify({"error": response.text}), 401

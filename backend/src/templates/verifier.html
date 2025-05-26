@@ -1,86 +1,171 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "base.html" %} 
+{% block title %}Credential Verifier - {{ tenant_name }}{% endblock %} 
+{% block content %}
 
-<div class="center-div-content">
-  <h1>Home</h1>
-  <div class="balancing-button-container">
-    <a href="/issuer" class="balancing-button">Issuer</a>
-    <a href="/verifier/" class="balancing-button">Verifier</a>
-    <a href="/verifier/settings" class="balancing-button">Verifier Settings</a>
-    <a href="/validate/" class="balancing-button">Validate</a>
-  </div>
-  <img
-    id="picture"
-    src="data:image/png;base64,{{ img_data }}"
-    style="max-width: 100%"
-  />
-
-  <table style="margin-top: 20px">
-    <thead>
-      <tr>
-        <th>Status</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <p id="presentation_requested">⏳</p>
-        </td>
-        <td>Presentation Requested</td>
-      </tr>
-      <tr>
-        <td>
-          <p id="key_extraction">⏳</p>
-        </td>
-        <td>Keys Extracted from Credential</td>
-      </tr>
-      <tr>
-        <td>
-          <p id="signature_verification">⏳</p>
-        </td>
-        <td>Holder Key matches Presentation</td>
-      </tr>
-      <tr>
-        <td>
-          <p id="issuer_pub_key_verification">⏳</p>
-        </td>
-        <td>Issuer Public Key is Trusted</td>
-      </tr>
-      <tr>
-        <td>
-          <p id="mandatory_fields_verification">⏳</p>
-        </td>
-        <td>All Mandatory fields were sent</td>
-      </tr>
-      <tr>
-        <td>
-          <p id="credential_validity_status">⏳</p>
-        </td>
-        <td>Credential is not Revoked</td>
-      </tr>
-      <tr>
-        <td>
-          <p id="issuer_bbs_key_verification">⏳</p>
-        </td>
-        <td>BBS Key is Valid</td>
-      </tr>
-      <tr>
-        <td>
-          <p id="verification_result">⏳</p>
-        </td>
-        <td>Signature matches Messages</td>
-      </tr>
-      <tr>
-        <td>
-          <p id="verification_result_all">⏳</p>
-        </td>
-        <td>VERIFICATION RESULT</td>
-      </tr>
-    </tbody>
-  </table>
+<!-- Simple Page Title -->
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-tenant-text mb-2">Credential Verifier</h1>
+  <p class="text-gray-600 text-sm">Verify authenticity and validity of credentials</p>
 </div>
 
-<!-- JavaScript included at the end of the body -->
+<!-- QR Code Display -->
+{% if img_data %}
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8 p-6">
+  <div class="text-center">
+    <h3 class="text-xl font-semibold text-tenant-text mb-4">
+      <i class="fas fa-qrcode text-tenant-primary mr-2"></i>
+      Verification Request QR Code
+    </h3>
+    <div class="bg-gray-50 rounded-lg p-6 inline-block">
+      <img id="picture" src="data:image/png;base64,{{ img_data }}" class="mx-auto max-w-full h-auto" style="max-width: 300px;" />
+    </div>
+    <p class="text-sm text-gray-600 mt-4">Student scans this QR code to initiate credential verification</p>
+  </div>
+</div>
+{% endif %}
+
+<!-- Real-time Verification Status -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-tenant-text flex items-center">
+      <i class="fas fa-tasks text-tenant-primary mr-2"></i>
+      Real-time Verification Process
+    </h3>
+    <p class="text-sm text-gray-600 mt-1">Monitor each step of the credential verification process</p>
+  </div>
+  
+  <div class="p-6">
+    <div class="space-y-4">
+      <!-- Verification Steps -->
+      <div class="grid gap-4">
+        
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-3">
+            <div class="text-2xl" id="presentation_requested">⏳</div>
+            <div>
+              <div class="font-medium text-gray-900">Presentation Requested</div>
+              <div class="text-sm text-gray-500">Verification request initiated</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 1</div>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-3">
+            <div class="text-2xl" id="key_extraction">⏳</div>
+            <div>
+              <div class="font-medium text-gray-900">Keys Extracted from Credential</div>
+              <div class="text-sm text-gray-500">Cryptographic keys extracted and verified</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 2</div>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-3">
+            <div class="text-2xl" id="signature_verification">⏳</div>
+            <div>
+              <div class="font-medium text-gray-900">Holder Key matches Presentation</div>
+              <div class="text-sm text-gray-500">Verifying credential holder authenticity</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 3</div>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-3">
+            <div class="text-2xl" id="issuer_pub_key_verification">⏳</div>
+            <div>
+              <div class="font-medium text-gray-900">Issuer Public Key is Trusted</div>
+              <div class="text-sm text-gray-500">Validating issuer authority and trustworthiness</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 4</div>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-3">
+            <div class="text-2xl" id="mandatory_fields_verification">⏳</div>
+            <div>
+              <div class="font-medium text-gray-900">All Mandatory Fields Present</div>
+              <div class="text-sm text-gray-500">Checking required credential attributes</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 5</div>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-3">
+            <div class="text-2xl" id="credential_validity_status">⏳</div>
+            <div>
+              <div class="font-medium text-gray-900">Credential is not Revoked</div>
+              <div class="text-sm text-gray-500">Checking revocation status</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 6</div>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-3">
+            <div class="text-2xl" id="issuer_bbs_key_verification">⏳</div>
+            <div>
+              <div class="font-medium text-gray-900">BBS Key is Valid</div>
+              <div class="text-sm text-gray-500">Validating BBS+ signature key</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 7</div>
+        </div>
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-3">
+            <div class="text-2xl" id="verification_result">⏳</div>
+            <div>
+              <div class="font-medium text-gray-900">Signature matches Messages</div>
+              <div class="text-sm text-gray-500">Final cryptographic verification</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 8</div>
+        </div>
+
+        <!-- Final Result -->
+        <div class="flex items-center justify-between p-6 border-2 border-tenant-primary rounded-lg bg-tenant-light">
+          <div class="flex items-center space-x-3">
+            <div class="text-3xl" id="verification_result_all">⏳</div>
+            <div>
+              <div class="font-bold text-tenant-text text-lg">VERIFICATION RESULT</div>
+              <div class="text-sm text-gray-600">Overall verification outcome</div>
+            </div>
+          </div>
+          <div class="text-xs bg-tenant-primary text-white px-3 py-1 rounded-full font-semibold">FINAL</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Legend -->
+    <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+      <h4 class="font-semibold text-gray-900 mb-3">Status Legend</h4>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">⏳</span>
+          <span class="text-gray-600">Pending verification</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">✅</span>
+          <span class="text-gray-600">Verification successful</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">⛔</span>
+          <span class="text-gray-600">Verification failed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<!-- Socket.IO and jQuery for real-time verification -->
 <script
   src="https://cdn.socket.io/4.7.5/socket.io.min.js"
   integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
@@ -105,8 +190,8 @@
     // Find the element by ID
     const element = document.getElementById(id);
 
-    // Check if the element exists and is a paragraph
-    if (element && element.tagName === "P") {
+    // Check if the element exists
+    if (element) {
       // Check if the current text is success and allowChangeFromSuccess is false
       if (element.innerText === texts.success && !allowChangeFromSuccess) {
         return;
@@ -115,13 +200,26 @@
       // Update the text content if the condition is valid
       if (texts[condition]) {
         element.innerText = texts[condition];
+        
+        // Add visual feedback by updating the parent container
+        const parentDiv = element.closest('.border');
+        if (parentDiv) {
+          parentDiv.classList.remove('bg-gray-50', 'bg-green-50', 'bg-red-50');
+          if (condition === 'success') {
+            parentDiv.classList.add('bg-green-50', 'border-green-200');
+          } else if (condition === 'error') {
+            parentDiv.classList.add('bg-red-50', 'border-red-200');
+          } else {
+            parentDiv.classList.add('bg-gray-50');
+          }
+        }
       } else {
         console.error(
           "Invalid condition provided. Use 'loading', 'success', or 'error'."
         );
       }
     } else {
-      console.error(`Element with ID "${id}" not found or is not a paragraph.`);
+      console.error(`Element with ID "${id}" not found.`);
     }
   }
 
@@ -151,8 +249,6 @@
 
   $(document).ready(function () {
     // Connect to the Socket.IO server.
-    // The connection URL has the following format, relative to the current page:
-    //     http[s]://<domain>:<port>[/<namespace>]
     var socket = io();
 
     socket.on("presentation_requested", function (msg) {
@@ -222,5 +318,4 @@
     });
   });
 </script>
-
 {% endblock %}

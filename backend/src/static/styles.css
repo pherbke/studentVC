@@ -96,6 +96,18 @@ label {
 
 .logo-container {
     float: left;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tenant-name {
+    color: var(--tenant-secondary);
+    font-family: var(--text-font);
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .supernav-container {
@@ -266,16 +278,25 @@ input[type="file"] {
 
 
 :root {
-    --default-text-color: #333333; /* Dark text for light background */
-    --main-bg-color: #ffffff; /* White background */
-    --main-bg-color-rgba: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
-    --secondary-bg-color: #f2f2f2; /* Light gray background */
-    --input-bg-color: #ffffff; /* White input background */
-    --input-selected-color: #e6f7ff; /* Light blue for selected input */
-    --nav-bar-color: #222b37; /* Light nav bar */
-    --highlight-blue: #007bff; /* Bright blue highlight */
+    /* Tenant-specific variables will be injected here */
+    /* Fallback values */
+    --tenant-primary: #C50E1F;
+    --tenant-secondary: #FFFFFF;
+    --tenant-accent: #E6E6E6;
+    --tenant-text: #333333;
+    --tenant-background: #FAFAFA;
+    
+    /* Derived variables using tenant colors */
+    --default-text-color: var(--tenant-text);
+    --main-bg-color: var(--tenant-background);
+    --main-bg-color-rgba: rgba(255, 255, 255, 0.95);
+    --secondary-bg-color: var(--tenant-accent);
+    --input-bg-color: var(--tenant-secondary);
+    --input-selected-color: var(--tenant-accent);
+    --nav-bar-color: var(--tenant-primary);
+    --highlight-blue: var(--tenant-primary);
     --text-font: 'Roboto', sans-serif;
-    --disabled-text-color: #b0b0b0; /* Light gray for disabled text */
+    --disabled-text-color: #b0b0b0;
     --standard-padding: 10px;
     --standard-border-radius: 12px;
 }
