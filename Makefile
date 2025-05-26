@@ -13,6 +13,7 @@ help:
 	@echo "  test-docker   - Test Docker build and container"
 	@echo "  test-compose  - Test all docker-compose profiles"
 	@echo "  test-ci       - Test CI steps locally"
+	@echo "  test-perf     - Run performance audit on local server"
 	@echo ""
 	@echo "Development:"
 	@echo "  install       - Install development dependencies"
@@ -105,6 +106,11 @@ clean-all:
 	docker compose -f backend/docker-compose.yml down -v --remove-orphans || true
 	docker system prune -af --volumes
 	@echo "✅ Deep cleanup complete!"
+
+# Test performance
+test-perf:
+	@echo "🔍 Running performance audit..."
+	./scripts/performance-audit.sh
 
 # Test everything
 test: test-compose test-docker test-ci

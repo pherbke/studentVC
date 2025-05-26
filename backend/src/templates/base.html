@@ -3,10 +3,30 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="{% block description %}{{ tenant_name }} StudentVC - Secure Verifiable Credential Management Platform{% endblock %}" />
+    <meta name="theme-color" content="{{ tenant_colors.primary }}" />
+    
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+    
+    <!-- Optimized Google Fonts with font-display: swap -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Optimized Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      crossorigin="anonymous"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    />
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+      // Optimized Tailwind config with performance considerations
       tailwind.config = {
         theme: {
           extend: {
@@ -21,118 +41,167 @@
             },
             fontFamily: {
               'university': ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-in-out',
+              'slide-in': 'slideIn 0.3s ease-out',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' }
+              },
+              slideIn: {
+                '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' }
+              }
             }
           }
+        },
+        corePlugins: {
+          // Disable unused plugins for better performance
+          container: false
         }
       }
     </script>
-    
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      crossorigin="anonymous"
-    />
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <title>{% block title %}{{ tenant_name }} - StudentVC{% endblock %}</title>
     <link rel="icon" href="{{ tenant_logo.icon }}" />
+    
+    <!-- Performance monitoring and optimization hints -->
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="{{ request.url }}" />
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="{{ tenant_logo.main }}" as="image" type="image/png" />
+    <link rel="preload" href="{{ url_for('static', filename='js/responsive-optimizations.js') }}" as="script" />
   </head>
   <body class="h-full bg-tenant-background font-university">
-    <!-- Compact University Navigation -->
-    <nav class="bg-white shadow-md border-b-2 border-tenant-primary">
+    <!-- Enhanced University Navigation with Larger Logo -->
+    <nav class="bg-white shadow-lg border-b-2 border-tenant-primary relative">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <!-- Ultra Compact Logo and University Name -->
-          <div class="flex items-center space-x-1">
-            <a href="/" class="flex items-center space-x-1 group">
-              <img src="{{ tenant_logo.main }}" alt="{{ tenant_full_name }}" class="h-7 w-auto transition-transform group-hover:scale-105" />
+        <div class="flex justify-between items-center h-20 relative">
+          <!-- Large Overlapping Logo and University Name -->
+          <div class="flex items-center space-x-3 relative z-10">
+            <a href="/" class="flex items-center space-x-3 group">
+              <div class="relative">
+                <!-- Large logo with overlap effect -->
+                <img src="{{ tenant_logo.main }}" alt="{{ tenant_full_name }}" 
+                     class="h-16 w-auto transition-all duration-300 group-hover:scale-110 group-hover:rotate-2 
+                            filter drop-shadow-lg hover:drop-shadow-xl" />
+                <!-- Optional glow effect on hover -->
+                <div class="absolute inset-0 h-16 w-16 bg-tenant-primary opacity-0 group-hover:opacity-20 
+                           rounded-full blur-xl transition-opacity duration-300 -z-10"></div>
+              </div>
               <div class="flex flex-col">
-                <span class="text-xs font-bold text-tenant-text">{{ tenant_name }}</span>
-                <span class="text-xs text-gray-500">StudentVC</span>
+                <span class="text-lg font-bold text-tenant-text group-hover:text-tenant-primary transition-colors">{{ tenant_name }}</span>
+                <span class="text-sm text-gray-600 font-medium">StudentVC Platform</span>
               </div>
             </a>
           </div>
 
-          <!-- Main Navigation Menu in Header -->
-          <div class="hidden md:flex items-center space-x-1">
-            <!-- Main Menu Items -->
-            <a href="/" class="text-tenant-text hover:text-tenant-primary transition-colors px-1 py-0.5 rounded text-xs font-medium">
-              <i class="fas fa-home mr-0.5 text-xs"></i>Home
+          <!-- Enhanced Main Navigation Menu in Header -->
+          <div class="hidden md:flex items-center space-x-6">
+            <!-- Main Menu Items with Larger Size -->
+            <a href="/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                             px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
+              <i class="fas fa-home mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+              <span>Home</span>
             </a>
-            <a href="/issuer" class="text-tenant-text hover:text-tenant-primary transition-colors px-1 py-0.5 rounded text-xs font-medium">
-              <i class="fas fa-id-card mr-0.5 text-xs"></i>Issuer
+            <a href="/issuer" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                   px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
+              <i class="fas fa-id-card mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+              <span>Issuer</span>
             </a>
-            <a href="/verifier/" class="text-tenant-text hover:text-tenant-primary transition-colors px-1 py-0.5 rounded text-xs font-medium">
-              <i class="fas fa-shield-alt mr-0.5 text-xs"></i>Verifier
+            <a href="/verifier/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                      px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
+              <i class="fas fa-shield-alt mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+              <span>Verifier</span>
             </a>
-            <a href="/verifier/settings" class="text-tenant-text hover:text-tenant-primary transition-colors px-1 py-0.5 rounded text-xs font-medium">
-              <i class="fas fa-cog mr-0.5 text-xs"></i>Settings
+            <a href="/verifier/settings" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                             px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
+              <i class="fas fa-cog mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+              <span>Settings</span>
             </a>
-            <a href="/validate/" class="text-tenant-text hover:text-tenant-primary transition-colors px-1 py-0.5 rounded text-xs font-medium">
-              <i class="fas fa-check-circle mr-0.5 text-xs"></i>Validate
+            <a href="/validate/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                      px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
+              <i class="fas fa-check-circle mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+              <span>Validate</span>
             </a>
             
-            <!-- Auth Links -->
-            <div class="flex items-center space-x-1 ml-2 pl-2 border-l border-gray-300">
+            <!-- Enhanced Auth Links -->
+            <div class="flex items-center space-x-3 ml-6 pl-6 border-l-2 border-gray-300">
               {% if current_user.is_authenticated %}
-                <a href="/logout" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 transition-colors px-2 py-0.5 rounded text-xs font-medium">
-                  <i class="fas fa-sign-out-alt mr-0.5 text-xs"></i>Logout
+                <a href="/logout" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-lg 
+                                       transition-all duration-200 px-5 py-3 rounded-lg text-base font-semibold flex items-center group">
+                  <i class="fas fa-sign-out-alt mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                  <span>Logout</span>
                 </a>
               {% else %}
-                <a href="/login" class="text-tenant-text hover:text-tenant-primary transition-colors px-1 py-0.5 rounded text-xs font-medium">
-                  <i class="fas fa-sign-in-alt mr-0.5 text-xs"></i>Login
+                <a href="/login" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                      px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
+                  <i class="fas fa-sign-in-alt mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                  <span>Login</span>
                 </a>
-                <a href="/register" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 transition-colors px-2 py-0.5 rounded text-xs font-medium">
-                  <i class="fas fa-user-plus mr-0.5 text-xs"></i>Register
+                <a href="/register" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-lg 
+                                         transition-all duration-200 px-5 py-3 rounded-lg text-base font-semibold flex items-center group">
+                  <i class="fas fa-user-plus mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                  <span>Register</span>
                 </a>
               {% endif %}
             </div>
           </div>
 
-          <!-- Mobile menu button -->
+          <!-- Enhanced Mobile menu button -->
           <div class="md:hidden">
-            <button type="button" class="text-tenant-text hover:text-tenant-primary" onclick="toggleMobileMenu()">
-              <i class="fas fa-bars text-sm"></i>
+            <button type="button" class="text-tenant-text hover:text-tenant-primary p-2 rounded-lg hover:bg-tenant-light transition-all duration-200" onclick="toggleMobileMenu()">
+              <i class="fas fa-bars text-xl"></i>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Mobile Navigation Menu -->
-      <div id="mobile-menu" class="hidden md:hidden bg-tenant-light border-t">
-        <div class="px-2 py-2 space-y-1">
-          <!-- Main Menu Items -->
-          <a href="/" class="block px-2 py-1 text-tenant-text hover:text-tenant-primary transition-colors text-xs">
-            <i class="fas fa-home mr-1"></i>Home
+      <!-- Enhanced Mobile Navigation Menu -->
+      <div id="mobile-menu" class="hidden md:hidden bg-tenant-light border-t-2 border-tenant-primary shadow-lg">
+        <div class="px-4 py-4 space-y-2">
+          <!-- Main Menu Items with Enhanced Mobile Design -->
+          <a href="/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                           rounded-lg text-base font-semibold flex items-center">
+            <i class="fas fa-home mr-3 text-lg w-6"></i>Home
           </a>
-          <a href="/issuer" class="block px-2 py-1 text-tenant-text hover:text-tenant-primary transition-colors text-xs">
-            <i class="fas fa-id-card mr-1"></i>Issuer
+          <a href="/issuer" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                 rounded-lg text-base font-semibold flex items-center">
+            <i class="fas fa-id-card mr-3 text-lg w-6"></i>Issuer
           </a>
-          <a href="/verifier/" class="block px-2 py-1 text-tenant-text hover:text-tenant-primary transition-colors text-xs">
-            <i class="fas fa-shield-alt mr-1"></i>Verifier
+          <a href="/verifier/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                    rounded-lg text-base font-semibold flex items-center">
+            <i class="fas fa-shield-alt mr-3 text-lg w-6"></i>Verifier
           </a>
-          <a href="/verifier/settings" class="block px-2 py-1 text-tenant-text hover:text-tenant-primary transition-colors text-xs">
-            <i class="fas fa-cog mr-1"></i>Settings
+          <a href="/verifier/settings" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                           rounded-lg text-base font-semibold flex items-center">
+            <i class="fas fa-cog mr-3 text-lg w-6"></i>Settings
           </a>
-          <a href="/validate/" class="block px-2 py-1 text-tenant-text hover:text-tenant-primary transition-colors text-xs">
-            <i class="fas fa-check-circle mr-1"></i>Validate
+          <a href="/validate/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                    rounded-lg text-base font-semibold flex items-center">
+            <i class="fas fa-check-circle mr-3 text-lg w-6"></i>Validate
           </a>
           
-          <!-- Auth Links -->
-          <div class="border-t border-gray-300 pt-1 mt-1">
+          <!-- Enhanced Auth Links -->
+          <div class="border-t-2 border-gray-300 pt-3 mt-3">
             {% if current_user.is_authenticated %}
-              <a href="/logout" class="block px-2 py-1 text-tenant-text hover:text-tenant-primary transition-colors text-xs">
-                <i class="fas fa-sign-out-alt mr-1"></i>Logout
+              <a href="/logout" class="block px-4 py-3 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
+                                     transition-all duration-200 rounded-lg text-base font-semibold flex items-center">
+                <i class="fas fa-sign-out-alt mr-3 text-lg w-6"></i>Logout
               </a>
             {% else %}
-              <a href="/login" class="block px-2 py-1 text-tenant-text hover:text-tenant-primary transition-colors text-xs">
-                <i class="fas fa-sign-in-alt mr-1"></i>Login
+              <a href="/login" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                     rounded-lg text-base font-semibold flex items-center mb-2">
+                <i class="fas fa-sign-in-alt mr-3 text-lg w-6"></i>Login
               </a>
-              <a href="/register" class="block px-2 py-1 text-tenant-text hover:text-tenant-primary transition-colors text-xs">
-                <i class="fas fa-user-plus mr-1"></i>Register
+              <a href="/register" class="block px-4 py-3 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
+                                        transition-all duration-200 rounded-lg text-base font-semibold flex items-center">
+                <i class="fas fa-user-plus mr-3 text-lg w-6"></i>Register
               </a>
             {% endif %}
           </div>
@@ -176,22 +245,159 @@
 
     <!-- JavaScript -->
     <script>
+      // Performance optimized mobile menu toggle
       function toggleMobileMenu() {
         const menu = document.getElementById('mobile-menu');
-        menu.classList.toggle('hidden');
+        const isHidden = menu.classList.contains('hidden');
+        
+        if (isHidden) {
+          menu.classList.remove('hidden');
+          // Add entrance animation
+          menu.style.animation = 'slideIn 0.3s ease-out';
+        } else {
+          // Add exit animation
+          menu.style.animation = 'fadeOut 0.2s ease-in';
+          setTimeout(() => {
+            menu.classList.add('hidden');
+            menu.style.animation = '';
+          }, 200);
+        }
       }
 
-      // Auto-hide flash messages after 5 seconds
-      setTimeout(() => {
-        document.querySelectorAll('[class*="bg-red-50"], [class*="bg-yellow-50"], [class*="bg-green-50"]').forEach(el => {
-          if (el.parentElement) {
-            el.style.transition = 'opacity 0.5s';
-            el.style.opacity = '0';
-            setTimeout(() => el.remove(), 500);
-          }
+      // Optimized document ready function
+      document.addEventListener('DOMContentLoaded', function() {
+        // Lazy load images that are not immediately visible
+        if ('IntersectionObserver' in window) {
+          const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                  img.src = img.dataset.src;
+                  img.removeAttribute('data-src');
+                  observer.unobserve(img);
+                }
+              }
+            });
+          });
+          
+          document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+          });
+        }
+
+        // Auto-hide flash messages with improved performance
+        setTimeout(() => {
+          document.querySelectorAll('[class*="bg-red-50"], [class*="bg-yellow-50"], [class*="bg-green-50"]').forEach(el => {
+            if (el.parentElement) {
+              el.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+              el.style.opacity = '0';
+              el.style.transform = 'translateY(-10px)';
+              setTimeout(() => el.remove(), 500);
+            }
+          });
+        }, 5000);
+
+        // Optimize logo hover effects with requestAnimationFrame
+        const logoElements = document.querySelectorAll('.group img');
+        logoElements.forEach(logo => {
+          let isAnimating = false;
+          
+          logo.addEventListener('mouseenter', () => {
+            if (!isAnimating) {
+              isAnimating = true;
+              requestAnimationFrame(() => {
+                logo.style.transform = 'scale(1.1) rotate(2deg)';
+                isAnimating = false;
+              });
+            }
+          });
+          
+          logo.addEventListener('mouseleave', () => {
+            if (!isAnimating) {
+              isAnimating = true;
+              requestAnimationFrame(() => {
+                logo.style.transform = 'scale(1) rotate(0deg)';
+                isAnimating = false;
+              });
+            }
+          });
         });
-      }, 5000);
+
+        // Add smooth scrolling for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+              target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
+          });
+        });
+      });
+
+      // Critical CSS loading optimization
+      function loadCSS(href) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        document.head.appendChild(link);
+      }
+
+      // Preload next likely pages for better navigation performance
+      function preloadPage(url) {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = url;
+        document.head.appendChild(link);
+      }
+
+      // Add CSS animations keyframes
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fadeOut {
+          from { opacity: 1; transform: translateY(0); }
+          to { opacity: 0; transform: translateY(-10px); }
+        }
+        
+        /* Improve image loading experience */
+        img {
+          transition: opacity 0.3s ease-in-out;
+        }
+        
+        img[data-src] {
+          opacity: 0.5;
+          filter: blur(2px);
+        }
+        
+        /* Optimize hover states */
+        .group:hover img {
+          will-change: transform;
+        }
+        
+        /* Reduce motion for users with motion sensitivity */
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+        
+        /* Improve focus states for accessibility */
+        button:focus, a:focus {
+          outline: 2px solid {{ tenant_colors.primary }};
+          outline-offset: 2px;
+        }
+      `;
+      document.head.appendChild(style);
     </script>
+
+    <!-- Load responsive optimizations -->
+    <script src="{{ url_for('static', filename='js/responsive-optimizations.js') }}" async></script>
 
     {% block javascript %}{% endblock %}
   </body>
