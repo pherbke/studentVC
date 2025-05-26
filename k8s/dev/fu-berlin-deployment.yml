@@ -1,0 +1,178 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fu-berlin-dev-config
+  namespace: studentvc-dev
+data:
+  TENANT_NAME: "FU Berlin"
+  SERVER_URL: "https://fu-berlin.dev.studentvc.example.com"
+  ENVIRONMENT: "dev"
+  # Development FU Berlin specific configurations
+  UNIVERSITY_TYPE: "comprehensive"
+  CREDENTIAL_SCHEMA_VERSION: "v1.0-dev"
+  ENABLE_DEBUG_FEATURES: "true"
+  DID_METHOD: "did:web:dev:fu-berlin.de"
+  CREDENTIAL_TYPES: "StudentID,Transcript,ThesisCredential"
+  # Development settings for frequent resets
+  ENABLE_FEATURE_FLAGS: "true"
+  DEBUG_MODE: "true"
+  ALLOW_INSECURE_CONNECTIONS: "true"  # Only for dev
+  MOCK_EXTERNAL_SERVICES: "true"
+  # FU-specific dev features
+  MULTILINGUAL_SUPPORT: "true"
+  HUMANITIES_SCHEMAS: "enabled"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fu-berlin-dev-secrets
+  namespace: studentvc-dev
+type: Opaque
+data:
+  # Base64 encoded dev secrets - non-sensitive
+  DATABASE_URL: cG9zdGdyZXNxbDovL2Z1YmVybGluOmRldkBmdS1kZXYtZGIvc3R1ZGVudHZjLWRldg==
+  SECRET_KEY: ZnUtYmVybGluLWRldi1zZWNyZXQ=
+  # Dev-specific API keys (non-sensitive)
+  DEV_API_KEY: ZGV2LWFwaS1rZXktZnUtYmVybGlu
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fu-berlin-dev
+  namespace: studentvc-dev
+  labels:
+    app: fu-berlin
+    environment: dev
+    university: fu-berlin
+spec:
+  replicas: 1  # Single replica for dev
+  strategy:
+    type: Recreate  # Allow for frequent updates
+  selector:
+    matchLabels:
+      app: fu-berlin
+      environment: dev
+  template:
+    metadata:
+      labels:
+        app: fu-berlin
+        environment: dev
+        university: fu-berlin
+      annotations:
+        dev.studentvc.org/features: "debug,mock-services,feature-flags,multilingual"
+        dev.studentvc.org/reset-policy: "frequent"
+    spec:
+      containers:
+      - name: studentvc
+        image: ghcr.io/pherbke/studentvc:${IMAGE_TAG}
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: debug
+        envFrom:
+        - configMapRef:
+            name: fu-berlin-dev-config
+        - secretRef:
+            name: fu-berlin-dev-secrets
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: LOG_LEVEL
+          value: "DEBUG"
+        - name: FLASK_ENV
+          value: "development"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10  # More tolerant for dev
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 10  # More tolerant for dev
+        volumeMounts:
+        - name: dev-storage
+          mountPath: /src/instance
+        - name: logs
+          mountPath: /var/log/studentvc
+      volumes:
+      - name: dev-storage
+        emptyDir: {}  # Ephemeral storage for dev - frequent resets
+      - name: logs
+        emptyDir: {}
+      imagePullSecrets:
+      - name: ghcr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fu-berlin-dev-service
+  namespace: studentvc-dev
+spec:
+  selector:
+    app: fu-berlin
+    environment: dev
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: debug
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fu-berlin-dev-ingress
+  namespace: studentvc-dev
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Allow HTTP for dev
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"  # Large uploads for testing
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    # Dev-specific annotations
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Environment: dev";
+      more_set_headers "X-University: fu-berlin";
+spec:
+  tls:
+  - hosts:
+    - fu-berlin.dev.studentvc.example.com
+    secretName: fu-berlin-dev-tls
+  rules:
+  - host: fu-berlin.dev.studentvc.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: fu-berlin-dev-service
+            port:
+              number: 80

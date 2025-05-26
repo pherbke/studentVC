@@ -13,6 +13,7 @@ on:
         default: 'staging'
         type: choice
         options:
+        - dev
         - staging
         - production
       university:
@@ -28,6 +29,11 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: studentvc
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
 
 jobs:
   # Test and Build
@@ -86,6 +92,8 @@ jobs:
       run: |
         if [[ "${{ github.event_name }}" == "workflow_dispatch" ]] || \
            [[ "${{ github.ref }}" == "refs/heads/main" ]] || \
+           [[ "${{ github.ref }}" == "refs/heads/develop" ]] || \
+           [[ "${{ github.ref }}" == refs/heads/release/* ]] || \
            [[ "${{ github.ref }}" == "refs/heads/X509compatibility" ]]; then
           echo "should-deploy=true" >> $GITHUB_OUTPUT
         else
@@ -103,6 +111,21 @@ jobs:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        DOCKER_BUILDKIT: 1
+
+    - name: Extract metadata
+      if: steps.check-deploy.outputs.should-deploy == 'true'
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=raw,value=${{ steps.version.outputs.version }}
+          type=raw,value=latest,enable={{is_default_branch}}
 
     - name: Build and push Docker image
       if: steps.check-deploy.outputs.should-deploy == 'true'
@@ -112,17 +135,82 @@ jobs:
         file: ./backend/Dockerfile
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: |
-          ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
-          ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+
+  # Deploy to Dev (Shared Development)
+  deploy-dev:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: needs.test-and-build.outputs.should-deploy == 'true' && (github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'dev')
+    environment: dev
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+
+    - name: Configure kubectl for dev
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+        kubectl config current-context
+
+    - name: Deploy TU Berlin to dev
+      if: github.event.inputs.university != 'fu-berlin'
+      run: |
+        export KUBECONFIG=kubeconfig
+        envsubst < k8s/dev/tu-berlin-deployment.yml | kubectl apply -f -
+        echo "🧪 TU Berlin dev instance deployed for shared development"
+      env:
+        IMAGE_TAG: ${{ needs.test-and-build.outputs.version }}
+        ENVIRONMENT: dev
+
+    - name: Deploy FU Berlin to dev
+      if: github.event.inputs.university != 'tu-berlin'
+      run: |
+        export KUBECONFIG=kubeconfig
+        envsubst < k8s/dev/fu-berlin-deployment.yml | kubectl apply -f -
+        echo "🧪 FU Berlin dev instance deployed for shared development"
+      env:
+        IMAGE_TAG: ${{ needs.test-and-build.outputs.version }}
+        ENVIRONMENT: dev
+
+    - name: Wait for dev deployments
+      run: |
+        export KUBECONFIG=kubeconfig
+        if [[ "${{ github.event.inputs.university }}" != "fu-berlin" ]]; then
+          kubectl rollout status deployment/tu-berlin-dev -n studentvc-dev --timeout=300s
+          echo "✅ TU Berlin dev deployment ready"
+        fi
+        if [[ "${{ github.event.inputs.university }}" != "tu-berlin" ]]; then
+          kubectl rollout status deployment/fu-berlin-dev -n studentvc-dev --timeout=300s
+          echo "✅ FU Berlin dev deployment ready"
+        fi
+
+    - name: Verify dev endpoints
+      run: |
+        export KUBECONFIG=kubeconfig
+        echo "🔗 Development endpoints:"
+        if [[ "${{ github.event.inputs.university }}" != "fu-berlin" ]]; then
+          echo "   TU Berlin (Dev): https://tu-berlin.dev.studentvc.example.com"
+        fi
+        if [[ "${{ github.event.inputs.university }}" != "tu-berlin" ]]; then
+          echo "   FU Berlin (Dev): https://fu-berlin.dev.studentvc.example.com"
+        fi
+        echo "🔧 These are shared development environments with frequent resets"
 
   # Deploy to Staging
   deploy-staging:
     needs: test-and-build
     runs-on: ubuntu-latest
-    if: needs.test-and-build.outputs.should-deploy == 'true' && (github.ref == 'refs/heads/X509compatibility' || github.event.inputs.environment == 'staging')
+    if: needs.test-and-build.outputs.should-deploy == 'true' && (github.ref == 'refs/heads/release/*' || github.event.inputs.environment == 'staging')
     environment: staging
     
     steps:

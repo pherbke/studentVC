@@ -1,24 +1,127 @@
 services:
-  tu-berlin:
+  # Local development (default)
+  tu-berlin-local:
     build:
       context: .
     environment:
       - TENANT_NAME=TU Berlin
+      - ENVIRONMENT=local
     volumes:
-      - ./instance/tu-berlin:/instance
+      - ./instance/tu-berlin-local:/instance
     ports:
       - "8080:8080"
     restart: unless-stopped
 
-  fu-berlin:
+  fu-berlin-local:
     build:
       context: .
     environment:
       - TENANT_NAME=FU Berlin
+      - ENVIRONMENT=local
     volumes:
-      - ./instance/fu-berlin:/instance
+      - ./instance/fu-berlin-local:/instance
     ports:
       - "8081:8080"
     restart: unless-stopped
     profiles:
       - multi-tenant
+
+  # Development environment (shared development/testing)
+  tu-berlin-dev:
+    build:
+      context: .
+    environment:
+      - TENANT_NAME=TU Berlin
+      - ENVIRONMENT=dev
+      - UNIVERSITY_TYPE=technical
+      - CREDENTIAL_SCHEMA_VERSION=v1.0-dev
+      - ENABLE_DEBUG_FEATURES=true
+      - DID_METHOD=did:web:dev:tu.berlin
+      - ENABLE_FEATURE_FLAGS=true
+      - DEBUG_MODE=true
+      - ALLOW_INSECURE_CONNECTIONS=true
+      - MOCK_EXTERNAL_SERVICES=true
+      - LOG_LEVEL=DEBUG
+      - FLASK_ENV=development
+    volumes:
+      - ./instance/tu-berlin-dev:/instance
+    ports:
+      - "8082:8080"
+      - "9092:9090"  # Debug port
+    restart: unless-stopped
+    profiles:
+      - dev
+
+  fu-berlin-dev:
+    build:
+      context: .
+    environment:
+      - TENANT_NAME=FU Berlin
+      - ENVIRONMENT=dev
+      - UNIVERSITY_TYPE=comprehensive
+      - CREDENTIAL_SCHEMA_VERSION=v1.0-dev
+      - ENABLE_DEBUG_FEATURES=true
+      - DID_METHOD=did:web:dev:fu-berlin.de
+      - ENABLE_FEATURE_FLAGS=true
+      - DEBUG_MODE=true
+      - ALLOW_INSECURE_CONNECTIONS=true
+      - MOCK_EXTERNAL_SERVICES=true
+      - MULTILINGUAL_SUPPORT=true
+      - HUMANITIES_SCHEMAS=enabled
+      - LOG_LEVEL=DEBUG
+      - FLASK_ENV=development
+    volumes:
+      - ./instance/fu-berlin-dev:/instance
+    ports:
+      - "8083:8080"
+      - "9093:9090"  # Debug port
+    restart: unless-stopped
+    profiles:
+      - dev
+
+  # Staging environment (pre-production simulation)
+  tu-berlin-staging:
+    build:
+      context: .
+    environment:
+      - TENANT_NAME=TU Berlin
+      - ENVIRONMENT=staging
+      - UNIVERSITY_TYPE=technical
+      - CREDENTIAL_SCHEMA_VERSION=v1.0
+      - DID_METHOD=did:web:staging:tu.berlin
+      - ENABLE_AUDIT_LOGGING=true
+      - REALISTIC_TEST_DATA=true
+      - MIRROR_PRODUCTION_CONFIG=true
+      - LOG_LEVEL=INFO
+      - FLASK_ENV=staging
+    volumes:
+      - ./instance/tu-berlin-staging:/instance
+    ports:
+      - "8084:8080"
+    restart: unless-stopped
+    profiles:
+      - staging
+
+  fu-berlin-staging:
+    build:
+      context: .
+    environment:
+      - TENANT_NAME=FU Berlin
+      - ENVIRONMENT=staging
+      - UNIVERSITY_TYPE=comprehensive
+      - CREDENTIAL_SCHEMA_VERSION=v1.0
+      - DID_METHOD=did:web:staging:fu-berlin.de
+      - ENABLE_AUDIT_LOGGING=true
+      - REALISTIC_TEST_DATA=true
+      - MIRROR_PRODUCTION_CONFIG=true
+      - MULTILINGUAL_SUPPORT=true
+      - HUMANITIES_SCHEMAS=enabled
+      - LOG_LEVEL=INFO
+      - FLASK_ENV=staging
+    volumes:
+      - ./instance/fu-berlin-staging:/instance
+    ports:
+      - "8085:8080"
+    restart: unless-stopped
+    profiles:
+      - staging

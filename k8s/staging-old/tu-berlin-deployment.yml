@@ -2,41 +2,27 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: studentvc-staging
-  labels:
-    environment: staging
-    purpose: pre-production-simulation
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: tu-berlin-staging-config
+  name: tu-berlin-config
   namespace: studentvc-staging
 data:
   TENANT_NAME: "TU Berlin"
-  SERVER_URL: "https://tu-berlin.staging.studentvc.example.com"
+  SERVER_URL: "https://tu-berlin-staging.studentvc.org"
   ENVIRONMENT: "staging"
-  # Staging TU Berlin configurations - mirrors production
-  UNIVERSITY_TYPE: "technical"
-  CREDENTIAL_SCHEMA_VERSION: "v1.0"
-  DID_METHOD: "did:web:staging:tu.berlin"
-  CREDENTIAL_TYPES: "StudentID,Transcript,ResearchCredential"
-  # Staging-specific settings
-  ENABLE_AUDIT_LOGGING: "true"
-  REALISTIC_TEST_DATA: "true"
-  MIRROR_PRODUCTION_CONFIG: "true"
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: tu-berlin-staging-secrets
+  name: tu-berlin-secrets
   namespace: studentvc-staging
 type: Opaque
 data:
-  # Base64 encoded staging secrets - production-like but separate
-  DATABASE_URL: cG9zdGdyZXNxbDovL3R1YmVybGluOnN0YWdpbmdAdHUtc3RhZ2luZy1kYi9zdHVkZW50dmM=
-  SECRET_KEY: dHUtYmVybGluLXN0YWdpbmctc2VjcmV0LWtleQ==
-  # Staging API keys (isolated from production)
-  STAGING_API_KEY: dHUtc3RhZ2luZy1hcGkta2V5
+  # Base64 encoded secrets - replace with actual values
+  DATABASE_URL: cG9zdGdyZXNxbDovL3VzZXI6cGFzc0BkYi9zdHVkZW50dmM=
+  SECRET_KEY: c3VwZXItc2VjcmV0LWtleQ==
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,7 +34,7 @@ metadata:
     environment: staging
     university: tu-berlin
 spec:
-  replicas: 2  # Production-like replica count
+  replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -64,9 +50,6 @@ spec:
         app: tu-berlin
         environment: staging
         university: tu-berlin
-      annotations:
-        staging.studentvc.org/purpose: "pre-production-simulation"
-        staging.studentvc.org/data-type: "realistic-test-data"
     spec:
       containers:
       - name: studentvc
@@ -76,9 +59,9 @@ spec:
           name: http
         envFrom:
         - configMapRef:
-            name: tu-berlin-staging-config
+            name: tu-berlin-config
         - secretRef:
-            name: tu-berlin-staging-secrets
+            name: tu-berlin-secrets
         env:
         - name: POD_NAME
           valueFrom:
@@ -88,10 +71,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-        - name: LOG_LEVEL
-          value: "INFO"  # Production-like logging
-        - name: FLASK_ENV
-          value: "staging"
         resources:
           requests:
             memory: "512Mi"
@@ -155,18 +134,13 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "16m"
-    # Staging-specific annotations
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "X-Environment: staging";
-      more_set_headers "X-University: tu-berlin";
-      more_set_headers "X-Purpose: pre-production-simulation";
 spec:
   tls:
   - hosts:
-    - tu-berlin.staging.studentvc.example.com
+    - tu-berlin-staging.studentvc.org
     secretName: tu-berlin-staging-tls
   rules:
-  - host: tu-berlin.staging.studentvc.example.com
+  - host: tu-berlin-staging.studentvc.org
     http:
       paths:
       - path: /

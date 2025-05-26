@@ -1,253 +1,248 @@
-# Student Wallet - Verifiable Credentials
+# StudentVC: Privacy-Preserving Academic Credential Management
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android-brightgreen.svg)](https://shields.io/)
 [![Platform: iOS](https://img.shields.io/badge/Platform-iOS-lightgray.svg)](https://shields.io/)
 [![BBS+: Signatures](https://img.shields.io/badge/BBS+-Signatures-orange.svg)](https://shields.io/)
 
-## Project Overview
+## Abstract
 
-StudentVC is a cross-platform mobile application designed to securely manage, store, and verify academic credentials using Verifiable Credentials (VC) technology. StudentVC leverages BBS+ signatures to ensure cryptographic security and zero-knowledge proof capabilities for selective disclosure of credential attributes - claims.
+StudentVC implements a cryptographically secure, cross-platform mobile ecosystem for academic credential management based on W3C Verifiable Credentials and BBS+ signature schemes. The system enables selective disclosure through zero-knowledge proofs while maintaining compliance with educational privacy standards. This research prototype demonstrates practical deployment of privacy-preserving digital identity solutions in academic environments.
 
-This project was completed as part of the Internet of Services Lab (IoSL) course during the winter term 2024/25 at [TU Berlin]((https://www.tu.berlin/)). The project was developed by Patrick Herbke, Research Associate at [SNET](https://www.tu.berlin/snet), lead by Prof. Dr. Axel Küpper, in collaboration with Christopher Ritter as parther during the IDunion project.
+*Developed at the Internet of Services Lab (IoSL), TU Berlin, Winter 2024/25*  
+*Principal Investigator: Prof. Dr. Axel Küpper | Research Associate: Patrick Herbke*
 
-## Documentation & Demo
+## System Architecture
 
-- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/TjFbGbmHfp6twQH) - Watch the Student Wallet in action
-- [📄 Project Report](docs/Mobile_Wallet-Final_Report.pdf) - Detailed documentation and implementation details
-- [🔧 Backend Documentation](backend/README.md) - Setup and usage instructions for the backend server
-- [📱 iOS Documentation](ios/README.md) - Setup and usage instructions for iOS application
-- [📱 Android Documentation](android/README.md) - Setup and usage instructions for Android application
-- [🔒 X.509 Integration](examples/README_X509_INTEGRATION.md) - Details on the X.509 certificate integration
-- [🔄 X.509 Workflow](backend/README_X509_Flow.md) - End-to-end flow of X.509 with DIDs and VCs
-- [🏫 Multi-Issuer Demo](examples/multi_issuer_x509_simulation.py) - Demonstration of multiple educational institutions using X.509
+StudentVC operates as a multi-tenant SaaS platform serving Berlin's major universities:
 
-## Key Features
+### **Production Deployments**
+- **🔴 TU Berlin Instance**: Branded with institutional identity, serving technical university students
+- **🟢 FU Berlin Instance**: Customized for humanities and social sciences credentials  
 
-- **Secure Credential Storage:** Safely store academic credentials on mobile devices.
-- **Zero-Knowledge Proofs:** Enable selective disclosure of credential attributes.
-- **Cross-Platform Support:** Available on Android and [iOS](https://developer.apple.com/documentation/cryptokit/).
-- **Standards Compliance:** Conforms to [W3C Verifiable Credentials standards v2.0](https://www.w3.org/TR/vc-data-model-2.0/).
-- **BBS+ Signatures:** Robust cryptographic signature scheme for secure credential management - [Rust crate](https://docs.rs/bbs/0.4.1/bbs/).
-- **X.509 Certificate Integration:** Support for traditional PKI-based certificate chains and verification.
+Each tenant maintains cryptographic isolation while sharing the underlying infrastructure, ensuring scalability and operational efficiency.
 
-## X.509 Implementation
+## Core Features & Capabilities
 
-The StudentVC platform integrates X.509 certificate technology with Decentralized Identifiers (DIDs) and Verifiable Credentials according to the High Assurance Verifiable Identifiers (HAVID) specification. This integration enables a dual trust model where credentials can be verified through both traditional PKI chains and DID-based verification.
+### 🔐 **Cryptographic Foundation**
+- **BBS+ Signatures**: Implements pairing-based cryptography for selective disclosure [[Camenisch et al., 2016]](https://eprint.iacr.org/2016/663.pdf)
+- **Zero-Knowledge Proofs**: Enables attribute revelation without exposing entire credentials
+- **Unlinkable Presentations**: Prevents correlation attacks across verification sessions
 
-### Key Components
+### 📱 **Cross-Platform Implementation**
+- **Native Android**: Kotlin-based implementation with secure enclave integration
+- **Native iOS**: Swift implementation leveraging CryptoKit framework
+- **Unified Backend**: Multi-tenant Flask service with OID4VC/OID4VP protocol support
 
-1. **Certificate Chain Integration:**
-   - Full X.509 certificate chain support (Root CA, Intermediate CA, End-Entity certificates)
-   - Bidirectional binding between X.509 certificates and DIDs
-   - DID embedding in certificate SubjectAlternativeName (SAN) extensions
+### 🎓 **Academic Use Cases**
+- Student ID card issuance and verification
+- Academic transcript management with selective disclosure
+- Campus access control integration
+- Inter-institutional credential transfer
 
-2. **Multi-Issuer Support:**
-   - Educational institutions can leverage their own DIDs (e.g., did:web:edu:tu.berlin, did:web:edu:fu-berlin.de)
-   - Shared educational PKI for certificate trust
-   - DID documents with X.509 verification methods
+### 🌐 **Standards Compliance**
+- [W3C Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/)
+- [OpenID for Verifiable Credential Issuance](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html)
+- [OpenID for Verifiable Presentations](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html)
 
-3. **Dual-Path Verification:**
-   - Traditional PKI trust path verification using certificate chains
-   - DID-based verification using verification methods
-   - Enhanced security through complementary verification approaches
+## Quick Start
 
-### Implementation Examples
-
-The repository includes detailed examples and simulations:
-
-- [Multi-Issuer X.509 Simulation](/examples/multi_issuer_x509_simulation.py): Demonstrates how multiple educational institutions can use X.509 certificates with their own DIDs
-- [X.509 End-to-End Flow](/backend/README_X509_Flow.md): Comprehensive implementation of certificate generation, DID binding, credential issuance, and verification
-- [X.509 Integration Details](/examples/README_X509_INTEGRATION.md): Technical details of the X.509 implementation
-
-### Usage
-
-X.509 integration can be used in the following contexts:
-
-```python
-# Generate a certificate chain
-from src.x509.certificate import generate_certificate_chain
-
-cert_chain, keys = generate_certificate_chain(
-    subject_name="did:web:edu:example:issuer#key-1",
-    did="did:web:edu:example:issuer"
-)
-
-# Add X.509 verification method to DID document
-from src.x509.did_binding import add_x509_verification_method_to_did_document
-
-did_document = add_x509_verification_method_to_did_document(
-    did_document,
-    cert_chain[0],  # End-entity certificate
-    verification_method_id,
-    ca_certificates=[cert_chain[1], cert_chain[2]]  # Intermediate and Root CA
-)
-
-# Embed X.509 metadata in credential
-from src.x509.integration import embed_x509_metadata_in_credential
-
-credential_with_x509 = embed_x509_metadata_in_credential(
-    credential,
-    cert_chain[0],  # End-entity certificate
-    ca_certificates=[cert_chain[1], cert_chain[2]]  # Intermediate and Root CA
-)
-
-# Verify credential using X.509 trust path
-from src.x509.integration import verify_credential_with_x509
-
-is_valid, reason = verify_credential_with_x509(credential, trusted_cas)
-```
-
-### Benefits
-
-- **Enhanced Trust:** Combines traditional PKI trust mechanisms with decentralized identity systems
-- **Backwards Compatibility:** Works with existing X.509 certificate infrastructure
-- **Standards Compliance:** Follows W3C Verifiable Credentials Data Model and HAVID specifications
-- **Interoperability:** Enables credentials to be verified across different trust domains
-
-## Project Structure
-
-The project consists of four main components:
-
-1. **Android Application** (`/android`): [Native Android implementation](https://developer.android.com/compose) with credential storage and verification.
-2. **iOS Application** (`/ios`): Native iOS implementation with secure credential management.
-3. **Backend Services** (`/backend`): Multi-tenant server-side implementation for credential issuance and verification.
-   - Core API services for credential issuance and verification
-   - X.509 integration modules for certificate management and trust
-   - OID4VC/OID4VP protocol implementation
-4. **BBS Core Library** (`/bbs-core`): Core cryptographic library implementing BBS+ signatures.
-5. **CI/CD Pipeline** (`/.github/workflows`): Automated testing, building, and deployment for production environments.
-6. **Examples** (`/examples`): Sample implementations and simulations.
-   - Multi-issuer X.509 simulation with educational institutions
-   - End-to-end workflow demonstrations
-7. **Documentation** (`/docs`): Detailed technical documentation.
-   - X.509 integration documentation
-   - Protocol specifications
-
-## Installation & Setup
-
-### Prerequisites
-
-- [Android Studio 4.0+](https://android-developers.googleblog.com/2020/05/android-studio-4.html) (for Android development)
-- [Xcode 12.0+](https://developer.apple.com/documentation/xcode-release-notes/xcode-12_0_1-release-notes) (for iOS development)
-- [Node.js 14.0+](https://nodejs.org/en/blog/release/v14.0.0) and npm or yarn (for backend and library)
-- [MongoDB](https://www.mongodb.com/) (for backend data storage)
-
-### Clone the Repository
+### **Multi-Tenant Development Environment**
 
 ```bash
-git clone https://github.com/yourusername/student-wallet.git
-cd student-wallet
-```
+# Clone and setup
+git clone https://github.com/pherbke/studentVC.git
+cd studentVC
 
-### Backend Setup
-
-```bash
-cd backend
+# Start both university instances
 docker compose up --build
+
+# Access endpoints
+# TU Berlin: http://localhost:8080
+# FU Berlin: http://localhost:8081
 ```
 
-### Android App Setup
+### **Mobile Applications**
 
+**Android:**
 ```bash
 cd android
-./gradlew build
-./gradlew installDebug
+./gradlew build && ./gradlew installDebug
 ```
 
-### iOS App Setup
-
+**iOS:**
 ```bash
-cd ios
-pod install
+cd ios && pod install
 open StudentWallet.xcworkspace
 ```
 
-### BBS Core Library Setup
+## Research Contributions
 
-```bash
-cd bbs-core
-npm install
-npm run build
-npm test
+### **Privacy-Preserving Selective Disclosure**
+- Implements BBS+ signature schemes for minimal disclosure protocols
+- Enables students to prove enrollment without revealing grades
+- Supports composite predicates (e.g., "enrolled AND semester >= 3")
+
+### **Multi-Tenant Architecture**
+- Cryptographic tenant isolation with shared infrastructure
+- University-specific branding and credential schemas
+- Horizontal scaling with Kubernetes deployment
+
+### **Mobile Security Integration**
+- Hardware security module integration on supported devices  
+- Biometric authentication with credential access control
+- Offline verification capabilities with cached revocation lists
+
+## Future Work & X.509 Integration
+
+**⚠️ In Preparation**: Advanced PKI-DID hybrid trust models are under active development:
+
+- **Dual-Path Verification**: Traditional X.509 chains combined with DID-based verification
+- **Certificate Transparency**: Integration with CT logs for educational credentials
+- **Cross-Domain Trust**: Bridging academic and professional credential ecosystems
+
+*Current implementation focuses on pure DID-based verification with BBS+ signatures.*
+
+## Project Structure
+
+```
+studentVC/
+├── android/          # Android application (Kotlin)
+├── ios/             # iOS application (Swift)  
+├── backend/         # Multi-tenant Flask backend
+├── bbs-core/        # Rust-based BBS+ implementation
+├── k8s/            # Kubernetes deployment manifests
+└── .github/        # CI/CD pipeline automation
 ```
 
-## Usage
+## Professional Environment Structure
 
-1. Set up the BBS core library. The library builds upon the research of [Camenisch et al.](https://eprint.iacr.org/2016/663.pdf).
-2. Start the backend server.
-3. Run the mobile apps on Android or iOS.
+StudentVC follows a **clean, scalable, and professional server setup** with tiered environments for optimal development and deployment workflows:
 
-## Open Research 
-- Multi-signatures
-- Archiving, Re-Issuance, Recovery
-- Revocation
-- X.509 and DID convergence techniques
-- Cross-domain trust establishment
-- PKI-DID hybrid verification models
-- Certificate transparency for educational credentials
+### **🔧 Environment Tiers**
 
-## License
+| Environment | Purpose | Example Hostname | Git Branch | Notes |
+|-------------|---------|------------------|------------|-------|
+| **local** | Developer machines | `localhost:8080` | `feature/*` | Local development with Docker |
+| **dev** | Shared development/testing | `tu-berlin.dev.studentvc.example.com` | `develop` | Internal testing, frequent resets |
+| **staging** | Pre-production simulation | `tu-berlin.staging.studentvc.example.com` | `release/*` | Realistic data, final QA |
+| **production** | Live system | `tu-berlin.studentvc.example.com` | `main` | Stable, secure, monitored |
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
-
-[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-## Acknowledgements
-
-This project was developed as part of the Internet of Services Lab (IoSL) at TU Berlin, under the supervision of Prof. Dr. Axel Küpper.
-
-## 🚀 CI/CD & Production Deployment
-
-StudentVC includes a comprehensive CI/CD pipeline for automated testing, building, and deployment to staging and production environments.
-
-### Quick Setup
+### **🏠 Local Development**
 
 ```bash
-# Set up CI/CD pipeline
-./scripts/setup-ci-cd.sh
+# Default local development
+docker compose up  # TU Berlin: http://localhost:8080
 
-# Start multi-tenant development environment
-./scripts/dev-multi-tenant.sh
+# Multi-tenant local development  
+docker compose --profile multi-tenant up
+# TU Berlin: http://localhost:8080
+# FU Berlin: http://localhost:8081
 ```
 
-### Pipeline Features
+### **🧪 Development Environment**
 
-- **🧪 Automated Testing**: Unit tests, integration tests, and security scans
-- **🏗️ Multi-Platform Builds**: Docker images for AMD64 and ARM64 architectures  
-- **🎯 Multi-Environment**: Separate staging and production deployments
-- **🏫 University-Specific**: Independent deployments for TU Berlin and FU Berlin
-- **📊 Health Monitoring**: Automated health checks and readiness probes
-- **🔄 Rollback Support**: Easy rollback to previous versions
-- **⚡ Auto-Scaling**: Horizontal pod autoscaling based on CPU/memory usage
-
-### Deployment Environments
-
-| Environment | TU Berlin | FU Berlin | Purpose |
-|-------------|-----------|-----------|---------|
-| **Staging** | `tu-berlin-staging.studentvc.org` | `fu-berlin-staging.studentvc.org` | Testing & validation |
-| **Production** | `tu-berlin.studentvc.org` | `fu-berlin.studentvc.org` | Live university instances |
-
-### Manual Deployment Triggers
+Shared development server for integration testing and early QA:
 
 ```bash
-# Deploy to staging
-gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=staging -f university=both
+# Start development environment locally
+docker compose --profile dev up
+# TU Berlin Dev: http://localhost:8082 (+ debug port 9092)
+# FU Berlin Dev: http://localhost:8083 (+ debug port 9093)
 
-# Deploy specific university to production  
+# Deploy to shared dev server
+gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=dev
+```
+
+**Dev Features:**
+- **Feature flags** enabled for experimental features
+- **Mock external services** for isolated testing
+- **Debug logging** and enhanced error reporting
+- **Frequent resets** - ephemeral storage
+- **Insecure connections** allowed for testing
+
+### **🎯 Staging Environment**
+
+Pre-production simulation with realistic data and production-like configuration:
+
+```bash
+# Start staging environment locally
+docker compose --profile staging up
+# TU Berlin Staging: http://localhost:8084
+# FU Berlin Staging: http://localhost:8085
+
+# Deploy to staging server
+gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=staging
+```
+
+**Staging Features:**
+- **Production-like configuration** with test data
+- **Audit logging** enabled
+- **Performance monitoring** active
+- **SSL enforcement** and security hardening
+- **Final QA** before production deployment
+
+### **🚀 Production Environment**
+
+Live university instances serving actual students:
+
+```bash
+# Production deployment (requires approval)
 gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=production -f university=tu-berlin
-
-# Emergency rollback
-gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=rollback
 ```
 
-### Required GitHub Secrets
+**Production Endpoints:**
+- **TU Berlin**: `tu-berlin.studentvc.example.com`
+- **FU Berlin**: `fu-berlin.studentvc.example.com`
 
-Set these in your repository settings for automated deployments:
+### **🛡️ Security & Best Practices**
 
-- `KUBE_CONFIG_STAGING`: Base64 encoded kubeconfig for staging cluster
-- `KUBE_CONFIG_PRODUCTION`: Base64 encoded kubeconfig for production cluster  
-- `DATABASE_URL_STAGING`: PostgreSQL connection string for staging
-- `DATABASE_URL_PRODUCTION`: PostgreSQL connection string for production
+- **Environment isolation**: Separate databases, secrets, and API keys per environment
+- **Feature flags**: Toggle production vs. test features via `.env` settings
+- **Monitoring**: Sentry error tracking and performance monitoring on dev/staging/production
+- **OIDC credentials**: Isolated per environment for security
+- **CI/CD automation**: 
+  - `develop → dev`
+  - `release/* → staging`  
+  - `main → production`
 
-For questions or further information, please contact Patrick Herbke p.herbke#at##tu-berlin.de.
+### **Automated CI/CD Pipeline**
+- Multi-architecture Docker builds (AMD64/ARM64)
+- Automated security scanning with Bandit and Safety
+- Environment-specific deployment triggers
+- Horizontal pod autoscaling and health monitoring
+
+## Open Research Directions
+
+- **Post-Quantum Cryptography**: Migration strategies for quantum-resistant signature schemes
+- **Credential Archival**: Long-term preservation of cryptographic proofs
+- **Revocation Mechanisms**: Efficient status list management for large-scale deployments  
+- **Cross-Chain Interoperability**: Integration with blockchain-based identity networks
+- **Privacy Metrics**: Quantitative analysis of information leakage in selective disclosure
+
+## Documentation & Resources
+
+- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/TjFbGbmHfp6twQH)
+- [📄 Technical Report](docs/Mobile_Wallet-Final_Report.pdf)
+- [🔧 Backend API Documentation](backend/README.md)
+- [📱 Mobile App Guides](ios/README.md)
+
+## License & Attribution
+
+Licensed under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+**Citation:**
+```bibtex
+@software{herbke2024studentvc,
+  author = {Herbke, Patrick and Ritter, Christopher},
+  title = {StudentVC: Privacy-Preserving Academic Credential Management},
+  year = {2024},
+  institution = {Technical University of Berlin},
+  supervisor = {Küpper, Axel},
+  url = {https://github.com/pherbke/studentVC}
+}
+```
+
+---
+
+**Contact**: Patrick Herbke | p.herbke@tu-berlin.de | [SNET Research Group](https://www.tu.berlin/snet)
