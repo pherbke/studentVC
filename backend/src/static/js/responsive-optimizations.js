@@ -50,23 +50,23 @@
                 // Mobile optimizations
                 if (nav) nav.classList.add('mobile-optimized');
                 if (logo) {
-                    logo.style.height = '3rem'; // Smaller on mobile
-                    logo.style.maxWidth = '120px';
+                    logo.style.height = '4rem'; // Still large on mobile
+                    logo.style.maxWidth = '150px';
                 }
             } else if (viewport < 1024) {
                 // Tablet optimizations
                 if (nav) nav.classList.add('tablet-optimized');
                 if (logo) {
-                    logo.style.height = '3.5rem';
-                    logo.style.maxWidth = '150px';
+                    logo.style.height = '5rem'; // Larger on tablet
+                    logo.style.maxWidth = '200px';
                 }
             } else {
-                // Desktop optimizations
+                // Desktop optimizations - EXTRA LARGE
                 if (nav) {
                     nav.classList.remove('mobile-optimized', 'tablet-optimized');
                 }
                 if (logo) {
-                    logo.style.height = '4rem'; // Full size on desktop
+                    logo.style.height = '6rem'; // EXTRA LARGE on desktop (96px)
                     logo.style.maxWidth = 'none';
                 }
             }
@@ -269,45 +269,56 @@
     // Add CSS for responsive optimizations
     const responsiveCSS = document.createElement('style');
     responsiveCSS.textContent = `
-        /* Responsive logo optimizations */
+        /* EXTRA LARGE Responsive logo optimizations */
         .responsive-logo {
             transition: all 0.3s ease-in-out;
-            max-height: 4rem;
+            max-height: 6rem; /* EXTRA LARGE default */
             width: auto;
             height: auto;
         }
         
-        /* Mobile optimizations */
+        /* Mobile optimizations - still prominent */
         @media (max-width: 767px) {
             .mobile-optimized {
-                padding-left: 1rem;
-                padding-right: 1rem;
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
             }
             
             .responsive-logo {
-                max-height: 3rem;
-                max-width: 120px;
-            }
-            
-            /* Improve touch targets */
-            nav a, nav button {
-                padding: 16px 12px;
-                font-size: 16px;
-            }
-        }
-        
-        /* Tablet optimizations */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .tablet-optimized .responsive-logo {
-                max-height: 3.5rem;
+                max-height: 4rem; /* Large on mobile */
                 max-width: 150px;
             }
+            
+            /* Improve touch targets - LARGER */
+            nav a, nav button {
+                padding: 20px 16px;
+                font-size: 18px;
+                min-height: 52px;
+            }
         }
         
-        /* Desktop optimizations */
+        /* Tablet optimizations - BIGGER */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .tablet-optimized .responsive-logo {
+                max-height: 5rem; /* Even larger on tablet */
+                max-width: 200px;
+            }
+            
+            nav a, nav button {
+                padding: 18px 14px;
+                font-size: 17px;
+            }
+        }
+        
+        /* Desktop optimizations - EXTRA LARGE */
         @media (min-width: 1024px) {
             .responsive-logo {
-                max-height: 4rem;
+                max-height: 6rem; /* EXTRA LARGE on desktop */
+            }
+            
+            nav a, nav button {
+                padding: 16px 24px;
+                font-size: 20px;
             }
         }
         

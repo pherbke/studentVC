@@ -78,130 +78,130 @@
     <link rel="preload" href="{{ url_for('static', filename='js/responsive-optimizations.js') }}" as="script" />
   </head>
   <body class="h-full bg-tenant-background font-university">
-    <!-- Enhanced University Navigation with Larger Logo -->
-    <nav class="bg-white shadow-lg border-b-2 border-tenant-primary relative">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-20 relative">
-          <!-- Large Overlapping Logo and University Name -->
-          <div class="flex items-center space-x-3 relative z-10">
-            <a href="/" class="flex items-center space-x-3 group">
+    <!-- EXTRA LARGE University Navigation with Prominent Logo -->
+    <nav class="bg-white shadow-xl border-b-4 border-tenant-primary relative">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div class="flex justify-between items-center h-28 relative">
+          <!-- EXTRA LARGE Overlapping Logo and University Name -->
+          <div class="flex items-center space-x-5 relative z-20">
+            <a href="/" class="flex items-center space-x-5 group">
               <div class="relative">
-                <!-- Large logo with overlap effect -->
+                <!-- EXTRA LARGE logo - now 24 (96px) instead of 16 (64px) -->
                 <img src="{{ tenant_logo.main }}" alt="{{ tenant_full_name }}" 
-                     class="h-16 w-auto transition-all duration-300 group-hover:scale-110 group-hover:rotate-2 
-                            filter drop-shadow-lg hover:drop-shadow-xl" />
-                <!-- Optional glow effect on hover -->
-                <div class="absolute inset-0 h-16 w-16 bg-tenant-primary opacity-0 group-hover:opacity-20 
-                           rounded-full blur-xl transition-opacity duration-300 -z-10"></div>
+                     class="h-24 w-auto transition-all duration-300 group-hover:scale-115 group-hover:rotate-3 
+                            filter drop-shadow-2xl hover:drop-shadow-3xl" />
+                <!-- Enhanced glow effect on hover -->
+                <div class="absolute inset-0 h-24 w-24 bg-tenant-primary opacity-0 group-hover:opacity-30 
+                           rounded-full blur-2xl transition-opacity duration-300 -z-10"></div>
               </div>
               <div class="flex flex-col">
-                <span class="text-lg font-bold text-tenant-text group-hover:text-tenant-primary transition-colors">{{ tenant_name }}</span>
-                <span class="text-sm text-gray-600 font-medium">StudentVC Platform</span>
+                <span class="text-2xl font-bold text-tenant-text group-hover:text-tenant-primary transition-colors">{{ tenant_name }}</span>
+                <span class="text-lg text-gray-600 font-semibold">StudentVC Platform</span>
               </div>
             </a>
           </div>
 
-          <!-- Enhanced Main Navigation Menu in Header -->
-          <div class="hidden md:flex items-center space-x-6">
-            <!-- Main Menu Items with Larger Size -->
+          <!-- EXTRA LARGE Enhanced Main Navigation Menu in Header -->
+          <div class="hidden md:flex items-center space-x-8">
+            <!-- EXTRA LARGE Main Menu Items -->
             <a href="/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                             px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
-              <i class="fas fa-home mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                             px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
+              <i class="fas fa-home mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
               <span>Home</span>
             </a>
             <a href="/issuer" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                   px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
-              <i class="fas fa-id-card mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                                   px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
+              <i class="fas fa-id-card mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
               <span>Issuer</span>
             </a>
             <a href="/verifier/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                      px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
-              <i class="fas fa-shield-alt mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                                      px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
+              <i class="fas fa-shield-alt mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
               <span>Verifier</span>
             </a>
             <a href="/verifier/settings" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                             px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
-              <i class="fas fa-cog mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                                             px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
+              <i class="fas fa-cog mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
               <span>Settings</span>
             </a>
             <a href="/validate/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                      px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
-              <i class="fas fa-check-circle mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                                      px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
+              <i class="fas fa-check-circle mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
               <span>Validate</span>
             </a>
             
-            <!-- Enhanced Auth Links -->
-            <div class="flex items-center space-x-3 ml-6 pl-6 border-l-2 border-gray-300">
+            <!-- EXTRA LARGE Enhanced Auth Links -->
+            <div class="flex items-center space-x-4 ml-8 pl-8 border-l-4 border-gray-300">
               {% if current_user.is_authenticated %}
-                <a href="/logout" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-lg 
-                                       transition-all duration-200 px-5 py-3 rounded-lg text-base font-semibold flex items-center group">
-                  <i class="fas fa-sign-out-alt mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                <a href="/logout" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-xl 
+                                       transition-all duration-200 px-7 py-4 rounded-xl text-xl font-bold flex items-center group">
+                  <i class="fas fa-sign-out-alt mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
                   <span>Logout</span>
                 </a>
               {% else %}
                 <a href="/login" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                      px-4 py-3 rounded-lg text-base font-semibold flex items-center group">
-                  <i class="fas fa-sign-in-alt mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                                      px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
+                  <i class="fas fa-sign-in-alt mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
                   <span>Login</span>
                 </a>
-                <a href="/register" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-lg 
-                                         transition-all duration-200 px-5 py-3 rounded-lg text-base font-semibold flex items-center group">
-                  <i class="fas fa-user-plus mr-2 text-lg group-hover:scale-110 transition-transform"></i>
+                <a href="/register" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-xl 
+                                         transition-all duration-200 px-7 py-4 rounded-xl text-xl font-bold flex items-center group">
+                  <i class="fas fa-user-plus mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
                   <span>Register</span>
                 </a>
               {% endif %}
             </div>
           </div>
 
-          <!-- Enhanced Mobile menu button -->
+          <!-- EXTRA LARGE Mobile menu button -->
           <div class="md:hidden">
-            <button type="button" class="text-tenant-text hover:text-tenant-primary p-2 rounded-lg hover:bg-tenant-light transition-all duration-200" onclick="toggleMobileMenu()">
-              <i class="fas fa-bars text-xl"></i>
+            <button type="button" class="text-tenant-text hover:text-tenant-primary p-4 rounded-xl hover:bg-tenant-light transition-all duration-200" onclick="toggleMobileMenu()">
+              <i class="fas fa-bars text-3xl"></i>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Enhanced Mobile Navigation Menu -->
-      <div id="mobile-menu" class="hidden md:hidden bg-tenant-light border-t-2 border-tenant-primary shadow-lg">
-        <div class="px-4 py-4 space-y-2">
-          <!-- Main Menu Items with Enhanced Mobile Design -->
-          <a href="/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                           rounded-lg text-base font-semibold flex items-center">
-            <i class="fas fa-home mr-3 text-lg w-6"></i>Home
+      <!-- EXTRA LARGE Enhanced Mobile Navigation Menu -->
+      <div id="mobile-menu" class="hidden md:hidden bg-tenant-light border-t-4 border-tenant-primary shadow-xl">
+        <div class="px-6 py-6 space-y-3">
+          <!-- EXTRA LARGE Main Menu Items with Enhanced Mobile Design -->
+          <a href="/" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                           rounded-xl text-xl font-bold flex items-center">
+            <i class="fas fa-home mr-4 text-2xl w-8"></i>Home
           </a>
-          <a href="/issuer" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                 rounded-lg text-base font-semibold flex items-center">
-            <i class="fas fa-id-card mr-3 text-lg w-6"></i>Issuer
+          <a href="/issuer" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                 rounded-xl text-xl font-bold flex items-center">
+            <i class="fas fa-id-card mr-4 text-2xl w-8"></i>Issuer
           </a>
-          <a href="/verifier/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                    rounded-lg text-base font-semibold flex items-center">
-            <i class="fas fa-shield-alt mr-3 text-lg w-6"></i>Verifier
+          <a href="/verifier/" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                    rounded-xl text-xl font-bold flex items-center">
+            <i class="fas fa-shield-alt mr-4 text-2xl w-8"></i>Verifier
           </a>
-          <a href="/verifier/settings" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                           rounded-lg text-base font-semibold flex items-center">
-            <i class="fas fa-cog mr-3 text-lg w-6"></i>Settings
+          <a href="/verifier/settings" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                           rounded-xl text-xl font-bold flex items-center">
+            <i class="fas fa-cog mr-4 text-2xl w-8"></i>Settings
           </a>
-          <a href="/validate/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                    rounded-lg text-base font-semibold flex items-center">
-            <i class="fas fa-check-circle mr-3 text-lg w-6"></i>Validate
+          <a href="/validate/" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                    rounded-xl text-xl font-bold flex items-center">
+            <i class="fas fa-check-circle mr-4 text-2xl w-8"></i>Validate
           </a>
           
-          <!-- Enhanced Auth Links -->
-          <div class="border-t-2 border-gray-300 pt-3 mt-3">
+          <!-- EXTRA LARGE Enhanced Auth Links -->
+          <div class="border-t-4 border-gray-300 pt-4 mt-4">
             {% if current_user.is_authenticated %}
-              <a href="/logout" class="block px-4 py-3 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
-                                     transition-all duration-200 rounded-lg text-base font-semibold flex items-center">
-                <i class="fas fa-sign-out-alt mr-3 text-lg w-6"></i>Logout
+              <a href="/logout" class="block px-6 py-5 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
+                                     transition-all duration-200 rounded-xl text-xl font-bold flex items-center">
+                <i class="fas fa-sign-out-alt mr-4 text-2xl w-8"></i>Logout
               </a>
             {% else %}
-              <a href="/login" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                     rounded-lg text-base font-semibold flex items-center mb-2">
-                <i class="fas fa-sign-in-alt mr-3 text-lg w-6"></i>Login
+              <a href="/login" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
+                                     rounded-xl text-xl font-bold flex items-center mb-3">
+                <i class="fas fa-sign-in-alt mr-4 text-2xl w-8"></i>Login
               </a>
-              <a href="/register" class="block px-4 py-3 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
-                                        transition-all duration-200 rounded-lg text-base font-semibold flex items-center">
-                <i class="fas fa-user-plus mr-3 text-lg w-6"></i>Register
+              <a href="/register" class="block px-6 py-5 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
+                                        transition-all duration-200 rounded-xl text-xl font-bold flex items-center">
+                <i class="fas fa-user-plus mr-4 text-2xl w-8"></i>Register
               </a>
             {% endif %}
           </div>
