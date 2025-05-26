@@ -1,36 +1,232 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "base.html" %} 
+{% block title %}Credential Validation - {{ tenant_name }}{% endblock %} 
+{% block content %}
 
-<div class="center-div-content">
-  <h1>Home</h1>
-  <div class="balancing-button-container">
-    <a href="/issuer" class="balancing-button">Issuer</a>
-    <a href="/verifier/" class="balancing-button">Verifier</a>
-    <a href="/verifier/settings" class="balancing-button">Verifier Settings</a>
-    <a href="/validate/" class="balancing-button">Validate</a>
-  </div>
-
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Status</th>
-        <th>Data</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    {% for credential in credentials %}
-    <form action="/validate/" method="post">
-      <input type="hidden" name="identifier" value="{{ credential.identifier }}" />
-      <tr>
-        <td>{{ credential.valid }}</td>
-        <td>{{ credential.view }}</td>
-        <td>
-          <button type="submit" class="activeButton">Toggle Status</button>
-        </td>
-      </tr>
-    </form>
-    {% endfor %}
-    </tbody>
-  </table>
+<!-- Simple Page Title -->
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-tenant-text mb-2">Credential Validation</h1>
+  <p class="text-gray-600 text-sm">Manage validity and revocation status of issued credentials</p>
 </div>
 
+<!-- Statistics Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center">
+      <div class="p-3 rounded-full bg-green-100 text-green-600">
+        <i class="fas fa-check-circle text-xl"></i>
+      </div>
+      <div class="ml-4">
+        <div class="text-sm font-medium text-gray-500">Valid Credentials</div>
+        <div class="text-2xl font-bold text-gray-900">
+          {% set valid_count = credentials|selectattr('valid', 'equalto', 'Valid')|list|length %}
+          {{ valid_count }}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center">
+      <div class="p-3 rounded-full bg-red-100 text-red-600">
+        <i class="fas fa-times-circle text-xl"></i>
+      </div>
+      <div class="ml-4">
+        <div class="text-sm font-medium text-gray-500">Revoked Credentials</div>
+        <div class="text-2xl font-bold text-gray-900">
+          {% set revoked_count = credentials|selectattr('valid', 'equalto', 'Revoked')|list|length %}
+          {{ revoked_count }}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center">
+      <div class="p-3 rounded-full bg-tenant-primary bg-opacity-10 text-tenant-primary">
+        <i class="fas fa-list text-xl"></i>
+      </div>
+      <div class="ml-4">
+        <div class="text-sm font-medium text-gray-500">Total Credentials</div>
+        <div class="text-2xl font-bold text-gray-900">{{ credentials|length }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Credentials Management Table -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-tenant-text flex items-center">
+      <i class="fas fa-table text-tenant-primary mr-2"></i>
+      Credential Management
+    </h3>
+    <p class="text-sm text-gray-600 mt-1">Manage the validity status of issued credentials</p>
+  </div>
+  
+  <div class="overflow-x-auto">
+    {% if credentials %}
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Credential Details
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Identifier
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for credential in credentials %}
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              {% if credential.valid == 'Valid' %}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <i class="fas fa-check-circle mr-1"></i>
+                  Valid
+                </span>
+              {% else %}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  <i class="fas fa-times-circle mr-1"></i>
+                  Revoked
+                </span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-900 font-medium">{{ credential.view }}</div>
+              <div class="text-sm text-gray-500">Credential information and metadata</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded max-w-xs truncate">
+                {{ credential.identifier }}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <form action="/validate/" method="post" class="inline">
+                <input type="hidden" name="identifier" value="{{ credential.identifier }}" />
+                {% if credential.valid == 'Valid' %}
+                  <button type="submit" 
+                          onclick="return confirm('Are you sure you want to revoke this credential? This action cannot be undone.')"
+                          class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center">
+                    <i class="fas fa-ban mr-2"></i>
+                    Revoke
+                  </button>
+                {% else %}
+                  <button type="submit" 
+                          onclick="return confirm('Are you sure you want to reactivate this credential?')"
+                          class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center">
+                    <i class="fas fa-undo mr-2"></i>
+                    Reactivate
+                  </button>
+                {% endif %}
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-12">
+        <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+          <i class="fas fa-file-alt text-6xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No Credentials Found</h3>
+        <p class="text-gray-500 mb-6">There are no credentials to validate at this time.</p>
+        <a href="/issuer" class="bg-tenant-primary text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors inline-flex items-center">
+          <i class="fas fa-plus mr-2"></i>
+          Issue New Credential
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Help Section -->
+{% if credentials %}
+<div class="mt-8 bg-tenant-light rounded-lg border border-gray-200 p-6">
+  <h4 class="font-semibold text-tenant-text mb-3 flex items-center">
+    <i class="fas fa-info-circle text-tenant-primary mr-2"></i>
+    Credential Lifecycle Management
+  </h4>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
+    <div>
+      <h5 class="font-medium text-gray-900 mb-2">Revocation Process</h5>
+      <ul class="space-y-1">
+        <li>• Revoked credentials cannot be used for verification</li>
+        <li>• Changes are reflected immediately in the system</li>
+        <li>• Revocation status is cryptographically verifiable</li>
+      </ul>
+    </div>
+    <div>
+      <h5 class="font-medium text-gray-900 mb-2">Reactivation Process</h5>
+      <ul class="space-y-1">
+        <li>• Credentials can be reactivated if needed</li>
+        <li>• All verification processes will resume normally</li>
+        <li>• Status changes are logged for audit purposes</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+  // Add confirmation dialogs for status changes
+  document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form[action="/validate/"]');
+    
+    forms.forEach(form => {
+      form.addEventListener('submit', function(e) {
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        
+        // Show loading state
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        submitButton.disabled = true;
+        
+        // Simulate processing time for better UX
+        setTimeout(() => {
+          // The form will actually submit and reload the page
+          // This is just for visual feedback
+        }, 500);
+      });
+    });
+  });
+
+  // Add search/filter functionality
+  function filterCredentials() {
+    const searchInput = document.getElementById('credential-search');
+    const statusFilter = document.getElementById('status-filter');
+    
+    if (!searchInput || !statusFilter) return;
+    
+    const searchTerm = searchInput.value.toLowerCase();
+    const statusValue = statusFilter.value;
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+      const credentialText = row.cells[1].textContent.toLowerCase();
+      const identifier = row.cells[2].textContent.toLowerCase();
+      const status = row.cells[0].textContent.trim();
+      
+      const matchesSearch = credentialText.includes(searchTerm) || identifier.includes(searchTerm);
+      const matchesStatus = statusValue === 'all' || status.toLowerCase().includes(statusValue.toLowerCase());
+      
+      if (matchesSearch && matchesStatus) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
 {% endblock %}

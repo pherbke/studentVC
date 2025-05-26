@@ -74,7 +74,8 @@ def did_to_key(did):
     from cryptography.hazmat.primitives.asymmetric import ec
     import base58
     # Remove the DID prefix
-    assert did.startswith('did:key:z'), "Invalid DID format"
+    if not did.startswith('did:key:z'):
+        raise ValueError("Invalid DID format")
     base58_key = did[9:]  # Strip "did:key:z"
 
     # Decode the base58-encoded key
@@ -84,7 +85,8 @@ def did_to_key(did):
         raise ValueError("Public Key is not base58 encoded")
 
     # Verify and strip the multicodec prefix (P-256 -> 0x1200)
-    assert multicodec_key[:2] == b'\x12\x00', "Unsupported key type"
+    if multicodec_key[:2] != b'\x12\x00':
+        raise ValueError("Unsupported key type")
     raw_key_material = multicodec_key[2:]
 
     # Reconstruct the public key

@@ -2,7 +2,7 @@ from flask import request, jsonify, current_app
 import jwt
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
-from ..models import VC_Offer
+from ..models import VC_Offer, VC_validity
 from .offer import generate_nonce
 import logging
 from flask import current_app as app
@@ -14,6 +14,12 @@ import base64
 from .utils import get_placeholders
 from ..models import VC_validity
 from .. import db
+import sys
+
+# Add x509 module to path if it's not already available
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from x509.manager import X509Manager
+from ..validate.status_list import generate_credential_status
 
 logo, profile = get_placeholders()
 
@@ -27,7 +33,7 @@ spec.loader.exec_module(bbs_core)
 logger = logging.getLogger(__name__)
 
 
-def generate_credential(auth_header, public_key, private_key, issuer_did, issuer_kid, bbs_dpk, bbs_secret):
+def generate_credential(auth_header, public_key, private_key, issuer_did, issuer_kid, bbs_dpk, bbs_secret, issuer_cert=None):
     if not auth_header:
         return jsonify({"error": "Authorization header is missing"}), 401
 
@@ -45,17 +51,27 @@ def generate_credential(auth_header, public_key, private_key, issuer_did, issuer
     # Create the Verifiable Credential payload
     uniqID = f"urn:uuid:{str(uuid4())}"
     payload = get_payload(issuer_did, decoded_token,
-                          credential_subject, uniqID)
+                          credential_subject, uniqID, issuer_cert)
 
     nonce = generate_nonce(20)
     payload["nonce"] = nonce
     payload["signed_nonce"] = jwt.encode(
         {"nonce": nonce}, private_key, algorithm="ES256")
     payload["bbs_dpk"] = base64.b64encode(bbs_dpk).decode('utf-8')
+    
+    # Generate a unique identifier for credential status
     unique_id = generate_nonce(50)
-    unique_id_path = current_app.config["SERVER_URL"] + \
-        "/validate/isvalid/" + unique_id
-    payload["validity_identifier"] = unique_id_path
+    
+    # Generate credential status
+    credential_status = generate_credential_status(unique_id)
+    
+    # Add credential status to the payload if not already present
+    if "credentialStatus" not in payload["vc"]:
+        payload["vc"]["credentialStatus"] = credential_status
+    
+    # Add the credential status URL
+    payload["validity_identifier"] = credential_status["id"]
+    
     logger.debug(f"Payload: {payload}")
 
     flattened_payload = flatten(payload, '.')
@@ -76,7 +92,15 @@ def generate_credential(auth_header, public_key, private_key, issuer_did, issuer
         "typ": "JWT",
     }
 
-    vc_validity = VC_validity(identifier=unique_id, credential_data=payload)
+    # Create a VC_validity entry with status_index
+    status_list_index = int(credential_status["statusListIndex"])
+    vc_validity = VC_validity(
+        identifier=unique_id, 
+        credential_data=payload, 
+        validity=True, 
+        status="active",
+        status_index=status_list_index
+    )
     db.session.add(vc_validity)
     db.session.commit()
 
@@ -96,7 +120,7 @@ def generate_credential(auth_header, public_key, private_key, issuer_did, issuer
     }), 200
 
 
-def get_payload(issuer_did, decoded_token, credential_subject, uniqID):
+def get_payload(issuer_did, decoded_token, credential_subject, uniqID, issuer_cert=None):
     payload = {
         "iat": int(datetime.now(tz=timezone.utc).timestamp()) - 60,
         "iss": issuer_did,
@@ -106,14 +130,21 @@ def get_payload(issuer_did, decoded_token, credential_subject, uniqID):
         "nbf": int(datetime.now(tz=timezone.utc).timestamp()),
         "jti": uniqID,
         "vc": {
-            "@context": ["https://www.w3.org/2018/credentials/v1"],
+            "@context": [
+                "https://www.w3.org/2018/credentials/v1",
+                "https://www.w3.org/2018/credentials/examples/v1",
+                "https://w3id.org/vc/status-list/2021/v1"
+            ],
             "type": [
                 "VerifiableCredential",
                 "VerifiableAttestation",
                 "StudentIDCard"
             ],
             "id": uniqID,
-            "issuer": issuer_did,
+            "issuer": {
+                "id": issuer_did,
+                "name": "Technical University of Berlin"
+            },
             "issuanceDate": datetime.utcnow().isoformat(),
             "validFrom": datetime.utcnow().isoformat(),
             "credentialSubject": credential_subject,
@@ -124,6 +155,38 @@ def get_payload(issuer_did, decoded_token, credential_subject, uniqID):
             "expirationDate": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
         },
     }
+    
+    # Add X.509 certificate information if available
+    if issuer_cert:
+        try:
+            # Create a temporary X509Manager to get certificate info
+            x509_manager = X509Manager()
+            cert_info = x509_manager.get_certificate_info(issuer_cert)
+            
+            # Add certificate information to the VC
+            payload["vc"]["issuer"] = {
+                "id": issuer_did,
+                "name": cert_info["subject"]["common_name"] or "Technical University of Berlin",
+                "x509Certificate": {
+                    "subject": {
+                        "commonName": cert_info["subject"]["common_name"],
+                        "organization": cert_info["subject"]["organization"]
+                    },
+                    "issuer": {
+                        "commonName": cert_info["issuer"]["common_name"],
+                        "organization": cert_info["issuer"]["organization"]
+                    },
+                    "serialNumber": cert_info["serial_number"],
+                    "validity": {
+                        "notBefore": cert_info["validity"]["not_before"].isoformat(),
+                        "notAfter": cert_info["validity"]["not_after"].isoformat()
+                    },
+                    "thumbprint": cert_info["thumbprint"],
+                    "thumbprintAlgorithm": "SHA-256"
+                }
+            }
+        except Exception as e:
+            logger.warning(f"Error adding X.509 certificate to credential: {str(e)}")
 
     return payload
 

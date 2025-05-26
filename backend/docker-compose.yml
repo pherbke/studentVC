@@ -1,9 +1,24 @@
 services:
-  issuer:
+  tu-berlin:
     build:
       context: .
+    environment:
+      - TENANT_NAME=TU Berlin
     volumes:
-      - ./instance:/instance
+      - ./instance/tu-berlin:/instance
     ports:
       - "8080:8080"
     restart: unless-stopped
+
+  fu-berlin:
+    build:
+      context: .
+    environment:
+      - TENANT_NAME=FU Berlin
+    volumes:
+      - ./instance/fu-berlin:/instance
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
+    profiles:
+      - multi-tenant

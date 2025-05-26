@@ -1,34 +1,320 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "base.html" %} 
+{% block title %}Verifier Settings - {{ tenant_name }}{% endblock %} 
+{% block content %}
 
-<div class="center-div-content">
-  <h1>Home</h1>
-  <div class="balancing-button-container">
-    <a href="/issuer" class="balancing-button">Issuer</a>
-    <a href="/verifier/" class="balancing-button">Verifier</a>
-    <a href="/verifier/settings" class="balancing-button">Verifier Settings</a>
-    <a href="/validate/" class="balancing-button">Validate</a>
-  </div>
-  <form id="myForm" action="/verifier" method="post" style="width: 150%; overflow-wrap: anywhere;">
-    <div class="form-group" style="text-align: left;"> 
-      {% for key, value in demo_credential.items() %}
-    <div style="margin-top: 10px; width: 100%;">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        name="{{ key }}"
-        value="{{ value }}"
-        id="{{ key }}"
-        {% if key in mandatory_fields %}
-        checked
-        {% endif %}
-      />
-      <label style="margin-left: 10px;" for="{{ key }}">
-        {{ key }}: {{ value }}
-      </label>
-    </div>
-    {% endfor %}
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+<!-- Simple Page Title -->
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-tenant-text mb-2">Verification Configuration</h1>
+  <p class="text-gray-600 text-sm">Configure which student information is required for credential verification</p>
 </div>
 
+<!-- Settings Overview -->
+<div class="bg-tenant-light rounded border border-gray-200 p-3 mb-4">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center">
+      <i class="fas fa-shield-check text-tenant-primary mr-2"></i>
+      <div>
+        <h3 class="font-semibold text-tenant-text text-sm">Selective Disclosure Verification</h3>
+        <p class="text-xs text-gray-600">Students share only specified information</p>
+      </div>
+    </div>
+    <div class="text-right">
+      <div class="text-xs text-gray-500">Security Level</div>
+      <div class="flex items-center space-x-1">
+        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">High</span>
+        <i class="fas fa-check-circle text-green-500"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Form -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+  
+  <!-- Main Settings Form -->
+  <div class="lg:col-span-3">
+    <form id="verifierSettingsForm" action="/verifier" method="post" class="space-y-4">
+      
+      <!-- Student Information Requirements -->
+      <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+        <h3 class="text-base font-semibold text-tenant-text mb-3 flex items-center">
+          <i class="fas fa-user-check text-tenant-primary mr-2"></i>
+          Student Information Requirements
+        </h3>
+        <p class="text-sm text-gray-600 mb-4">
+          <strong>Privacy-First:</strong> Students reveal only selected information below. All other data stays encrypted.
+        </p>
+        
+        <div class="space-y-2">
+          {% set field_labels = {
+            'exp': 'Credential Expiration Date',
+            'iat': 'Credential Issue Date', 
+            'iss': 'Issuing University',
+            'sub': 'Student Identifier',
+            'jti': 'Credential ID',
+            'nbf': 'Valid From Date',
+            'vc': 'Verifiable Credential Data',
+            'bbs_dpk': 'Digital Public Key',
+            'base64encodeddpk': 'Encoded Digital Public Key',
+            'bls12381g2_pub_key': 'BLS Public Key',
+            'signature': 'Cryptographic Signature',
+            'proof': 'Verification Proof',
+            'nonce': 'Security Nonce',
+            'challenge': 'Verification Challenge',
+            'domain': 'Security Domain',
+            'context': 'Cryptographic Context',
+            'type': 'Credential Type',
+            'credentialSubject': 'Student Information',
+            'issuanceDate': 'Date of Issuance',
+            'expirationDate': 'Expiration Date',
+            'credentialStatus': 'Credential Status',
+            'credentialSchema': 'Credential Schema',
+            'given_name': 'First Name',
+            'family_name': 'Last Name', 
+            'name': 'Full Name',
+            'email': 'Email Address',
+            'student_id': 'Student ID Number',
+            'university': 'University Name',
+            'degree': 'Degree Program',
+            'major': 'Field of Study',
+            'gpa': 'Grade Point Average',
+            'graduation_date': 'Graduation Date',
+            'enrollment_date': 'Enrollment Date',
+            'status': 'Enrollment Status',
+            'year': 'Academic Year',
+            'credits': 'Credit Hours',
+            'honors': 'Academic Honors',
+            'faculty': 'Faculty/School',
+            'department': 'Department',
+            'thesis_title': 'Thesis Title',
+            'advisor': 'Academic Advisor',
+            'birthdate': 'Date of Birth',
+            'nationality': 'Nationality',
+            'address': 'Address',
+            'phone': 'Phone Number'
+          } %}
+          
+          {% set field_descriptions = {
+            'bbs_dpk': 'BBS+ Digital Proving Key for selective disclosure',
+            'base64encodeddpk': 'Base64 encoded BBS+ public key for verification',
+            'bls12381g2_pub_key': 'BLS12-381 G2 elliptic curve public key',
+            'signature': 'BBS+ cryptographic signature for tamper detection',
+            'proof': 'Zero-knowledge proof for selective disclosure',
+            'nonce': 'Random number for replay attack prevention',
+            'challenge': 'Cryptographic challenge for verification protocol',
+            'domain': 'Security domain identifier for signature binding',
+            'context': 'JSON-LD context for semantic interpretation',
+            'exp': 'Unix timestamp when credential expires',
+            'iat': 'Unix timestamp when credential was issued',
+            'nbf': 'Unix timestamp when credential becomes valid',
+            'vc': 'Complete verifiable credential data structure',
+            'credentialSubject': 'All personal information about the student',
+            'credentialStatus': 'Current validity and revocation status'
+          } %}
+          
+          {% for key, value in demo_credential.items() %}
+          <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-3 flex-1">
+              <input
+                type="checkbox"
+                name="{{ key }}"
+                value="{{ value }}"
+                id="{{ key }}"
+                {% if key in mandatory_fields %}checked{% endif %}
+                class="h-4 w-4 text-tenant-primary border-gray-300 rounded focus:ring-tenant-primary focus:ring-1"
+              />
+              <div class="flex-1 min-w-0">
+                <label for="{{ key }}" class="block font-medium text-gray-900 cursor-pointer text-sm">
+                  {% if field_labels[key] %}
+                    {{ field_labels[key] }}
+                    <span class="text-xs text-gray-500 font-normal">({{ key }})</span>
+                  {% else %}
+                    {{ key|title }}
+                  {% endif %}
+                </label>
+                {% if field_descriptions[key] %}
+                  <div class="text-xs text-gray-500 mt-1">{{ field_descriptions[key] }}</div>
+                {% endif %}
+                <div class="text-xs text-gray-400 mt-1">
+                  <span class="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">{{ value|string|truncate(40) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              {% if key in mandatory_fields %}
+                <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">Required</span>
+              {% else %}
+                <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-0.5 rounded-full">Optional</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Security Verification Policies -->
+      <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+        <h3 class="text-base font-semibold text-tenant-text mb-3 flex items-center">
+          <i class="fas fa-security text-tenant-primary mr-2"></i>
+          Security & Authentication Policies
+        </h3>
+        <p class="text-sm text-gray-600 mb-3">These security measures are automatically enforced:</p>
+        
+        <div class="space-y-2">
+          <div class="flex items-center p-2 border border-green-200 bg-green-50 rounded">
+            <i class="fas fa-check-circle text-green-600 mr-2 text-sm"></i>
+            <div>
+              <label class="font-medium text-green-900 text-sm">Cryptographic Signature Verification</label>
+              <p class="text-xs text-green-700">BBS+ signatures ensure authenticity and tamper-proof verification</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center p-2 border border-green-200 bg-green-50 rounded">
+            <i class="fas fa-check-circle text-green-600 mr-2 text-sm"></i>
+            <div>
+              <label class="font-medium text-green-900 text-sm">Trusted Issuer Validation</label>
+              <p class="text-xs text-green-700">Validates credentials are issued by authorized universities</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center p-2 border border-green-200 bg-green-50 rounded">
+            <i class="fas fa-check-circle text-green-600 mr-2 text-sm"></i>
+            <div>
+              <label class="font-medium text-green-900 text-sm">Real-time Status Verification</label>
+              <p class="text-xs text-green-700">Checks if credentials are valid and not revoked</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Settings Button -->
+      <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+        <button type="submit" class="w-full bg-tenant-primary text-tenant-primary-text py-2 px-4 rounded hover:bg-opacity-90 transition-colors font-semibold text-sm flex items-center justify-center">
+          <i class="fas fa-save mr-2"></i>
+          Apply Verification Settings
+        </button>
+        <p class="text-xs text-gray-500 mt-2 text-center">Changes take effect immediately</p>
+      </div>
+    </form>
+  </div>
+
+  <!-- Compact Settings Sidebar -->
+  <div class="lg:col-span-1">
+    <div class="space-y-3">
+      
+      <!-- Live Settings Summary -->
+      <div class="bg-white rounded shadow-sm border border-gray-200 p-3 sticky top-4">
+        <h3 class="text-sm font-semibold text-tenant-text mb-2 flex items-center">
+          <i class="fas fa-chart-bar text-tenant-primary mr-2"></i>
+          Current Configuration
+        </h3>
+        
+        <div class="space-y-2">
+          <div class="text-center">
+            <div class="text-xs font-medium text-gray-700 mb-1">Required Information</div>
+            <div id="required-fields-count" class="text-xl font-bold text-tenant-primary">
+              {{ mandatory_fields|length }}
+            </div>
+            <div class="text-xs text-gray-500">of {{ demo_credential|length }} available</div>
+          </div>
+          
+          <div class="border-t pt-2 text-center">
+            <div class="text-xs font-medium text-gray-700 mb-1">Privacy Level</div>
+            <div class="inline-flex items-center space-x-1">
+              <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">Maximum</span>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">Zero-knowledge verification</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Guide -->
+      <div class="bg-tenant-light rounded border border-gray-200 p-3">
+        <h4 class="font-semibold text-tenant-text mb-2 text-sm flex items-center">
+          <i class="fas fa-lightbulb text-tenant-primary mr-2"></i>
+          How It Works
+        </h4>
+        <div class="text-xs text-gray-600 space-y-1">
+          <p><strong>Selective Disclosure:</strong> Students reveal only required information.</p>
+          <p><strong>Privacy-First:</strong> All other data stays encrypted.</p>
+        </div>
+      </div>
+
+      <!-- Best Practices -->
+      <div class="bg-yellow-50 rounded border border-yellow-200 p-3">
+        <h4 class="font-semibold text-yellow-900 mb-2 text-sm flex items-center">
+          <i class="fas fa-shield-check text-yellow-600 mr-2"></i>
+          Best Practice
+        </h4>
+        <div class="text-xs text-yellow-800">
+          <p>Only request essential information to maintain student privacy.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+  // Update required fields counter dynamically
+  function updateRequiredFieldsCount() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([disabled])');
+    const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+    document.getElementById('required-fields-count').textContent = checkedCount;
+  }
+
+  // Add event listeners to checkboxes
+  document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([disabled])');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        updateRequiredFieldsCount();
+        
+        // Update the status badge
+        const container = this.closest('.flex');
+        const badge = container.querySelector('.bg-red-100, .bg-gray-100');
+        if (badge) {
+          if (this.checked) {
+            badge.className = 'bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full';
+            badge.textContent = 'Required';
+          } else {
+            badge.className = 'bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full';
+            badge.textContent = 'Optional';
+          }
+        }
+      });
+    });
+    
+    // Initialize counter
+    updateRequiredFieldsCount();
+  });
+
+  // Form submission confirmation
+  document.getElementById('verifierSettingsForm').addEventListener('submit', function(e) {
+    const checkedCount = document.querySelectorAll('input[type="checkbox"]:not([disabled]):checked').length;
+    
+    if (checkedCount === 0) {
+      e.preventDefault();
+      alert('Please select at least one required field for verification.');
+      return false;
+    }
+    
+    // Show success message
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving Settings...';
+    submitButton.disabled = true;
+    
+    // Re-enable button after a short delay (for demo purposes)
+    setTimeout(() => {
+      submitButton.innerHTML = '<i class="fas fa-check mr-2"></i>Settings Saved!';
+      setTimeout(() => {
+        submitButton.innerHTML = originalText;
+        submitButton.disabled = false;
+      }, 2000);
+    }, 1000);
+  });
+</script>
 {% endblock %}

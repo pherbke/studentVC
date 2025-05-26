@@ -1,8 +1,14 @@
 from flask import jsonify
 from flask import current_app as app
+import sys
+import os
+
+# Add x509 module to path if it's not already available
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from x509.manager import X509Manager
 
 
-def openid_credential_issuer():
+def openid_credential_issuer(issuer_cert=None):
     server_url = app.config["SERVER_URL"]
     metadata = {
         "credential_issuer": server_url,
@@ -91,6 +97,53 @@ def openid_credential_issuer():
             }
         ],
     }
+    
+    # Add X.509 certificate information if available
+    if issuer_cert:
+        try:
+            # Create a temporary X509Manager to get certificate info
+            x509_manager = X509Manager()
+            cert_info = x509_manager.get_certificate_info(issuer_cert)
+            
+            # Add X.509 certificate information to the metadata
+            metadata["x509_certificate"] = {
+                "subject": {
+                    "common_name": cert_info["subject"]["common_name"],
+                    "organization": cert_info["subject"]["organization"]
+                },
+                "issuer": {
+                    "common_name": cert_info["issuer"]["common_name"],
+                    "organization": cert_info["issuer"]["organization"]
+                },
+                "validity": {
+                    "not_before": cert_info["validity"]["not_before"].isoformat(),
+                    "not_after": cert_info["validity"]["not_after"].isoformat()
+                },
+                "serial_number": cert_info["serial_number"],
+                "thumbprint": cert_info["thumbprint"],
+                "thumbprint_algorithm": "SHA-256",
+                "info_endpoint": f"{server_url}/x509-info"
+            }
+            
+            # Add certificate chain information
+            metadata["credentials_supported"][0]["certificate_chain_support"] = True
+            
+            # Add X.509 to cryptographic binding methods
+            if "X509" not in metadata["credentials_supported"][0]["cryptographic_binding_methods_supported"]:
+                metadata["credentials_supported"][0]["cryptographic_binding_methods_supported"].append("X509")
+                
+            # Add trust framework information for the certificate authority
+            if "organization" in cert_info["issuer"] and cert_info["issuer"]["organization"]:
+                ca_org = cert_info["issuer"]["organization"]
+                if "GÉANT" in ca_org or "GEANT" in ca_org:
+                    metadata["credentials_supported"][0]["trust_framework"]["certification_authorities"] = ["GÉANT TCS"]
+                elif "DFN" in ca_org:
+                    metadata["credentials_supported"][0]["trust_framework"]["certification_authorities"] = ["DFN-PKI"]
+                else:
+                    metadata["credentials_supported"][0]["trust_framework"]["certification_authorities"] = [ca_org]
+        except Exception as e:
+            # Log the error but continue without X.509 info
+            print(f"Error adding X.509 certificate information: {str(e)}")
 
     return jsonify(metadata), 200
 
@@ -120,7 +173,7 @@ def openid_configuration():
                 "alg_values_supported": ["ES256"]
             }
         },
-        "subject_syntax_types_supported": ["did:key", "did:ebsi"],
+        "subject_syntax_types_supported": ["did:key", "did:ebsi", "did:web"],
         "subject_trust_frameworks_supported": ["ebsi"],
         "id_token_types_supported": [
             "subject_signed_id_token",

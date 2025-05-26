@@ -1,160 +1,299 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "base.html" %} 
+{% block title %}Credential Issuer - {{ tenant_name }}{% endblock %} 
+{% block content %}
 
-<div class="center-div-content">
-  <h1>Home</h1>
-  <div class="balancing-button-container">
-    <a href="/issuer" class="balancing-button">Issuer</a>
-    <a href="/verifier/" class="balancing-button">Verifier</a>
-    <a href="/verifier/settings" class="balancing-button">Verifier Settings</a>
-    <a href="/validate/" class="balancing-button">Validate</a>
-  </div>
-  {% if img_data %}
-  <img
-    id="picture"
-    src="data:image/png;base64,{{ img_data }}"
-    style="max-width: 100%"
-  />
-  {% endif %}
-  <form
-    id="myForm"
-    action="/issuer"
-    method="post"
-    enctype="multipart/form-data"
-  >
-    <div class="form-group">
-      <label for="firstName">First Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="firstName"
-        name="firstName"
-        placeholder="Maxi"
-      />
-
-      <label for="lastName">Last Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="lastName"
-        name="lastName"
-        placeholder="Musterfrau"
-      />
-
-      <label for="profileImage">Profile Image</label>
-      <div class="custom-file-upload">
-        <img
-          src="{{ url_for('static',filename='upload-white.svg') }}"
-          width="100"
-        />
-        <input
-          type="file"
-          class="form-control custom-file-upload"
-          id="profileImage"
-          name="image"
-        />
-      </div>
-
-      <label for="studentId">Student ID</label>
-      <input
-        type="text"
-        class="form-control"
-        id="studentId"
-        name="studentId"
-        placeholder="123456"
-      />
-
-      <label for="studentIdPrefix">Student ID Prefix</label>
-      <input
-        type="text"
-        class="form-control"
-        id="studentIdPrefix"
-        name="studentIdPrefix"
-        placeholder="654321"
-      />
-    </div>
-
-    <h2>Theme Settings</h2>
-    <div class="form-group">
-      <label for="theme_name">Theme Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="theme_name"
-        name="theme[name]"
-        placeholder="Technische Universität Berlin"
-      />
-
-      <label for="theme_icon">Theme Icon</label>
-      <div class="custom-file-upload">
-        <img
-          src="{{ url_for('static',filename='upload-white.svg') }}"
-          width="100"
-        />
-        <input
-          type="file"
-          class="form-control custom-file-upload"
-          id="theme_icon"
-          name="theme[icon]"
-        />
-      </div>
-
-      <label for="bg_color_card">Background Color (Card)</label>
-      <input
-        type="text"
-        class="form-control"
-        id="bg_color_card"
-        name="theme[bgColorCard]"
-        placeholder="C40D1E"
-      />
-
-      <label for="bg_color_section_top">Background Color (Top Section)</label>
-      <input
-        type="text"
-        class="form-control"
-        id="bg_color_section_top"
-        name="theme[bgColorSectionTop]"
-        placeholder="C40D1E"
-      />
-
-      <label for="bg_color_section_bot"
-        >Background Color (Bottom Section)</label
-      >
-      <input
-        type="text"
-        class="form-control"
-        id="bg_color_section_bot"
-        name="theme[bgColorSectionBot]"
-        placeholder="FFFFFF"
-      />
-
-      <label for="fg_color_title">Foreground Color (Title)</label>
-      <input
-        type="text"
-        class="form-control"
-        id="fg_color_title"
-        name="theme[fgColorTitle]"
-        placeholder="FFFFFF"
-      />
-    </div>
-
-    <div class="center-div-content">
-      <button type="submit" class="btn btn-primary">Generate QR-Code</button>
-    </div>
-  </form>
+<!-- Simple Page Title -->
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-tenant-text mb-2">Credential Issuer</h1>
+  <p class="text-gray-600 text-sm">Create secure verifiable credentials</p>
 </div>
 
+<!-- Compact QR Code Result -->
+{% if img_data %}
+<div class="bg-white rounded border border-gray-200 mb-4 p-4">
+  <div class="text-center">
+    <h3 class="text-sm font-semibold text-tenant-text mb-2">
+      <i class="fas fa-qrcode text-tenant-primary mr-1"></i>
+      Generated Credential Offer
+    </h3>
+    <div class="bg-gray-50 rounded p-3 inline-block">
+      <img id="picture" src="data:image/png;base64,{{ img_data }}" class="mx-auto max-w-full h-auto" style="max-width: 200px;" />
+    </div>
+    <p class="text-xs text-gray-600 mt-2">Scan with StudentVC mobile app</p>
+  </div>
+</div>
+{% endif %}
+
+<!-- Compact Credential Form -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  
+  <!-- Main Form -->
+  <div class="lg:col-span-2">
+    <form id="credentialForm" action="/issuer" method="post" enctype="multipart/form-data" class="space-y-6">
+      
+      <!-- Student Information Section -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-tenant-text mb-4 flex items-center">
+          <i class="fas fa-user text-tenant-primary mr-2"></i>
+          Student Information
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+            <input type="text" id="firstName" name="firstName" placeholder="Maxi" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+          </div>
+          
+          <div>
+            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Musterfrau"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+          </div>
+          
+          <div>
+            <label for="studentId" class="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
+            <input type="text" id="studentId" name="studentId" placeholder="123456"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+          </div>
+          
+          <div>
+            <label for="studentIdPrefix" class="block text-sm font-medium text-gray-700 mb-2">Student ID Prefix</label>
+            <input type="text" id="studentIdPrefix" name="studentIdPrefix" placeholder="654321"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Image Section -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-tenant-text mb-4 flex items-center">
+          <i class="fas fa-camera text-tenant-primary mr-2"></i>
+          Profile Image
+        </h3>
+        
+        <div class="flex items-center space-x-6">
+          <div class="shrink-0">
+            <img id="profilePreview" class="h-32 w-32 object-cover rounded-lg border-2 border-gray-300 bg-gray-50" 
+                 src="data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100' height='100' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' font-size='18' text-anchor='middle' dy='.3em' fill='%239ca3af'%3ePhoto%3c/text%3e%3c/svg%3e"
+                 alt="Profile preview">
+          </div>
+          <div class="flex-1">
+            <label for="profileImage" class="block text-sm font-medium text-gray-700 mb-2">Upload Profile Image</label>
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-tenant-primary transition-colors cursor-pointer"
+                 onclick="document.getElementById('profileImage').click()">
+              <div class="space-y-1 text-center">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                <div class="text-sm text-gray-600">
+                  <span class="font-medium text-tenant-primary hover:text-tenant-primary">Click to upload</span>
+                  or drag and drop
+                </div>
+                <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+              </div>
+            </div>
+            <input type="file" id="profileImage" name="image" accept="image/*" class="hidden" onchange="previewImage(this, 'profilePreview')">
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Settings Section -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-tenant-text mb-4 flex items-center">
+          <i class="fas fa-palette text-tenant-primary mr-2"></i>
+          Theme Settings
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label for="theme_name" class="block text-sm font-medium text-gray-700 mb-2">Institution Name</label>
+            <input type="text" id="theme_name" name="theme[name]" placeholder="{{ tenant_full_name }}"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+          </div>
+          
+          <div>
+            <label for="bg_color_card" class="block text-sm font-medium text-gray-700 mb-2">Card Background</label>
+            <div class="flex space-x-2">
+              <input type="color" id="bg_color_card_picker" value="{{ tenant_colors.primary }}" 
+                     class="h-10 w-16 border border-gray-300 rounded cursor-pointer" 
+                     onchange="document.getElementById('bg_color_card').value = this.value.substring(1)">
+              <input type="text" id="bg_color_card" name="theme[bgColorCard]" placeholder="c40e20"
+                     class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+            </div>
+          </div>
+          
+          <div>
+            <label for="bg_color_section_top" class="block text-sm font-medium text-gray-700 mb-2">Header Background</label>
+            <div class="flex space-x-2">
+              <input type="color" id="bg_color_section_top_picker" value="{{ tenant_colors.primary }}"
+                     class="h-10 w-16 border border-gray-300 rounded cursor-pointer"
+                     onchange="document.getElementById('bg_color_section_top').value = this.value.substring(1)">
+              <input type="text" id="bg_color_section_top" name="theme[bgColorSectionTop]" placeholder="c40e20"
+                     class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+            </div>
+          </div>
+          
+          <div>
+            <label for="bg_color_section_bot" class="block text-sm font-medium text-gray-700 mb-2">Content Background</label>
+            <div class="flex space-x-2">
+              <input type="color" id="bg_color_section_bot_picker" value="#FFFFFF"
+                     class="h-10 w-16 border border-gray-300 rounded cursor-pointer"
+                     onchange="document.getElementById('bg_color_section_bot').value = this.value.substring(1)">
+              <input type="text" id="bg_color_section_bot" name="theme[bgColorSectionBot]" placeholder="FFFFFF"
+                     class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+            </div>
+          </div>
+          
+          <div>
+            <label for="fg_color_title" class="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+            <div class="flex space-x-2">
+              <input type="color" id="fg_color_title_picker" value="#FFFFFF"
+                     class="h-10 w-16 border border-gray-300 rounded cursor-pointer"
+                     onchange="document.getElementById('fg_color_title').value = this.value.substring(1)">
+              <input type="text" id="fg_color_title" name="theme[fgColorTitle]" placeholder="FFFFFF"
+                     class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Icon Upload -->
+        <div class="mt-4">
+          <label for="theme_icon" class="block text-sm font-medium text-gray-700 mb-2">Institution Logo</label>
+          <div class="flex items-center space-x-6">
+            <div class="shrink-0">
+              <img id="themeIconPreview" class="h-20 w-20 object-contain rounded-lg border-2 border-gray-300 bg-gray-50 p-2" 
+                   src="{{ tenant_logo.main }}" alt="Logo preview">
+            </div>
+            <div class="flex-1">
+              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-tenant-primary transition-colors cursor-pointer"
+                   onclick="document.getElementById('theme_icon').click()">
+                <div class="space-y-1 text-center">
+                  <i class="fas fa-image text-2xl text-gray-400 mb-2"></i>
+                  <div class="text-sm text-gray-600">
+                    <span class="font-medium text-tenant-primary hover:text-tenant-primary">Click to upload logo</span>
+                  </div>
+                </div>
+              </div>
+              <input type="file" id="theme_icon" name="theme[icon]" accept="image/*" class="hidden" onchange="previewImage(this, 'themeIconPreview')">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <button type="submit" class="w-full bg-tenant-primary text-white py-3 px-6 rounded-md hover:bg-opacity-90 transition-colors font-semibold text-lg flex items-center justify-center">
+          <i class="fas fa-qrcode mr-2"></i>
+          Generate Credential QR Code
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="lg:col-span-1">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
+      <h3 class="text-lg font-semibold text-tenant-text mb-4 flex items-center">
+        <i class="fas fa-info-circle text-tenant-primary mr-2"></i>
+        How it Works
+      </h3>
+      
+      <div class="space-y-4">
+        <div class="flex items-start space-x-3">
+          <div class="bg-tenant-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</div>
+          <div class="text-sm text-gray-600">Fill in student information and upload profile image</div>
+        </div>
+        
+        <div class="flex items-start space-x-3">
+          <div class="bg-tenant-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</div>
+          <div class="text-sm text-gray-600">Customize the credential theme and colors</div>
+        </div>
+        
+        <div class="flex items-start space-x-3">
+          <div class="bg-tenant-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</div>
+          <div class="text-sm text-gray-600">Generate a secure QR code for credential issuance</div>
+        </div>
+        
+        <div class="flex items-start space-x-3">
+          <div class="bg-tenant-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</div>
+          <div class="text-sm text-gray-600">Student scans QR code with StudentVC mobile app</div>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 bg-tenant-light rounded-lg">
+        <div class="text-sm text-gray-600">
+          <i class="fas fa-shield-alt text-tenant-primary mr-2"></i>
+          <strong>Secure & Private:</strong> All credentials use BBS+ signatures for selective disclosure and zero-knowledge proofs.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
 <script>
-  // This script will fill in the input fields with the placeholder value if the input field is empty
-  const form = document.getElementById("myForm");
-  form.addEventListener("submit", (event) => {
-    // Get all input fields with the class "form-control"
-    const inputs = document.querySelectorAll(".form-control");
-    inputs.forEach((input) => {
-      if (!input.value) {
+  // Image preview functionality
+  function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById(previewId).src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // Form submission with placeholder fallback
+  document.getElementById('credentialForm').addEventListener('submit', function(event) {
+    const inputs = document.querySelectorAll('input[type="text"]:not([type="color"])');
+    inputs.forEach(input => {
+      if (!input.value && input.placeholder) {
         input.value = input.placeholder;
       }
     });
   });
-</script>
 
+  // Drag and drop functionality
+  ['profileImage', 'theme_icon'].forEach(inputId => {
+    const input = document.getElementById(inputId);
+    const dropZone = input.parentElement;
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, unhighlight, false);
+    });
+    
+    dropZone.addEventListener('drop', handleDrop, false);
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    function highlight(e) {
+      dropZone.classList.add('border-tenant-primary', 'bg-tenant-light');
+    }
+    
+    function unhighlight(e) {
+      dropZone.classList.remove('border-tenant-primary', 'bg-tenant-light');
+    }
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      input.files = files;
+      const previewId = inputId === 'profileImage' ? 'profilePreview' : 'themeIconPreview';
+      previewImage(input, previewId);
+    }
+  });
+</script>
 {% endblock %}

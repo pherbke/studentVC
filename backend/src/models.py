@@ -46,3 +46,24 @@ class VC_validity(db.Model):
     identifier = db.Column(db.String(255), nullable=False)
     credential_data = db.Column(JSON, nullable=False)
     validity = db.Column(db.Boolean, nullable=False, default=True)
+    status_index = db.Column(db.Integer, nullable=True)
+    status = db.Column(db.String(20), nullable=True, default="active")
+    
+    def __str__(self) -> str:
+        return f"Credential ID: {self.identifier}, Valid: {self.validity}, Status: {self.status}"
+
+
+class StatusList(db.Model):
+    """
+    Model for storing status list credentials (StatusList2021).
+    A status list is used to track the status of verifiable credentials.
+    """
+    id = db.Column(db.String(255), primary_key=True)
+    purpose = db.Column(db.String(50), nullable=False, index=True)  # revocation or suspension
+    encoded_list = db.Column(db.Text, nullable=False)  # base64 encoded bitmap
+    created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
+    updated_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    credential = db.Column(JSON, nullable=False)  # The full status list credential
+    
+    def __str__(self) -> str:
+        return f"StatusList {self.id} ({self.purpose})"

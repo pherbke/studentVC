@@ -3,6 +3,7 @@ import string
 import segno
 import io
 import base64
+import secrets
 
 
 def generate_qr_code(data):
@@ -17,7 +18,7 @@ def generate_qr_code(data):
 
 def randomString(stingLength=10):
     letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(stingLength))
+    return ''.join(secrets.choice(letters) for i in range(stingLength))
 
 
 def get_demo_credential():

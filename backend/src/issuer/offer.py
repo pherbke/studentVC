@@ -3,6 +3,7 @@ from uuid import uuid4
 from .. import db
 from flask import current_app as app
 import random
+import secrets
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -31,5 +32,5 @@ def get_offer_url(credential_data):
 
 
 def generate_nonce(length):
-    return ''.join(random.choice(
+    return ''.join(secrets.choice(
         'abcdefghijklmnopqrstuvwxyz0123456789') for i in range(length))
