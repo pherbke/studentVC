@@ -20,6 +20,19 @@ content%}
       <button type="submit" class="btn btn-primary">Login</button>
     </div>
   </form>
+  
+  <!-- Shibboleth Login Option -->
+  <div class="mt-4 text-center">
+    <hr class="my-4">
+    <h5 class="text-muted mb-3">University Login</h5>
+    <a href="/auth/shibboleth/login" class="btn btn-outline-primary">
+      <i class="fas fa-university mr-2"></i>
+      Login with Shibboleth SSO
+    </a>
+    <p class="text-sm text-gray-600 mt-2">
+      Use your university credentials (TU Berlin, FU Berlin)
+    </p>
+  </div>
 </div>
 
 {% endblock %}

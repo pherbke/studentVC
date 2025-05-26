@@ -33,7 +33,17 @@ TENANT_CONFIGS = {
         },
         'shibboleth': {
             'metadata_url': 'https://shibboleth.tu-berlin.de/metadata',
-            'entity_id': 'https://shibboleth.tu-berlin.de'
+            'entity_id': 'https://shibboleth.tu-berlin.de',
+            'sso_url': 'https://shibboleth.tu-berlin.de/profile/SAML2/Redirect/SSO',
+            'slo_url': 'https://shibboleth.tu-berlin.de/profile/SAML2/Redirect/SLO',
+            'attribute_map': {
+                'eduPersonPrincipalName': 'username',
+                'displayName': 'full_name',
+                'givenName': 'first_name', 
+                'sn': 'last_name',
+                'mail': 'email',
+                'eduPersonAffiliation': 'affiliation'
+            }
         }
     },
     'fu-berlin': {
@@ -57,7 +67,17 @@ TENANT_CONFIGS = {
         },
         'shibboleth': {
             'metadata_url': 'https://shibboleth.fu-berlin.de/metadata',
-            'entity_id': 'https://shibboleth.fu-berlin.de'
+            'entity_id': 'https://shibboleth.fu-berlin.de',
+            'sso_url': 'https://shibboleth.fu-berlin.de/profile/SAML2/Redirect/SSO',
+            'slo_url': 'https://shibboleth.fu-berlin.de/profile/SAML2/Redirect/SLO',
+            'attribute_map': {
+                'eduPersonPrincipalName': 'username',
+                'displayName': 'full_name',
+                'givenName': 'first_name',
+                'sn': 'last_name', 
+                'mail': 'email',
+                'eduPersonAffiliation': 'affiliation'
+            }
         }
     }
 }
@@ -86,7 +106,9 @@ class TenantConfig:
             'FU Berlin': 'fu-berlin',
             'FU_Berlin': 'fu-berlin',
             'fu_berlin': 'fu-berlin', 
-            'fuberlin': 'fu-berlin'
+            'fuberlin': 'fu-berlin',
+            'fu-berlin-local': 'fu-berlin',
+            'tu-berlin-local': 'tu-berlin'
         }
         
         # Check if tenant_id needs mapping

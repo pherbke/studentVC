@@ -78,6 +78,9 @@ def create_app():
     from .verifier.verifier import verifier
     from .validate.validate import validate
     from .x509.routes import x509_bp
+    from .admin_routes import admin
+    from .student_routes import student_admin
+    # from .auth.shibboleth import shibboleth_auth
 
     app.register_blueprint(home, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
@@ -85,6 +88,8 @@ def create_app():
     app.register_blueprint(verifier, url_prefix='/verifier')
     app.register_blueprint(validate, url_prefix='/validate')
     app.register_blueprint(x509_bp)
+    app.register_blueprint(admin)
+    app.register_blueprint(student_admin)
     
     from .models import User
 
@@ -102,4 +107,9 @@ def create_app():
         return User.query.get(int(id))
 
     socketio.init_app(app)
+    
+    # Initialize data collector for real statistics
+    from .data_collector import data_collector
+    data_collector.init_app(app)
+    
     return app

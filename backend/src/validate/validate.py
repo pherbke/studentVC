@@ -118,7 +118,7 @@ def is_valid(identifier):
             return jsonify({
                 "valid": is_active and is_not_suspended,
                 "status": entry.status,
-                "statusDate": datetime.utcnow().isoformat() + "Z"
+                "statusDate": datetime.now(timezone.utc).isoformat() + "Z"
             })
         
         # Legacy validity check
@@ -171,7 +171,7 @@ def credential_status(identifier):
     response = {
         "id": f"{current_app.config['SERVER_URL']}/validate/status/{identifier}",
         "status": effective_status,
-        "statusDate": datetime.utcnow().isoformat() + "Z",
+        "statusDate": datetime.now(timezone.utc).isoformat() + "Z",
         "statusListIndex": str(entry.status_index) if entry.status_index is not None else "0",
         "statusListCredential": f"{current_app.config['SERVER_URL']}/validate/statuslist"
     }

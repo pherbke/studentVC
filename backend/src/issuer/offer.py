@@ -15,16 +15,21 @@ def get_offer_url(credential_data):
     issuer_state = uuid
     pre_authorized_code = generate_nonce(32)
 
-    # Save the offer to the database
-    new_offer = VC_Offer(
-        uuid=uuid,
-        issuer_state=issuer_state,
-        pre_authorized_code=pre_authorized_code,
-        credential_data=credential_data
-    )
-    logger.debug(f"Saving offer to the database: {new_offer.credential_data}")
-    db.session.add(new_offer)
-    db.session.commit()
+    # Save the offer to the database with optimized transaction
+    try:
+        new_offer = VC_Offer(
+            uuid=uuid,
+            issuer_state=issuer_state,
+            pre_authorized_code=pre_authorized_code,
+            credential_data=credential_data
+        )
+        logger.debug(f"Saving offer to the database: {new_offer.uuid}")
+        db.session.add(new_offer)
+        db.session.commit()
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        db.session.rollback()
+        raise
 
     # Generate the credential offer URI
     credential_offer_uri = f"openid-credential-offer://?credential_offer_uri={app.config['SERVER_URL']}/credential-offer/{uuid}"

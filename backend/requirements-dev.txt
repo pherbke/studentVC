@@ -1,13 +1,18 @@
-# Development and testing dependencies
-pytest==7.4.3
-pytest-cov==4.1.0
-pytest-flask==1.2.0
-pytest-mock==3.12.0
-coverage==7.3.2
-black==23.11.0
-flake8==6.1.0
-isort==5.12.0
-mypy==1.7.0
+# Development and testing dependencies - Updated for compatibility
+pytest>=8.0.0
+pytest-cov>=4.0.0
+pytest-flask>=1.3.0
+pytest-mock>=3.12.0
+coverage>=7.3.0
+black>=23.11.0
+flake8>=6.1.0
+isort>=5.12.0
+mypy>=1.7.0
 bandit>=1.7.0
+
+# Flask and Werkzeug compatibility fixes
+Flask>=3.0.0
+Werkzeug>=3.0.0
+Jinja2>=3.1.0
 
 # Production dependencies are in requirements.txt 

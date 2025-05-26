@@ -77,7 +77,7 @@ def verify_token(data, publicKey):
         return jsonify({"error": "Token not found"}), 401
 
     # Check if the token is expired
-    if access_token.expires_at and access_token.expires_at < datetime.utcnow():
+    if access_token.expires_at and access_token.expires_at < datetime.now(timezone.utc):
         return jsonify({"error": "Token has expired"}), 401
 
     # If token is valid and not expired

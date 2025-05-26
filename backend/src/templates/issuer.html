@@ -2,43 +2,28 @@
 {% block title %}Credential Issuer - {{ tenant_name }}{% endblock %} 
 {% block content %}
 
-<!-- Simple Page Title -->
-<div class="mb-6">
-  <h1 class="text-2xl font-bold text-tenant-text mb-2">Credential Issuer</h1>
-  <p class="text-gray-600 text-sm">Create secure verifiable credentials</p>
+<!-- Optimized Page Title -->
+<div class="mb-4">
+  <h1 class="text-3xl font-bold text-tenant-text mb-2">Credential Issuer</h1>
+  <p class="text-gray-600 text-base">Create secure verifiable credentials</p>
 </div>
 
-<!-- Compact QR Code Result -->
-{% if img_data %}
-<div class="bg-white rounded border border-gray-200 mb-4 p-4">
-  <div class="text-center">
-    <h3 class="text-sm font-semibold text-tenant-text mb-2">
-      <i class="fas fa-qrcode text-tenant-primary mr-1"></i>
-      Generated Credential Offer
-    </h3>
-    <div class="bg-gray-50 rounded p-3 inline-block">
-      <img id="picture" src="data:image/png;base64,{{ img_data }}" class="mx-auto max-w-full h-auto" style="max-width: 200px;" />
-    </div>
-    <p class="text-xs text-gray-600 mt-2">Scan with StudentVC mobile app</p>
-  </div>
-</div>
-{% endif %}
 
-<!-- Compact Credential Form -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<!-- Optimized Credential Form -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative">
   
   <!-- Main Form -->
   <div class="lg:col-span-2">
     <form id="credentialForm" action="/issuer" method="post" enctype="multipart/form-data" class="space-y-6">
       
       <!-- Student Information Section -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-tenant-text mb-4 flex items-center">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h3 class="text-lg font-semibold text-tenant-text mb-3 flex items-center">
           <i class="fas fa-user text-tenant-primary mr-2"></i>
           Student Information
         </h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
             <input type="text" id="firstName" name="firstName" placeholder="Maxi" 
@@ -66,27 +51,26 @@
       </div>
 
       <!-- Profile Image Section -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-tenant-text mb-4 flex items-center">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h3 class="text-lg font-semibold text-tenant-text mb-3 flex items-center">
           <i class="fas fa-camera text-tenant-primary mr-2"></i>
           Profile Image
         </h3>
         
-        <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-4">
           <div class="shrink-0">
-            <img id="profilePreview" class="h-32 w-32 object-cover rounded-lg border-2 border-gray-300 bg-gray-50" 
+            <img id="profilePreview" class="h-20 w-20 object-cover rounded-lg border-2 border-gray-300 bg-gray-50" 
                  src="data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100' height='100' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' font-size='18' text-anchor='middle' dy='.3em' fill='%239ca3af'%3ePhoto%3c/text%3e%3c/svg%3e"
                  alt="Profile preview">
           </div>
           <div class="flex-1">
             <label for="profileImage" class="block text-sm font-medium text-gray-700 mb-2">Upload Profile Image</label>
-            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-tenant-primary transition-colors cursor-pointer"
+            <div class="mt-1 flex justify-center px-4 pt-3 pb-3 border-2 border-gray-300 border-dashed rounded-md hover:border-tenant-primary transition-colors cursor-pointer"
                  onclick="document.getElementById('profileImage').click()">
               <div class="space-y-1 text-center">
-                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                <div class="text-sm text-gray-600">
+                <i class="fas fa-cloud-upload-alt text-xl text-gray-400"></i>
+                <div class="text-xs text-gray-600">
                   <span class="font-medium text-tenant-primary hover:text-tenant-primary">Click to upload</span>
-                  or drag and drop
                 </div>
                 <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
               </div>
@@ -97,13 +81,13 @@
       </div>
 
       <!-- Theme Settings Section -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-tenant-text mb-4 flex items-center">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h3 class="text-lg font-semibold text-tenant-text mb-3 flex items-center">
           <i class="fas fa-palette text-tenant-primary mr-2"></i>
           Theme Settings
         </h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div class="md:col-span-2">
             <label for="theme_name" class="block text-sm font-medium text-gray-700 mb-2">Institution Name</label>
             <input type="text" id="theme_name" name="theme[name]" placeholder="{{ tenant_full_name }}"
@@ -179,20 +163,31 @@
         </div>
       </div>
 
-      <!-- Submit Button -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <button type="submit" class="w-full bg-tenant-primary text-white py-3 px-6 rounded-md hover:bg-opacity-90 transition-colors font-semibold text-lg flex items-center justify-center">
+      <!-- Submit Section -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 space-y-4">
+        <!-- Regular Submit Button -->
+        <button type="submit" id="generateButton" class="w-full bg-tenant-primary text-white py-3 px-6 rounded-md hover:bg-opacity-90 transition-colors font-semibold text-base flex items-center justify-center">
           <i class="fas fa-qrcode mr-2"></i>
           Generate Credential QR Code
         </button>
+        
+        <!-- Demo VC Button -->
+        <button type="button" id="demoButton" class="w-full bg-red-600 text-white py-3 px-6 rounded-md hover:bg-red-700 transition-colors font-semibold text-base flex items-center justify-center">
+          <i class="fas fa-magic mr-2"></i>
+          Demo-Studierenden-VC ausstellen
+        </button>
+        <p class="text-xs text-gray-600 text-center">
+          → Alle Felder automatisch mit Zufallsdaten inkl. Testfoto - erstellt sofort VC mit QR-Code
+        </p>
       </div>
     </form>
   </div>
 
   <!-- Sidebar -->
   <div class="lg:col-span-1">
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
-      <h3 class="text-lg font-semibold text-tenant-text mb-4 flex items-center">
+    <!-- How it Works Box -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sticky top-4">
+      <h3 class="text-xl font-bold text-tenant-text mb-4 flex items-center">
         <i class="fas fa-info-circle text-tenant-primary mr-2"></i>
         How it Works
       </h3>
@@ -225,6 +220,78 @@
           <strong>Secure & Private:</strong> All credentials use BBS+ signatures for selective disclosure and zero-knowledge proofs.
         </div>
       </div>
+
+      <!-- QR Code Display - Integrated into the same sidebar box -->
+      {% if img_data %}
+      <div class="mt-6 pt-6 border-t border-gray-200">
+        <div class="text-center">
+          <h4 class="text-lg font-bold text-tenant-text mb-4 flex items-center justify-center">
+            <i class="fas fa-qrcode text-tenant-primary mr-2"></i>
+            QR Code Generated
+          </h4>
+          
+          <!-- Data Type Indicator -->
+          {% if debug_info %}
+          <div class="mb-4 p-2 rounded-lg {{ 'bg-orange-100 border border-orange-300' if debug_info.is_demo else 'bg-green-100 border border-green-300' }}">
+            <p class="text-sm font-semibold {{ 'text-orange-800' if debug_info.is_demo else 'text-green-800' }} flex items-center justify-center">
+              <i class="fas {{ 'fa-magic' if debug_info.is_demo else 'fa-keyboard' }} mr-2"></i>
+              {{ debug_info.data_type }}
+            </p>
+          </div>
+          {% endif %}
+          
+          <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border-2 border-dashed border-tenant-primary/30">
+            <img src="data:image/png;base64,{{ img_data }}" alt="QR Code" class="w-48 h-48 mx-auto rounded-lg shadow-md">
+          </div>
+          
+          <div class="mt-4 p-3 bg-tenant-primary/10 rounded-lg border border-tenant-primary/20">
+            <p class="text-sm text-tenant-text font-medium flex items-center justify-center">
+              <i class="fas fa-mobile-alt text-tenant-primary mr-2"></i>
+              Scan with StudentVC mobile app
+            </p>
+          </div>
+          
+          <!-- Debug Information Collapsible -->
+          {% if debug_info %}
+          <div class="mt-4">
+            <button onclick="toggleDebugInfo()" class="w-full text-left p-3 bg-gray-100 hover:bg-gray-200 rounded-lg border border-gray-300 transition-colors">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-700 flex items-center">
+                  <i class="fas fa-code text-gray-500 mr-2"></i>
+                  Debug Informationen
+                </span>
+                <i id="debugToggleIcon" class="fas fa-chevron-down text-gray-500 transition-transform duration-200"></i>
+              </div>
+            </button>
+            
+            <div id="debugInfo" class="hidden mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200 text-left">
+              <!-- QR Code URL -->
+              <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-600 mb-2">QR-Code URL:</label>
+                <div class="bg-white p-2 rounded border text-xs font-mono text-gray-800 break-all">
+                  {{ debug_info.qr_url }}
+                </div>
+                <button onclick="copyToClipboard('{{ debug_info.qr_url }}')" class="mt-1 text-xs text-tenant-primary hover:text-tenant-primary/80 flex items-center">
+                  <i class="fas fa-copy mr-1"></i>Copy URL
+                </button>
+              </div>
+              
+              <!-- Credential Data JSON -->
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-2">Credential Data (JSON):</label>
+                <div class="bg-white p-3 rounded border max-h-48 overflow-y-auto">
+                  <pre class="text-xs text-gray-800 whitespace-pre-wrap">{{ debug_info.credential_data | tojson(indent=2) }}</pre>
+                </div>
+                <button onclick="copyToClipboard('{{ debug_info.credential_data | tojson(indent=2) }}')" class="mt-1 text-xs text-tenant-primary hover:text-tenant-primary/80 flex items-center">
+                  <i class="fas fa-copy mr-1"></i>Copy JSON
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -244,14 +311,197 @@
     }
   }
 
-  // Form submission with placeholder fallback
+  // Simplified button handling
+  let isSubmitting = false;
+
+  // Demo button functionality
+  document.getElementById('demoButton').addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isSubmitting) return;
+    isSubmitting = true;
+    
+    // Generate random student names
+    const firstNames = ['Max', 'Anna', 'Lukas', 'Emma', 'Felix', 'Lena', 'Tom', 'Julia', 'Ben', 'Sarah'];
+    const lastNames = ['Müller', 'Schmidt', 'Weber', 'Fischer', 'Meyer', 'Wagner', 'Koch', 'Richter', 'Klein', 'Wolf'];
+    
+    const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    
+    // Generate random 6-digit numbers
+    const randomStudentId = Math.floor(100000 + Math.random() * 900000).toString();
+    const randomStudentIdPrefix = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Fill form fields with demo data
+    document.getElementById('firstName').value = randomFirstName;
+    document.getElementById('lastName').value = randomLastName;
+    document.getElementById('studentId').value = randomStudentId;
+    document.getElementById('studentIdPrefix').value = randomStudentIdPrefix;
+    
+    // Set demo image
+    const demoImageUrl = '/static/profile.jpg';
+    document.getElementById('profilePreview').src = demoImageUrl;
+    
+    // Show processing message
+    const button = this;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generiere VC...';
+    button.disabled = true;
+    
+    // Store scroll position and submit form
+    sessionStorage.setItem('scrollToButtons', 'true');
+    sessionStorage.setItem('savedScrollY', window.scrollY.toString());
+    
+    // Submit the form
+    document.getElementById('credentialForm').submit();
+  });
+
+  // Generate QR Code button functionality
+  document.getElementById('generateButton').addEventListener('click', function(event) {
+    if (isSubmitting) {
+      event.preventDefault();
+      return false;
+    }
+    
+    isSubmitting = true;
+    
+    // Show loading state
+    const originalText = this.innerHTML;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generiere QR Code...';
+    this.disabled = true;
+    
+    // Store scroll position
+    sessionStorage.setItem('scrollToButtons', 'true');
+    sessionStorage.setItem('savedScrollY', window.scrollY.toString());
+  });
+
+  // Form submission handler
   document.getElementById('credentialForm').addEventListener('submit', function(event) {
+    // Fill empty fields with placeholder values
     const inputs = document.querySelectorAll('input[type="text"]:not([type="color"])');
     inputs.forEach(input => {
       if (!input.value && input.placeholder) {
         input.value = input.placeholder;
       }
     });
+  });
+
+  // Restore scroll position after page load if QR code was generated
+  document.addEventListener('DOMContentLoaded', function() {
+    // Reset button states on page load
+    isSubmitting = false;
+    const generateBtn = document.getElementById('generateButton');
+    const demoBtn = document.getElementById('demoButton');
+    
+    if (generateBtn && generateBtn.disabled) {
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = '<i class="fas fa-qrcode mr-2"></i>Generate Credential QR Code';
+    }
+    
+    if (demoBtn && demoBtn.disabled) {
+      demoBtn.disabled = false;
+      demoBtn.innerHTML = '<i class="fas fa-magic mr-2"></i>Demo-Studierenden-VC ausstellen';
+      demoBtn.classList.remove('bg-blue-600');
+      demoBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+    }
+
+    if (sessionStorage.getItem('scrollToButtons') === 'true') {
+      sessionStorage.removeItem('scrollToButtons');
+      
+      // Get saved scroll position
+      const savedScrollY = sessionStorage.getItem('savedScrollY');
+      if (savedScrollY) {
+        sessionStorage.removeItem('savedScrollY');
+        
+        // Restore scroll position instantly to prevent jump
+        window.scrollTo(0, parseInt(savedScrollY));
+        
+        // If QR code exists, gently adjust to show it
+        setTimeout(() => {
+          const qrCode = document.querySelector('[class*="border-t border-gray-200"]');
+          if (qrCode) {
+            const qrCodeRect = qrCode.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            
+            // Only adjust if QR code is not fully visible
+            if (qrCodeRect.bottom > windowHeight || qrCodeRect.top < 0) {
+              qrCode.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest',
+                inline: 'nearest'
+              });
+            }
+          }
+        }, 50);
+      }
+    }
+  });
+
+  // Debug information toggle functionality
+  function toggleDebugInfo() {
+    const debugInfo = document.getElementById('debugInfo');
+    const toggleIcon = document.getElementById('debugToggleIcon');
+    
+    if (debugInfo.classList.contains('hidden')) {
+      debugInfo.classList.remove('hidden');
+      debugInfo.classList.add('animate-fade-in');
+      toggleIcon.classList.add('rotate-180');
+    } else {
+      debugInfo.classList.add('hidden');
+      debugInfo.classList.remove('animate-fade-in');
+      toggleIcon.classList.remove('rotate-180');
+    }
+  }
+
+  // Copy to clipboard functionality
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      // Show temporary success message
+      const event = new CustomEvent('showToast', {
+        detail: { message: 'In Zwischenablage kopiert!', type: 'success' }
+      });
+      document.dispatchEvent(event);
+    }).catch(err => {
+      console.error('Copy failed:', err);
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      
+      const event = new CustomEvent('showToast', {
+        detail: { message: 'In Zwischenablage kopiert!', type: 'success' }
+      });
+      document.dispatchEvent(event);
+    });
+  }
+
+  // Simple toast notification system
+  document.addEventListener('showToast', function(e) {
+    const { message, type } = e.detail;
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full ${
+      type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+      toast.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Animate out and remove
+    setTimeout(() => {
+      toast.classList.add('translate-x-full');
+      setTimeout(() => {
+        document.body.removeChild(toast);
+      }, 300);
+    }, 2500);
   });
 
   // Drag and drop functionality

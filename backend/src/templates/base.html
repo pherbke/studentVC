@@ -66,6 +66,7 @@
       }
     </script>
 
+
     <title>{% block title %}{{ tenant_name }} - StudentVC{% endblock %}</title>
     <link rel="icon" href="{{ tenant_logo.icon }}" />
     
@@ -78,130 +79,152 @@
     <link rel="preload" href="{{ url_for('static', filename='js/responsive-optimizations.js') }}" as="script" />
   </head>
   <body class="h-full bg-tenant-background font-university">
-    <!-- EXTRA LARGE University Navigation with Prominent Logo -->
+    <!-- Professional Balanced Navigation Header -->
     <nav class="bg-white shadow-xl border-b-4 border-tenant-primary relative">
       <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        <div class="flex justify-between items-center h-28 relative">
-          <!-- EXTRA LARGE Overlapping Logo and University Name -->
-          <div class="flex items-center space-x-5 relative z-20">
-            <a href="/" class="flex items-center space-x-5 group">
-              <div class="relative">
-                <!-- EXTRA LARGE logo - now 24 (96px) instead of 16 (64px) -->
+        <div class="flex items-center justify-between h-16 relative">
+          <!-- Clean Logo Only -->
+          <div class="flex items-center relative z-20">
+            <a href="/" class="flex items-center group">
+              <div class="relative flex items-center">
+                <!-- Clean logo without text for better visual focus -->
                 <img src="{{ tenant_logo.main }}" alt="{{ tenant_full_name }}" 
-                     class="h-24 w-auto transition-all duration-300 group-hover:scale-115 group-hover:rotate-3 
-                            filter drop-shadow-2xl hover:drop-shadow-3xl" />
-                <!-- Enhanced glow effect on hover -->
-                <div class="absolute inset-0 h-24 w-24 bg-tenant-primary opacity-0 group-hover:opacity-30 
-                           rounded-full blur-2xl transition-opacity duration-300 -z-10"></div>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-2xl font-bold text-tenant-text group-hover:text-tenant-primary transition-colors">{{ tenant_name }}</span>
-                <span class="text-lg text-gray-600 font-semibold">StudentVC Platform</span>
+                     class="h-10 w-auto transition-all duration-300 group-hover:scale-105 
+                            filter drop-shadow-md" />
               </div>
             </a>
           </div>
 
-          <!-- EXTRA LARGE Enhanced Main Navigation Menu in Header -->
-          <div class="hidden md:flex items-center space-x-8">
-            <!-- EXTRA LARGE Main Menu Items -->
-            <a href="/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                             px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
-              <i class="fas fa-home mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
+          <!-- Harmonious Main Navigation Menu -->
+          <div class="hidden md:flex items-center space-x-1">
+            <!-- Uniform Menu Items with Perfect Alignment and Active States -->
+            <a href="/" data-nav-link="/" class="nav-item {% if request.endpoint == 'home.index' %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-home mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Home</span>
             </a>
-            <a href="/issuer" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                   px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
-              <i class="fas fa-id-card mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
+            <a href="/issuer" data-nav-link="/issuer" class="nav-item {% if request.endpoint and 'issuer' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-id-card mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Issuer</span>
             </a>
-            <a href="/verifier/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                      px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
-              <i class="fas fa-shield-alt mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
+            <a href="/verifier/" data-nav-link="/verifier/" class="nav-item {% if request.endpoint and 'verifier' in request.endpoint and 'settings' not in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-shield-alt mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Verifier</span>
             </a>
-            <a href="/verifier/settings" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                             px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
-              <i class="fas fa-cog mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
+            <a href="/verifier/settings" data-nav-link="/verifier/settings" class="nav-item {% if request.endpoint and 'settings' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-cog mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Settings</span>
             </a>
-            <a href="/validate/" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                      px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
-              <i class="fas fa-check-circle mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
-              <span>Validate</span>
+            <a href="/validate/" data-nav-link="/validate/" class="nav-item {% if request.endpoint and 'validate' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-chart-line mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+              <span>Status</span>
             </a>
+            <a href="/logs" data-nav-link="/logs" class="nav-item {% if request.endpoint and 'logs' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-file-alt mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+              <span>Logs</span>
+            </a>
+            <a href="/stats" data-nav-link="/stats" class="nav-item {% if request.endpoint and 'stats' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-chart-bar mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+              <span>Stats</span>
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="/admin/database" data-nav-link="/admin/database" class="nav-item {% if request.endpoint and 'admin' in request.endpoint and 'database' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-database mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+              <span>Backup</span>
+            </a>
+            <a href="/admin/students/" data-nav-link="/admin/students/" class="nav-item {% if request.endpoint and 'admin' in request.endpoint and 'students' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-users mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+              <span>Students</span>
+            </a>
+            {% endif %}
+            <a href="/impressum" data-nav-link="/impressum" class="nav-item {% if request.endpoint and 'impressum' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+              <i class="fas fa-question-circle mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+              <span>?</span>
+            </a>
+          </div>
             
-            <!-- EXTRA LARGE Enhanced Auth Links -->
-            <div class="flex items-center space-x-4 ml-8 pl-8 border-l-4 border-gray-300">
-              {% if current_user.is_authenticated %}
-                <a href="/logout" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-xl 
-                                       transition-all duration-200 px-7 py-4 rounded-xl text-xl font-bold flex items-center group">
-                  <i class="fas fa-sign-out-alt mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
-                  <span>Logout</span>
-                </a>
-              {% else %}
-                <a href="/login" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
-                                      px-6 py-4 rounded-xl text-xl font-bold flex items-center group">
-                  <i class="fas fa-sign-in-alt mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
-                  <span>Login</span>
-                </a>
-                <a href="/register" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-xl 
-                                         transition-all duration-200 px-7 py-4 rounded-xl text-xl font-bold flex items-center group">
-                  <i class="fas fa-user-plus mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
-                  <span>Register</span>
-                </a>
-              {% endif %}
-            </div>
+          <!-- Balanced Auth Links with Proper Separation -->
+          <div class="hidden md:flex items-center ml-auto space-x-2 pl-6 border-l border-gray-200">
+            {% if current_user.is_authenticated %}
+              <a href="/logout" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-lg 
+                                     transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+                <i class="fas fa-sign-out-alt mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+                <span>Logout</span>
+              </a>
+            {% else %}
+              <a href="/login" class="text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                    px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+                <i class="fas fa-sign-in-alt mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+                <span>Login</span>
+              </a>
+              <a href="/register" class="bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 hover:shadow-lg 
+                                       transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+                <i class="fas fa-user-plus mr-2 text-sm group-hover:scale-110 transition-transform"></i>
+                <span>Register</span>
+              </a>
+            {% endif %}
           </div>
 
-          <!-- EXTRA LARGE Mobile menu button -->
+          <!-- Professional Mobile Menu Button -->
           <div class="md:hidden">
-            <button type="button" class="text-tenant-text hover:text-tenant-primary p-4 rounded-xl hover:bg-tenant-light transition-all duration-200" onclick="toggleMobileMenu()">
-              <i class="fas fa-bars text-3xl"></i>
+            <button type="button" class="text-tenant-text hover:text-tenant-primary p-2 rounded-lg hover:bg-tenant-light transition-all duration-200" onclick="toggleMobileMenu()">
+              <i class="fas fa-bars text-xl"></i>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- EXTRA LARGE Enhanced Mobile Navigation Menu -->
-      <div id="mobile-menu" class="hidden md:hidden bg-tenant-light border-t-4 border-tenant-primary shadow-xl">
-        <div class="px-6 py-6 space-y-3">
-          <!-- EXTRA LARGE Main Menu Items with Enhanced Mobile Design -->
-          <a href="/" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                           rounded-xl text-xl font-bold flex items-center">
-            <i class="fas fa-home mr-4 text-2xl w-8"></i>Home
+      <!-- Professional Mobile Navigation Menu -->
+      <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 shadow-lg">
+        <div class="px-4 py-4 space-y-1">
+          <!-- Mobile Menu Items with Consistent Design -->
+          <a href="/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                           rounded-lg text-base font-medium flex items-center">
+            <i class="fas fa-home mr-3 text-base w-6"></i>Home
           </a>
-          <a href="/issuer" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                 rounded-xl text-xl font-bold flex items-center">
-            <i class="fas fa-id-card mr-4 text-2xl w-8"></i>Issuer
+          <a href="/issuer" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                 rounded-lg text-base font-medium flex items-center">
+            <i class="fas fa-id-card mr-3 text-base w-6"></i>Issuer
           </a>
-          <a href="/verifier/" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                    rounded-xl text-xl font-bold flex items-center">
-            <i class="fas fa-shield-alt mr-4 text-2xl w-8"></i>Verifier
+          <a href="/verifier/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                    rounded-lg text-base font-medium flex items-center">
+            <i class="fas fa-shield-alt mr-3 text-base w-6"></i>Verifier
           </a>
-          <a href="/verifier/settings" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                           rounded-xl text-xl font-bold flex items-center">
-            <i class="fas fa-cog mr-4 text-2xl w-8"></i>Settings
+          <a href="/verifier/settings" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                           rounded-lg text-base font-medium flex items-center">
+            <i class="fas fa-cog mr-3 text-base w-6"></i>Settings
           </a>
-          <a href="/validate/" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                    rounded-xl text-xl font-bold flex items-center">
-            <i class="fas fa-check-circle mr-4 text-2xl w-8"></i>Validate
+          <a href="/validate/" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                    rounded-lg text-base font-medium flex items-center">
+            <i class="fas fa-chart-line mr-3 text-base w-6"></i>Status
+          </a>
+          <a href="/logs" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                rounded-lg text-base font-medium flex items-center">
+            <i class="fas fa-file-alt mr-3 text-base w-6"></i>Logs
+          </a>
+          <a href="/stats" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                rounded-lg text-base font-medium flex items-center">
+            <i class="fas fa-chart-bar mr-3 text-base w-6"></i>Stats
+          </a>
+          <a href="/impressum" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                     rounded-lg text-base font-medium flex items-center">
+            <i class="fas fa-question-circle mr-3 text-base w-6"></i>?
           </a>
           
-          <!-- EXTRA LARGE Enhanced Auth Links -->
-          <div class="border-t-4 border-gray-300 pt-4 mt-4">
+          <!-- Mobile Auth Links -->
+          <div class="border-t border-gray-200 pt-3 mt-3">
             {% if current_user.is_authenticated %}
-              <a href="/logout" class="block px-6 py-5 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
-                                     transition-all duration-200 rounded-xl text-xl font-bold flex items-center">
-                <i class="fas fa-sign-out-alt mr-4 text-2xl w-8"></i>Logout
+              <a href="/logout" class="block px-4 py-3 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
+                                     transition-all duration-200 rounded-lg text-base font-medium flex items-center">
+                <i class="fas fa-sign-out-alt mr-3 text-base w-6"></i>Logout
               </a>
             {% else %}
-              <a href="/login" class="block px-6 py-5 text-tenant-text hover:text-tenant-primary hover:bg-white transition-all duration-200 
-                                     rounded-xl text-xl font-bold flex items-center mb-3">
-                <i class="fas fa-sign-in-alt mr-4 text-2xl w-8"></i>Login
+              <a href="/login" class="block px-4 py-3 text-tenant-text hover:text-tenant-primary hover:bg-tenant-light transition-all duration-200 
+                                     rounded-lg text-base font-medium flex items-center mb-2">
+                <i class="fas fa-sign-in-alt mr-3 text-base w-6"></i>Login
               </a>
-              <a href="/register" class="block px-6 py-5 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
-                                        transition-all duration-200 rounded-xl text-xl font-bold flex items-center">
-                <i class="fas fa-user-plus mr-4 text-2xl w-8"></i>Register
+              <a href="/register" class="block px-4 py-3 bg-tenant-primary text-tenant-primary-text hover:bg-opacity-90 
+                                        transition-all duration-200 rounded-lg text-base font-medium flex items-center">
+                <i class="fas fa-user-plus mr-3 text-base w-6"></i>Register
               </a>
             {% endif %}
           </div>
@@ -394,6 +417,139 @@
         }
       `;
       document.head.appendChild(style);
+      
+      // Smooth Navigation System - Prevents header reload
+      class SmoothNavigation {
+        constructor() {
+          this.currentPage = window.location.pathname;
+          this.contentArea = document.querySelector('main');
+          this.isLoading = false;
+          this.init();
+        }
+        
+        init() {
+          // Intercept navigation clicks
+          document.addEventListener('click', (e) => {
+            const navLink = e.target.closest('[data-nav-link]');
+            if (navLink && !e.ctrlKey && !e.metaKey) {
+              e.preventDefault();
+              const url = navLink.getAttribute('data-nav-link');
+              this.navigateTo(url);
+            }
+          });
+          
+          // Handle browser back/forward
+          window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.page) {
+              this.loadContent(e.state.page, false);
+            }
+          });
+          
+          // Set initial state
+          history.replaceState({ page: this.currentPage }, '', this.currentPage);
+        }
+        
+        async navigateTo(url) {
+          if (this.isLoading || url === this.currentPage) return;
+          
+          this.isLoading = true;
+          this.updateActiveState(url);
+          
+          try {
+            await this.loadContent(url, true);
+            history.pushState({ page: url }, '', url);
+            this.currentPage = url;
+          } catch (error) {
+            console.error('Navigation failed:', error);
+            // Fallback to normal navigation
+            window.location.href = url;
+          } finally {
+            this.isLoading = false;
+          }
+        }
+        
+        async loadContent(url, showLoading = true) {
+          if (showLoading) {
+            this.showLoadingState();
+          }
+          
+          try {
+            const response = await fetch(url, {
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            });
+            
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newContent = doc.querySelector('main');
+            const newTitle = doc.querySelector('title');
+            
+            if (newContent) {
+              // Smooth transition
+              this.contentArea.style.opacity = '0.5';
+              this.contentArea.style.transform = 'translateY(10px)';
+              
+              setTimeout(() => {
+                this.contentArea.innerHTML = newContent.innerHTML;
+                if (newTitle) document.title = newTitle.textContent;
+                
+                // Reset and animate in
+                this.contentArea.style.opacity = '1';
+                this.contentArea.style.transform = 'translateY(0)';
+                
+                // Reinitialize any page-specific scripts
+                this.initializePageScripts();
+              }, 150);
+            }
+          } catch (error) {
+            throw error;
+          }
+        }
+        
+        showLoadingState() {
+          this.contentArea.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
+        }
+        
+        updateActiveState(url) {
+          // Remove active state from all nav items
+          document.querySelectorAll('.nav-item').forEach(item => {
+            item.className = item.className.replace(/bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary/g, 'text-tenant-text hover:text-tenant-primary hover:bg-tenant-light');
+          });
+          
+          // Add active state to current item
+          const activeLink = document.querySelector(`[data-nav-link="${url}"]`);
+          if (activeLink) {
+            activeLink.className = activeLink.className.replace(/text-tenant-text hover:text-tenant-primary hover:bg-tenant-light/g, 'bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary');
+          }
+        }
+        
+        initializePageScripts() {
+          // Reinitialize any page-specific functionality
+          const event = new CustomEvent('pageLoaded');
+          document.dispatchEvent(event);
+          
+          // Re-run block javascript if exists
+          const scripts = this.contentArea.querySelectorAll('script');
+          scripts.forEach(script => {
+            if (script.innerHTML) {
+              try {
+                eval(script.innerHTML);
+              } catch (e) {
+                console.error('Error executing page script:', e);
+              }
+            }
+          });
+        }
+      }
+      
+      // Initialize smooth navigation
+      document.addEventListener('DOMContentLoaded', () => {
+        new SmoothNavigation();
+      });
     </script>
 
     <!-- Load responsive optimizations -->

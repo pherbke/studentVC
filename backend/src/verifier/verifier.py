@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, jsonify, current_app
 from logging import getLogger
 from .utils import generate_qr_code, randomString, get_demo_credential
+from ..logging_system import log_verification, log_error, log_auth, LogLevel, log_function_call, LogCategory
 from urllib.parse import urlencode
 import jwt
 import json
@@ -11,6 +12,7 @@ import base64
 from flatten_json import flatten
 from .. import socketio
 import sys
+import time
 
 # Add x509 module to path if it's not already available
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -126,6 +128,8 @@ def offer():
 
 @verifier.route("/direct_post", methods=["POST"])
 def verify_access_token():
+    start_time = time.time()
+    from ..data_collector import track_operation
     try:
         vp = request.args["vp_token"]
 
@@ -229,6 +233,14 @@ def verify_access_token():
         })
 
         if verify_result == "true":
+            # Track successful verification
+            duration_ms = int((time.time() - start_time) * 1000)
+            track_operation('credential_verification', 'success', duration_ms, {
+                'issuer_did': issuer_did,
+                'holder_did': holder_did,
+                'validity_identifier': validity_identifier
+            })
+            
             # Emit success event
             socketio.emit('verification_result', {
                 'status': 'success',
@@ -236,6 +248,14 @@ def verify_access_token():
             })
             return jsonify({"success": "Access token is valid"}), 200
         else:
+            # Track failed verification
+            duration_ms = int((time.time() - start_time) * 1000)
+            track_operation('credential_verification', 'failed', duration_ms, {
+                'issuer_did': issuer_did,
+                'holder_did': holder_did,
+                'reason': 'BBS+ signature verification failed'
+            })
+            
             # Emit error event
             logger.error(f"verify_result: {verify_result}")
             socketio.emit('verification_result', {
@@ -245,6 +265,13 @@ def verify_access_token():
             return jsonify({"error": "Access token is not valid"}), 401
 
     except Exception as e:
+        # Track exception in verification
+        duration_ms = int((time.time() - start_time) * 1000)
+        track_operation('credential_verification', 'error', duration_ms, {
+            'error': str(e),
+            'error_type': type(e).__name__
+        })
+        
         logger.error(f"Error in verification: {e}")
         socketio.emit('verification_result', {
             'status': 'error',
@@ -536,7 +563,7 @@ def check_x509():
             from datetime import datetime
             valid_from = datetime.fromisoformat(verification_result["x509_validation"]["validFrom"].replace('Z', '+00:00'))
             valid_until = datetime.fromisoformat(verification_result["x509_validation"]["validUntil"].replace('Z', '+00:00'))
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             
             if now < valid_from:
                 verification_result["x509_validation"]["status"] = "invalid"

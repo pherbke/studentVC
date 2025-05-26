@@ -6,8 +6,12 @@ services:
     environment:
       - TENANT_NAME=TU Berlin
       - ENVIRONMENT=local
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
     volumes:
       - ./instance/tu-berlin-local:/instance
+      - ./src:/src  # Live reload for source code
+      - ./main.py:/main.py  # Live reload for main file
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -43,8 +47,11 @@ services:
       - MOCK_EXTERNAL_SERVICES=true
       - LOG_LEVEL=DEBUG
       - FLASK_ENV=development
+      - FLASK_DEBUG=1
     volumes:
       - ./instance/tu-berlin-dev:/instance
+      - ./src:/src  # Live reload for source code
+      - ./main.py:/main.py  # Live reload for main file
     ports:
       - "8082:8080"
       - "9092:9090"  # Debug port
@@ -70,8 +77,11 @@ services:
       - HUMANITIES_SCHEMAS=enabled
       - LOG_LEVEL=DEBUG
       - FLASK_ENV=development
+      - FLASK_DEBUG=1
     volumes:
       - ./instance/fu-berlin-dev:/instance
+      - ./src:/src  # Live reload for source code
+      - ./main.py:/main.py  # Live reload for main file
     ports:
       - "8083:8080"
       - "9093:9090"  # Debug port

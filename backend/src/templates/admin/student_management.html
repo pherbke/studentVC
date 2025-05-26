@@ -1,0 +1,866 @@
+{% extends "base.html" %}
+{% block title %}Student Management - {{ tenant_name }}{% endblock %}
+{% block content %}
+
+<div class="mb-6">
+  <h1 class="text-3xl font-bold text-tenant-text mb-2">Student Management</h1>
+  <p class="text-gray-600">Secure upload, manage student data, and issue credentials</p>
+</div>
+
+<!-- Tab Navigation -->
+<div class="mb-6">
+  <div class="border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8">
+      <button id="upload-tab" class="tab-button active whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" onclick="switchTab('upload')">
+        <i class="fas fa-upload mr-2"></i>Upload Students
+      </button>
+      <button id="manage-tab" class="tab-button whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" onclick="switchTab('manage')">
+        <i class="fas fa-users mr-2"></i>Manage Students
+      </button>
+      <button id="issue-tab" class="tab-button whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" onclick="switchTab('issue')">
+        <i class="fas fa-id-card mr-2"></i>Issue Credentials
+      </button>
+    </nav>
+  </div>
+</div>
+
+<!-- Upload Tab -->
+<div id="upload-content" class="tab-content">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    
+    <!-- Secure File Upload -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-tenant-text mb-4 flex items-center">
+        <i class="fas fa-shield-alt text-tenant-primary mr-2"></i>
+        Secure File Upload
+      </h2>
+      
+      <div class="space-y-4">
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-tenant-primary transition-colors cursor-pointer" 
+             onclick="document.getElementById('uploadStudentFile').click()">
+          <div class="text-center">
+            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+            <p class="text-lg text-gray-600 mb-2">Drop your student file here or click to browse</p>
+            <p class="text-sm text-gray-500 mb-3">CSV or JSON format • Max 10MB • Secure processing</p>
+            <div class="text-xs text-gray-400">
+              <i class="fas fa-lock mr-1"></i>Files are scanned and validated for security
+            </div>
+          </div>
+        </div>
+        
+        <input type="file" id="uploadStudentFile" accept=".csv,.json" class="hidden">
+        
+        <div id="fileInfo" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div class="flex items-center text-blue-800">
+            <i class="fas fa-file mr-2"></i>
+            <span id="fileName"></span>
+            <span id="fileSize" class="text-sm text-blue-600 ml-2"></span>
+          </div>
+        </div>
+        
+        <button id="uploadBtn" disabled class="w-full bg-gray-400 text-white py-3 px-6 rounded-md font-medium cursor-not-allowed">
+          <i class="fas fa-upload mr-2"></i>
+          Upload and Import Students
+        </button>
+        
+        <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+          <h4 class="text-sm font-medium text-yellow-800 mb-2">Security Features:</h4>
+          <ul class="text-xs text-yellow-700 space-y-1">
+            <li>• File type validation and MIME type checking</li>
+            <li>• Malware scanning and content validation</li>
+            <li>• Secure filename generation with UUID</li>
+            <li>• Data sanitization and field validation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Enhanced Templates -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-tenant-text mb-4 flex items-center">
+        <i class="fas fa-download text-tenant-primary mr-2"></i>
+        Enhanced Templates
+      </h2>
+      
+      <div class="space-y-4">
+        <p class="text-sm text-gray-600 mb-4">Download templates with all supported fields:</p>
+        
+        <div class="space-y-3">
+          <button onclick="downloadTemplate('csv')" class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors font-medium">
+            <i class="fas fa-file-csv mr-2"></i>
+            Enhanced CSV Template
+          </button>
+          
+          <button onclick="downloadTemplate('json')" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium">
+            <i class="fas fa-file-code mr-2"></i>
+            Enhanced JSON Template
+          </button>
+        </div>
+        
+        <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mt-4">
+          <h4 class="font-medium text-blue-800 mb-2">Supported Fields:</h4>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <div>
+              <strong class="text-blue-700">Required:</strong>
+              <ul class="text-blue-600 mt-1">
+                <li>• firstName</li>
+                <li>• lastName</li>
+                <li>• studentId</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-blue-700">Optional:</strong>
+              <ul class="text-blue-600 mt-1">
+                <li>• studentIdPrefix</li>
+                <li>• email</li>
+                <li>• program</li>
+                <li>• semester</li>
+                <li>• enrollmentYear</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Upload Results -->
+  <div id="uploadResults" class="hidden bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-xl font-semibold text-tenant-text mb-4 flex items-center">
+      <i class="fas fa-check-circle text-green-500 mr-2"></i>
+      Upload Results
+    </h2>
+    <div id="uploadSummary"></div>
+  </div>
+</div>
+
+<!-- Manage Students Tab -->
+<div id="manage-content" class="tab-content hidden">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-semibold text-tenant-text flex items-center">
+        <i class="fas fa-users text-tenant-primary mr-2"></i>
+        Student Database
+      </h2>
+      
+      <div class="flex space-x-3">
+        <input type="text" id="searchStudents" placeholder="Search students..." 
+               class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary">
+        
+        <select id="batchFilter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary">
+          <option value="">All Batches</option>
+        </select>
+        
+        <button onclick="refreshStudentList()" class="bg-tenant-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+          <i class="fas fa-sync-alt mr-2"></i>Refresh
+        </button>
+      </div>
+    </div>
+    
+    <!-- Batch Selection Controls -->
+    <div class="mb-4 flex items-center space-x-4">
+      <span class="text-sm text-gray-600">Bulk Actions:</span>
+      <button onclick="selectAllVisible()" class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition-colors">
+        Select All Visible
+      </button>
+      <button onclick="deselectAll()" class="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 transition-colors">
+        Deselect All
+      </button>
+      <button onclick="selectForIssuance()" class="text-sm bg-green-100 text-green-700 px-3 py-1 rounded hover:bg-green-200 transition-colors">
+        Mark Selected for Issuance
+      </button>
+    </div>
+    
+    <!-- Student List -->
+    <div id="studentList" class="space-y-3">
+      <div class="text-center text-gray-500 py-8">
+        <i class="fas fa-users text-3xl mb-2"></i>
+        <p>No students found</p>
+        <p class="text-sm">Upload a student file to get started</p>
+      </div>
+    </div>
+    
+    <!-- Pagination -->
+    <div id="pagination" class="mt-6 flex justify-center"></div>
+  </div>
+</div>
+
+<!-- Issue Credentials Tab -->
+<div id="issue-content" class="tab-content hidden">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-semibold text-tenant-text flex items-center">
+        <i class="fas fa-id-card text-tenant-primary mr-2"></i>
+        Credential Issuance
+      </h2>
+      
+      <button onclick="refreshSelectedStudents()" class="bg-tenant-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+        <i class="fas fa-sync-alt mr-2"></i>Refresh
+      </button>
+    </div>
+    
+    <div id="selectedStudentsContainer">
+      <div class="text-center text-gray-500 py-8">
+        <i class="fas fa-clipboard-list text-3xl mb-2"></i>
+        <p>No students selected for credential issuance</p>
+        <p class="text-sm">Use the "Manage Students" tab to select students</p>
+      </div>
+    </div>
+    
+    <div id="issueCredentialsSection" class="hidden mt-6 pt-6 border-t border-gray-200">
+      <button id="issueAllCredentialsBtn" class="bg-red-600 text-white py-3 px-8 rounded-md hover:bg-red-700 transition-colors font-medium text-lg">
+        <i class="fas fa-qrcode mr-2"></i>
+        Issue Credentials for All Selected Students
+      </button>
+    </div>
+  </div>
+  
+  <!-- Credential Results -->
+  <div id="credentialResults" class="hidden mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-xl font-semibold text-tenant-text mb-4 flex items-center">
+      <i class="fas fa-certificate text-tenant-primary mr-2"></i>
+      Generated Credentials
+    </h2>
+    <div id="credentialList"></div>
+  </div>
+</div>
+
+<!-- Status Messages -->
+<div id="statusMessages" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
+<script>
+let currentTab = 'upload';
+let currentPage = 1;
+let selectedStudentIds = new Set();
+
+document.addEventListener('DOMContentLoaded', function() {
+    // File upload handling
+    const fileInput = document.getElementById('uploadStudentFile');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInfo = document.getElementById('fileInfo');
+    
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            
+            // Validate file type
+            const allowedTypes = ['text/csv', 'application/json', 'text/plain'];
+            const allowedExtensions = ['.csv', '.json'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedExtensions.includes(fileExt)) {
+                showMessage('error', 'Invalid file type. Please select a CSV or JSON file.');
+                fileInput.value = '';
+                return;
+            }
+            
+            // Show file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = `(${formatBytes(file.size)})`;
+            fileInfo.classList.remove('hidden');
+            
+            // Enable upload button
+            uploadBtn.disabled = false;
+            uploadBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            uploadBtn.classList.add('bg-tenant-primary', 'hover:bg-opacity-90');
+            
+            showMessage('info', `File selected: ${file.name} (${formatBytes(file.size)})`);
+        } else {
+            fileInfo.classList.add('hidden');
+            uploadBtn.disabled = true;
+            uploadBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            uploadBtn.classList.remove('bg-tenant-primary', 'hover:bg-opacity-90');
+        }
+    });
+    
+    // Upload button
+    uploadBtn.addEventListener('click', uploadStudentFile);
+    
+    // Search functionality
+    let searchTimeout;
+    document.getElementById('searchStudents').addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentPage = 1;
+            loadStudentList();
+        }, 500);
+    });
+    
+    // Batch filter
+    document.getElementById('batchFilter').addEventListener('change', function() {
+        currentPage = 1;
+        loadStudentList();
+    });
+    
+    // Issue credentials button
+    document.getElementById('issueAllCredentialsBtn').addEventListener('click', issueAllCredentials);
+    
+    // Load initial data
+    loadImportBatches();
+});
+
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Show/hide content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    document.getElementById(tabName + '-content').classList.remove('hidden');
+    
+    currentTab = tabName;
+    
+    // Load data based on tab
+    if (tabName === 'manage') {
+        loadStudentList();
+    } else if (tabName === 'issue') {
+        refreshSelectedStudents();
+    }
+}
+
+function uploadStudentFile() {
+    const fileInput = document.getElementById('uploadStudentFile');
+    const btn = document.getElementById('uploadBtn');
+    
+    if (!fileInput.files[0]) {
+        showMessage('error', 'Please select a file');
+        return;
+    }
+    
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+    
+    const formData = new FormData();
+    formData.append('student_file', fileInput.files[0]);
+    
+    fetch('/admin/students/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('success', `Successfully imported ${data.successfulImports} students`);
+            displayUploadResults(data);
+            loadImportBatches(); // Refresh batch list
+            
+            // Clear file input
+            fileInput.value = '';
+            document.getElementById('fileInfo').classList.add('hidden');
+        } else {
+            showMessage('error', data.error || 'Upload failed');
+            if (data.errors && data.errors.length > 0) {
+                data.errors.forEach(error => {
+                    showMessage('error', error);
+                });
+            }
+        }
+    })
+    .catch(error => {
+        showMessage('error', 'Error uploading file: ' + error.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+        btn.classList.remove('bg-tenant-primary', 'hover:bg-opacity-90');
+    });
+}
+
+function displayUploadResults(data) {
+    const resultsDiv = document.getElementById('uploadResults');
+    const summaryDiv = document.getElementById('uploadSummary');
+    
+    resultsDiv.classList.remove('hidden');
+    
+    let html = `
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-green-600">${data.successfulImports}</div>
+                <div class="text-sm text-green-700">Imported</div>
+            </div>
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-red-600">${data.failedImports}</div>
+                <div class="text-sm text-red-700">Failed</div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-blue-600">${data.totalRecords}</div>
+                <div class="text-sm text-blue-700">Total</div>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                <div class="text-sm font-medium text-gray-700">Batch ID</div>
+                <div class="text-xs text-gray-600 font-mono">${data.batchId.substring(0, 8)}...</div>
+            </div>
+        </div>
+    `;
+    
+    if (data.errors && data.errors.length > 0) {
+        html += `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <h4 class="font-medium text-red-800 mb-2">Import Errors:</h4>
+                <ul class="text-sm text-red-700 space-y-1 max-h-40 overflow-y-auto">
+                    ${data.errors.map(error => `<li>• ${error}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+    
+    if (data.warnings && data.warnings.length > 0) {
+        html += `
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <h4 class="font-medium text-yellow-800 mb-2">Warnings:</h4>
+                <ul class="text-sm text-yellow-700 space-y-1">
+                    ${data.warnings.map(warning => `<li>• ${warning}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+    
+    summaryDiv.innerHTML = html;
+}
+
+function loadImportBatches() {
+    fetch('/admin/students/batches')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const batchFilter = document.getElementById('batchFilter');
+            const currentValue = batchFilter.value;
+            
+            // Clear existing options except "All Batches"
+            batchFilter.innerHTML = '<option value="">All Batches</option>';
+            
+            // Add batch options
+            data.batches.forEach(batch => {
+                const option = document.createElement('option');
+                option.value = batch.batchId;
+                option.textContent = `${batch.filename} (${batch.successfulImports} students)`;
+                batchFilter.appendChild(option);
+            });
+            
+            // Restore selection
+            batchFilter.value = currentValue;
+        }
+    })
+    .catch(error => {
+        console.error('Error loading batches:', error);
+    });
+}
+
+function loadStudentList() {
+    const search = document.getElementById('searchStudents').value;
+    const batchId = document.getElementById('batchFilter').value;
+    
+    const params = new URLSearchParams({
+        page: currentPage,
+        per_page: 20
+    });
+    
+    if (search) params.append('search', search);
+    if (batchId) params.append('batch_id', batchId);
+    
+    fetch(`/admin/students/list?${params}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayStudentList(data.students);
+            displayPagination(data.pagination);
+        } else {
+            showMessage('error', 'Error loading students: ' + data.error);
+        }
+    })
+    .catch(error => {
+        showMessage('error', 'Error loading students: ' + error.message);
+    });
+}
+
+function displayStudentList(students) {
+    const listDiv = document.getElementById('studentList');
+    
+    if (students.length === 0) {
+        listDiv.innerHTML = `
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-users text-3xl mb-2"></i>
+                <p>No students found</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const html = students.map(student => `
+        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="student-checkbox rounded border-gray-300 text-tenant-primary focus:ring-tenant-primary" 
+                           data-student-id="${student.id}" ${selectedStudentIds.has(student.id) ? 'checked' : ''}>
+                    
+                    <div class="flex-1">
+                        <h4 class="font-medium text-gray-900">${student.fullName}</h4>
+                        <div class="text-sm text-gray-600 space-x-4">
+                            <span><i class="fas fa-id-badge mr-1"></i>ID: ${student.displayStudentId}</span>
+                            ${student.email ? `<span><i class="fas fa-envelope mr-1"></i>${student.email}</span>` : ''}
+                            ${student.program ? `<span><i class="fas fa-graduation-cap mr-1"></i>${student.program}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    ${student.isSelectedForIssuance ? '<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">Selected</span>' : ''}
+                    ${student.credentialIssued ? '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">Issued</span>' : ''}
+                    
+                    <span class="text-xs text-gray-500">
+                        ${formatDate(student.createdAt)}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    listDiv.innerHTML = html;
+    
+    // Add event listeners to checkboxes
+    document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const studentId = parseInt(this.dataset.studentId);
+            if (this.checked) {
+                selectedStudentIds.add(studentId);
+            } else {
+                selectedStudentIds.delete(studentId);
+            }
+        });
+    });
+}
+
+function displayPagination(pagination) {
+    const paginationDiv = document.getElementById('pagination');
+    
+    if (pagination.pages <= 1) {
+        paginationDiv.innerHTML = '';
+        return;
+    }
+    
+    let html = '<div class="flex items-center space-x-2">';
+    
+    // Previous button
+    if (pagination.has_prev) {
+        html += `<button onclick="changePage(${pagination.page - 1})" class="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50">Previous</button>`;
+    }
+    
+    // Page numbers
+    const startPage = Math.max(1, pagination.page - 2);
+    const endPage = Math.min(pagination.pages, pagination.page + 2);
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const isActive = i === pagination.page;
+        html += `<button onclick="changePage(${i})" class="px-3 py-2 border ${isActive ? 'bg-tenant-primary text-white border-tenant-primary' : 'border-gray-300 hover:bg-gray-50'} rounded">${i}</button>`;
+    }
+    
+    // Next button
+    if (pagination.has_next) {
+        html += `<button onclick="changePage(${pagination.page + 1})" class="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50">Next</button>`;
+    }
+    
+    html += '</div>';
+    html += `<div class="text-sm text-gray-600 mt-2 text-center">Showing ${(pagination.page - 1) * pagination.per_page + 1}-${Math.min(pagination.page * pagination.per_page, pagination.total)} of ${pagination.total} students</div>`;
+    
+    paginationDiv.innerHTML = html;
+}
+
+function changePage(page) {
+    currentPage = page;
+    loadStudentList();
+}
+
+function selectAllVisible() {
+    document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+        checkbox.checked = true;
+        selectedStudentIds.add(parseInt(checkbox.dataset.studentId));
+    });
+}
+
+function deselectAll() {
+    document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    selectedStudentIds.clear();
+}
+
+function selectForIssuance() {
+    if (selectedStudentIds.size === 0) {
+        showMessage('error', 'Please select students first');
+        return;
+    }
+    
+    fetch('/admin/students/select', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            student_ids: Array.from(selectedStudentIds),
+            selected: true
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('success', data.message);
+            loadStudentList(); // Refresh list
+            selectedStudentIds.clear();
+        } else {
+            showMessage('error', data.error);
+        }
+    })
+    .catch(error => {
+        showMessage('error', 'Error updating selection: ' + error.message);
+    });
+}
+
+function refreshStudentList() {
+    loadStudentList();
+}
+
+function refreshSelectedStudents() {
+    fetch('/admin/students/selected')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displaySelectedStudents(data.students);
+        } else {
+            showMessage('error', 'Error loading selected students: ' + data.error);
+        }
+    })
+    .catch(error => {
+        showMessage('error', 'Error loading selected students: ' + error.message);
+    });
+}
+
+function displaySelectedStudents(students) {
+    const container = document.getElementById('selectedStudentsContainer');
+    const issueSection = document.getElementById('issueCredentialsSection');
+    
+    if (students.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-clipboard-list text-3xl mb-2"></i>
+                <p>No students selected for credential issuance</p>
+                <p class="text-sm">Use the "Manage Students" tab to select students</p>
+            </div>
+        `;
+        issueSection.classList.add('hidden');
+        return;
+    }
+    
+    const html = `
+        <div class="mb-4">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">Selected Students (${students.length})</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${students.map(student => `
+                <div class="border border-gray-200 rounded-lg p-4 bg-blue-50">
+                    <h4 class="font-medium text-gray-900">${student.fullName}</h4>
+                    <div class="text-sm text-gray-600 mt-1">
+                        <div><i class="fas fa-id-badge mr-1"></i>ID: ${student.displayStudentId}</div>
+                        ${student.email ? `<div><i class="fas fa-envelope mr-1"></i>${student.email}</div>` : ''}
+                        ${student.program ? `<div><i class="fas fa-graduation-cap mr-1"></i>${student.program}</div>` : ''}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    issueSection.classList.remove('hidden');
+}
+
+function issueAllCredentials() {
+    const btn = document.getElementById('issueAllCredentialsBtn');
+    const originalText = btn.innerHTML;
+    
+    if (!confirm('Are you sure you want to issue credentials for all selected students? This action cannot be undone.')) {
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating Credentials...';
+    
+    fetch('/admin/students/issue-credentials', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('success', data.message);
+            displayCredentialResults(data);
+            refreshSelectedStudents(); // Refresh selected students list
+        } else {
+            showMessage('error', data.error || 'Failed to issue credentials');
+        }
+    })
+    .catch(error => {
+        showMessage('error', 'Error issuing credentials: ' + error.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
+
+function displayCredentialResults(data) {
+    const resultsDiv = document.getElementById('credentialResults');
+    const listDiv = document.getElementById('credentialList');
+    
+    resultsDiv.classList.remove('hidden');
+    
+    let html = `
+        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <h4 class="font-medium text-green-800 mb-2">Credential Generation Complete</h4>
+            <p class="text-sm text-green-700">
+                Successfully generated ${data.successfulCount} credentials out of ${data.totalProcessed} students.
+                ${data.errorCount > 0 ? `${data.errorCount} errors occurred.` : ''}
+            </p>
+        </div>
+    `;
+    
+    if (data.errors && data.errors.length > 0) {
+        html += `
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <h4 class="font-medium text-red-800 mb-2">Errors:</h4>
+                <ul class="text-sm text-red-700 space-y-1 max-h-40 overflow-y-auto">
+                    ${data.errors.map(error => `<li>• ${error}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+    
+    html += `
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${data.results.map(result => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="text-center mb-3">
+                        <h5 class="font-medium text-gray-900">${result.student.fullName}</h5>
+                        <p class="text-sm text-gray-500">ID: ${result.student.displayStudentId}</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded p-3 text-center mb-3">
+                        <img src="data:image/png;base64,${result.qr_code}" 
+                             class="mx-auto max-w-full h-auto" 
+                             style="max-width: 150px;" 
+                             alt="QR Code for ${result.student.fullName}" />
+                    </div>
+                    
+                    <button onclick="copyToClipboard('${result.offer_url}')" 
+                            class="w-full bg-gray-600 text-white py-2 px-3 rounded text-sm hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-copy mr-1"></i>Copy URL
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    listDiv.innerHTML = html;
+}
+
+// Utility functions
+function downloadTemplate(format) {
+    window.location.href = `/admin/students/template/${format}`;
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showMessage('success', 'URL copied to clipboard!');
+    });
+}
+
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleString();
+}
+
+function showMessage(type, message) {
+    const container = document.getElementById('statusMessages');
+    const messageDiv = document.createElement('div');
+    
+    let bgColor, icon;
+    switch(type) {
+        case 'success':
+            bgColor = 'bg-green-500';
+            icon = 'fa-check-circle';
+            break;
+        case 'error':
+            bgColor = 'bg-red-500';
+            icon = 'fa-exclamation-circle';
+            break;
+        case 'info':
+            bgColor = 'bg-blue-500';
+            icon = 'fa-info-circle';
+            break;
+        default:
+            bgColor = 'bg-gray-500';
+            icon = 'fa-bell';
+    }
+    
+    messageDiv.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 opacity-0 transform translate-x-full transition-all duration-300`;
+    messageDiv.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    container.appendChild(messageDiv);
+    
+    // Animate in
+    setTimeout(() => {
+        messageDiv.classList.remove('opacity-0', 'translate-x-full');
+    }, 100);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (messageDiv.parentElement) {
+            messageDiv.classList.add('opacity-0', 'translate-x-full');
+            setTimeout(() => messageDiv.remove(), 300);
+        }
+    }, 5000);
+}
+
+// CSS for active tab
+document.addEventListener('DOMContentLoaded', function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .tab-button {
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        .tab-button:hover {
+            color: var(--tenant-primary, #c40e20);
+            border-bottom-color: var(--tenant-primary, #c40e20);
+        }
+        .tab-button.active {
+            color: var(--tenant-primary, #c40e20);
+            border-bottom-color: var(--tenant-primary, #c40e20);
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% block title %}Impressum - {{ tenant_name }}{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-br from-tenant-light to-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-tenant-primary rounded-full mb-6">
+        <i class="fas fa-question-circle text-3xl text-tenant-primary-text"></i>
+      </div>
+      <h1 class="text-4xl font-bold text-tenant-text mb-4">Help & Impressum</h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Learn about StudentVC and the team behind this innovative verifiable credentials platform.
+      </p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+      
+      <!-- About StudentVC -->
+      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-tenant-primary rounded-lg flex items-center justify-center mr-4">
+            <i class="fas fa-id-card text-xl text-tenant-primary-text"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-tenant-text">About StudentVC</h2>
+        </div>
+        
+        <div class="space-y-4 text-gray-700">
+          <p>
+            StudentVC is a cutting-edge verifiable credentials platform that implements the 
+            <strong>W3C VC Data Model 2.0</strong> with advanced cryptographic features.
+          </p>
+          
+          <div class="bg-tenant-light rounded-lg p-4">
+            <h3 class="font-semibold text-tenant-text mb-2">Key Features:</h3>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-600 mr-2"></i>
+                BBS+ signatures for selective disclosure
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-600 mr-2"></i>
+                X.509 certificate integration with DIDs
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-600 mr-2"></i>
+                OpenID for Verifiable Credentials (OID4VC)
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-600 mr-2"></i>
+                Cross-platform mobile wallet support
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-600 mr-2"></i>
+                Multi-tenant architecture for universities
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Help -->
+      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+            <i class="fas fa-question text-xl text-white"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-tenant-text">Quick Help</h2>
+        </div>
+        
+        <div class="space-y-6">
+          <div>
+            <h3 class="font-semibold text-tenant-text mb-2 flex items-center">
+              <i class="fas fa-user-graduate mr-2 text-tenant-primary"></i>
+              For Students
+            </h3>
+            <p class="text-gray-700 text-sm mb-2">
+              Use the <strong>Issuer</strong> page to generate your student credential. 
+              Scan the QR code with the StudentVC mobile app to store your credential securely.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold text-tenant-text mb-2 flex items-center">
+              <i class="fas fa-shield-alt mr-2 text-blue-600"></i>
+              For Verifiers
+            </h3>
+            <p class="text-gray-700 text-sm mb-2">
+              Use the <strong>Verifier</strong> page to create presentation requests and 
+              verify student credentials with selective disclosure capabilities.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold text-tenant-text mb-2 flex items-center">
+              <i class="fas fa-cogs mr-2 text-green-600"></i>
+              System Status
+            </h3>
+            <p class="text-gray-700 text-sm mb-2">
+              Check the <strong>Status</strong> page for credential validation and 
+              system health monitoring.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Impressum Section -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-tenant-primary to-tenant-secondary p-6">
+        <h2 class="text-3xl font-bold text-tenant-primary-text flex items-center">
+          <i class="fas fa-university mr-3"></i>
+          Impressum
+        </h2>
+      </div>
+      
+      <div class="p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Institution Info -->
+          <div>
+            <h3 class="text-xl font-bold text-tenant-text mb-4 flex items-center">
+              <i class="fas fa-building mr-2 text-tenant-primary"></i>
+              Institution
+            </h3>
+            <div class="space-y-2 text-gray-700">
+              <p class="font-semibold">Technische Universität Berlin</p>
+              <p>Service-centric Networking</p>
+              <p>Straße des 17. Juni 135</p>
+              <p>10623 Berlin, Germany</p>
+              <div class="flex items-center mt-3">
+                <i class="fas fa-globe mr-2 text-tenant-primary"></i>
+                <a href="https://www.tu-berlin.de" class="text-tenant-primary hover:underline">
+                  www.tu-berlin.de
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact -->
+          <div>
+            <h3 class="text-xl font-bold text-tenant-text mb-4 flex items-center">
+              <i class="fas fa-user mr-2 text-tenant-primary"></i>
+              Contact
+            </h3>
+            <div class="space-y-4">
+              <div class="bg-tenant-light rounded-lg p-4">
+                <div class="flex items-center mb-2">
+                  <div class="w-10 h-10 bg-tenant-primary rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-user text-tenant-primary-text"></i>
+                  </div>
+                  <div>
+                    <p class="font-semibold text-tenant-text">Patrick Herbke</p>
+                    <p class="text-sm text-gray-600">StudentVC Developer</p>
+                  </div>
+                </div>
+                <div class="flex items-center mt-3">
+                  <i class="fas fa-envelope mr-2 text-tenant-primary"></i>
+                  <a href="mailto:p.herbke@tu-berlin.de" class="text-tenant-primary hover:underline">
+                    p.herbke@tu-berlin.de
+                  </a>
+                </div>
+              </div>
+              
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-tenant-text mb-2">Research Focus</h4>
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• Verifiable Credentials & Digital Identity</li>
+                  <li>• Service-centric Network Architectures</li>
+                  <li>• Mobile Computing & Privacy</li>
+                  <li>• Blockchain & Distributed Systems</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Technical Details -->
+        <div class="mt-8 pt-8 border-t border-gray-200">
+          <h3 class="text-xl font-bold text-tenant-text mb-4 flex items-center">
+            <i class="fas fa-code mr-2 text-tenant-primary"></i>
+            Technical Implementation
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+              <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-key text-white"></i>
+              </div>
+              <h4 class="font-semibold text-tenant-text">Cryptography</h4>
+              <p class="text-sm text-gray-600 mt-1">
+                BBS+ signatures, X.509 certificates, did:web/did:key support
+              </p>
+            </div>
+            
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+              <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-mobile-alt text-white"></i>
+              </div>
+              <h4 class="font-semibold text-tenant-text">Mobile Apps</h4>
+              <p class="text-sm text-gray-600 mt-1">
+                iOS (Swift/SwiftUI) and Android (Kotlin) wallet applications
+              </p>
+            </div>
+            
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+              <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-server text-white"></i>
+              </div>
+              <h4 class="font-semibold text-tenant-text">Backend</h4>
+              <p class="text-sm text-gray-600 mt-1">
+                Flask, Rust BBS+ core, Docker containerization
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Contact & Legal -->
+        <div class="mt-8 pt-8 border-t border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 class="text-lg font-bold text-tenant-text mb-3">Contact</h3>
+              <div class="space-y-2 text-gray-700">
+                <div class="flex items-center">
+                  <i class="fas fa-envelope mr-2 text-tenant-primary"></i>
+                  <a href="mailto:p.herbke@tu-berlin.de" class="text-tenant-primary hover:underline">
+                    p.herbke@tu-berlin.de
+                  </a>
+                </div>
+                <div class="flex items-center">
+                  <i class="fas fa-user mr-2 text-tenant-primary"></i>
+                  <span>Patrick Herbke</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="text-lg font-bold text-tenant-text mb-3">Legal</h3>
+              <p class="text-sm text-gray-600">
+                This platform is developed for research and educational purposes. 
+                All credential data is processed according to GDPR regulations.
+                For questions regarding data protection, please contact the 
+                TU Berlin Data Protection Officer.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

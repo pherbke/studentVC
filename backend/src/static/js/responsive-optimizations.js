@@ -50,23 +50,23 @@
                 // Mobile optimizations
                 if (nav) nav.classList.add('mobile-optimized');
                 if (logo) {
-                    logo.style.height = '4rem'; // Still large on mobile
-                    logo.style.maxWidth = '150px';
+                    logo.style.height = '2.5rem'; // Compact on mobile (40px)
+                    logo.style.maxWidth = '120px';
                 }
             } else if (viewport < 1024) {
                 // Tablet optimizations
                 if (nav) nav.classList.add('tablet-optimized');
                 if (logo) {
-                    logo.style.height = '5rem'; // Larger on tablet
-                    logo.style.maxWidth = '200px';
+                    logo.style.height = '2.75rem'; // Slightly larger on tablet (44px)
+                    logo.style.maxWidth = '140px';
                 }
             } else {
-                // Desktop optimizations - EXTRA LARGE
+                // Desktop optimizations - Larger as requested
                 if (nav) {
                     nav.classList.remove('mobile-optimized', 'tablet-optimized');
                 }
                 if (logo) {
-                    logo.style.height = '6rem'; // EXTRA LARGE on desktop (96px)
+                    logo.style.height = '3rem'; // Large on desktop (48px) - matching h-12
                     logo.style.maxWidth = 'none';
                 }
             }

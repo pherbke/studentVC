@@ -11,7 +11,7 @@ import base64
 import time
 import logging
 from typing import Dict, Any, List, Optional, Tuple, Union
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from flask import current_app, jsonify
 import jwt
 
@@ -53,7 +53,7 @@ def create_status_list_credential(purpose: str) -> Dict[str, Any]:
         
         # Create a status list credential
         list_id = f"urn:uuid:{os.urandom(16).hex()}"
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         status_list_credential = {
             "@context": [
@@ -180,7 +180,7 @@ def set_credential_status(
         
         # Re-encode the bitmap and update the status list
         status_list.encoded_list = base64.b64encode(bitmap).decode('utf-8')
-        status_list.updated_at = datetime.utcnow()
+        status_list.updated_at = datetime.now(timezone.utc)
         
         # Update the credentialSubject in the credential
         status_list.credential["credentialSubject"]["encodedList"] = status_list.encoded_list

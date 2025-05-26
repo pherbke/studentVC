@@ -39,18 +39,54 @@ issuer_cert = None
 def index():
     initialize_keys()
     if request.method == "GET":
-        return render_template("issuer.html", img_data=None)
+        return render_template("issuer.html", img_data=None, debug_info=None)
 
-    # Process the form data
+    # Check if this is a form submission that should generate a QR code
+    # Only generate QR code if we have meaningful form data
     credential_data = request.form.to_dict()
     logger.info(f"Received form data form: {credential_data}")
     logger.info(f"Received form data files: {request.files}")
 
+    # Check if this request has actual credential data (not empty form)
+    # Always generate QR code if ANY form data is provided (including placeholders)
+    has_any_data = bool(credential_data and any(v for v in credential_data.values() if v))
+    
+    # Only skip QR generation if completely empty form submission
+    if not has_any_data and not request.files:
+        logger.info("Empty form submission - not generating QR code")
+        return render_template("issuer.html", img_data=None, debug_info=None)
+
+    # Check if this is a demo submission (detected by specific demo names)
+    is_demo_submission = (
+        credential_data.get('firstName') in ['Max', 'Anna', 'Lukas', 'Emma', 'Felix', 'Lena', 'Tom', 'Julia', 'Ben', 'Sarah'] and
+        credential_data.get('lastName') in ['Müller', 'Schmidt', 'Weber', 'Fischer', 'Meyer', 'Wagner', 'Koch', 'Richter', 'Klein', 'Wolf']
+    )
+    
     profile_image = request.files.get('image')
     if profile_image:
         logger.info(f"Received profile image:")
         img = preprocess_image(profile_image, (561, 722))
         credential_data['image'] = img
+    elif is_demo_submission:
+        # Use the demo profile image for demo submissions
+        demo_image_path = os.path.join(current_app.static_folder, 'profile.jpg')
+        if os.path.exists(demo_image_path):
+            logger.info(f"Using demo profile image for demo submission")
+            from io import BytesIO
+            with open(demo_image_path, 'rb') as f:
+                file_content = f.read()
+            
+            # Create a file-like object that preprocess_image can handle
+            from werkzeug.datastructures import FileStorage
+            demo_file = FileStorage(
+                stream=BytesIO(file_content),
+                filename='profile.jpg',
+                content_type='image/jpeg'
+            )
+            img = preprocess_image(demo_file, (561, 722))
+            credential_data['image'] = img
+        else:
+            credential_data['image'] = placeholder_profile
     else:
         credential_data['image'] = placeholder_profile
 
@@ -84,12 +120,27 @@ def index():
         "theme": theme_data
     }
 
-    # Now you can use full_credential_data as needed
-    link = get_offer_url(full_credential_data)
-    logger.info(f"Generated QR code link: {link}")
-    img = generate_qr_code(link)
+    # Generate the offer URL and QR code efficiently
+    try:
+        link = get_offer_url(full_credential_data)
+        logger.info(f"Generated QR code link: {link}")
+        img = generate_qr_code(link)
+        logger.info("QR code generated successfully")
+        
+        # Create debug information for the template
+        debug_info = {
+            "qr_url": link,
+            "credential_data": full_credential_data,
+            "is_demo": is_demo_submission,
+            "data_type": "Demo-Daten (Zufällig generiert)" if is_demo_submission else "Eingegebene Daten"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating QR code: {e}")
+        flash("Error generating QR code. Please try again.", "error")
+        return render_template("issuer.html", img_data=None, debug_info=None)
 
-    return render_template("issuer.html", img_data=img)
+    return render_template("issuer.html", img_data=img, debug_info=debug_info)
 
 
 @issuer.route("/offer", methods=["POST"])

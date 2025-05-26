@@ -178,7 +178,7 @@ def create_certificate_with_did(
         serial_number = int.from_bytes(os.urandom(16), byteorder='big') & 0xFFFFFFFFFFFFFFFF
     
     # Determine validity period
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     valid_from = now
     valid_to = now + timedelta(days=validity_days)
     

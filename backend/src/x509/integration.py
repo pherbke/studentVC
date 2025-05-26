@@ -260,7 +260,7 @@ def verify_credential_with_x509(
         not_valid_after = end_entity_cert.not_valid_after_utc
     except AttributeError:
         # Fall back to naive datetime for older Python versions
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(timezone.utc)
         not_valid_before = end_entity_cert.not_valid_before
         not_valid_after = end_entity_cert.not_valid_after
     

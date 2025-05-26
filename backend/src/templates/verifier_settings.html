@@ -45,53 +45,51 @@
           <strong>Privacy-First:</strong> Students reveal only selected information below. All other data stays encrypted.
         </p>
         
-        <div class="space-y-2">
+        <!-- Collapsible Categories -->
+        <div class="space-y-3">
           {% set field_labels = {
             'exp': 'Credential Expiration Date',
             'iat': 'Credential Issue Date', 
-            'iss': 'Issuing University',
-            'sub': 'Student Identifier',
+            'iss': 'Issuing University DID',
+            'sub': 'Student DID',
             'jti': 'Credential ID',
             'nbf': 'Valid From Date',
-            'vc': 'Verifiable Credential Data',
-            'bbs_dpk': 'Digital Public Key',
-            'base64encodeddpk': 'Encoded Digital Public Key',
-            'bls12381g2_pub_key': 'BLS Public Key',
-            'signature': 'Cryptographic Signature',
-            'proof': 'Verification Proof',
+            'bbs_dpk': 'BBS+ Digital Public Key',
             'nonce': 'Security Nonce',
-            'challenge': 'Verification Challenge',
-            'domain': 'Security Domain',
-            'context': 'Cryptographic Context',
-            'type': 'Credential Type',
-            'credentialSubject': 'Student Information',
-            'issuanceDate': 'Date of Issuance',
-            'expirationDate': 'Expiration Date',
-            'credentialStatus': 'Credential Status',
-            'credentialSchema': 'Credential Schema',
-            'given_name': 'First Name',
-            'family_name': 'Last Name', 
-            'name': 'Full Name',
-            'email': 'Email Address',
-            'student_id': 'Student ID Number',
-            'university': 'University Name',
-            'degree': 'Degree Program',
-            'major': 'Field of Study',
-            'gpa': 'Grade Point Average',
-            'graduation_date': 'Graduation Date',
-            'enrollment_date': 'Enrollment Date',
-            'status': 'Enrollment Status',
-            'year': 'Academic Year',
-            'credits': 'Credit Hours',
-            'honors': 'Academic Honors',
-            'faculty': 'Faculty/School',
-            'department': 'Department',
-            'thesis_title': 'Thesis Title',
-            'advisor': 'Academic Advisor',
-            'birthdate': 'Date of Birth',
-            'nationality': 'Nationality',
-            'address': 'Address',
-            'phone': 'Phone Number'
+            'signed_nonce': 'Signed Security Nonce',
+            'total_messages': 'Total Message Count',
+            'validity_identifier': 'Validity Check URL',
+            'vc.@context.0': 'Credential Context',
+            'vc.id': 'Credential ID',
+            'vc.issuanceDate': 'Issuance Date',
+            'vc.expirationDate': 'Expiration Date',
+            'vc.validFrom': 'Valid From Date',
+            'vc.issuer': 'Issuer DID',
+            'vc.credentialSchema.id': 'Schema ID',
+            'vc.credentialSchema.type': 'Schema Type',
+            'vc.type.0': 'Credential Type 1',
+            'vc.type.1': 'Credential Type 2',
+            'vc.type.2': 'Credential Type 3',
+            'vc.credentialSubject.firstName': 'First Name',
+            'vc.credentialSubject.lastName': 'Last Name',
+            'vc.credentialSubject.studentId': 'Student ID',
+            'vc.credentialSubject.studentIdPrefix': 'Student ID Prefix',
+            'vc.credentialSubject.image': 'Student Photo',
+            'vc.credentialSubject.issuanceCount': 'Issuance Count',
+            'vc.credentialSubject.theme.name': 'University Name',
+            'vc.credentialSubject.theme.icon': 'University Icon',
+            'vc.credentialSubject.theme.bgColorCard': 'Card Background Color',
+            'vc.credentialSubject.theme.bgColorSectionBot': 'Bottom Section Color',
+            'vc.credentialSubject.theme.bgColorSectionTop': 'Top Section Color',
+            'vc.credentialSubject.theme.fgColorTitle': 'Title Text Color'
+          } %}
+          
+          {% set field_categories = {
+            'Student Identity': ['vc.credentialSubject.firstName', 'vc.credentialSubject.lastName', 'vc.credentialSubject.studentId', 'vc.credentialSubject.studentIdPrefix', 'vc.credentialSubject.image'],
+            'Academic Information': ['vc.credentialSubject.theme.name', 'vc.credentialSubject.issuanceCount', 'vc.credentialSubject.theme.icon'],
+            'Credential Metadata': ['exp', 'iat', 'iss', 'sub', 'jti', 'nbf', 'vc.@context.0', 'vc.id', 'vc.issuanceDate', 'vc.expirationDate', 'vc.validFrom', 'vc.credentialSchema.id', 'vc.credentialSchema.type', 'vc.type.0', 'vc.type.1', 'vc.type.2', 'vc.issuer'],
+            'Security & Cryptography': ['bbs_dpk', 'nonce', 'signed_nonce', 'total_messages', 'validity_identifier'],
+            'UI Theme Settings': ['vc.credentialSubject.theme.bgColorCard', 'vc.credentialSubject.theme.bgColorSectionBot', 'vc.credentialSubject.theme.bgColorSectionTop', 'vc.credentialSubject.theme.fgColorTitle']
           } %}
           
           {% set field_descriptions = {
@@ -112,76 +110,116 @@
             'credentialStatus': 'Current validity and revocation status'
           } %}
           
-          {% for key, value in demo_credential.items() %}
-          <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-            <div class="flex items-center space-x-3 flex-1">
-              <input
-                type="checkbox"
-                name="{{ key }}"
-                value="{{ value }}"
-                id="{{ key }}"
-                {% if key in mandatory_fields %}checked{% endif %}
-                class="h-4 w-4 text-tenant-primary border-gray-300 rounded focus:ring-tenant-primary focus:ring-1"
-              />
-              <div class="flex-1 min-w-0">
-                <label for="{{ key }}" class="block font-medium text-gray-900 cursor-pointer text-sm">
-                  {% if field_labels[key] %}
-                    {{ field_labels[key] }}
-                    <span class="text-xs text-gray-500 font-normal">({{ key }})</span>
-                  {% else %}
-                    {{ key|title }}
-                  {% endif %}
-                </label>
-                {% if field_descriptions[key] %}
-                  <div class="text-xs text-gray-500 mt-1">{{ field_descriptions[key] }}</div>
-                {% endif %}
-                <div class="text-xs text-gray-400 mt-1">
-                  <span class="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">{{ value|string|truncate(40) }}</span>
-                </div>
+          {% for category, fields in field_categories.items() %}
+          <div class="border border-gray-200 rounded">
+            <div class="flex items-center justify-between p-2 bg-gray-50 border-b border-gray-200 cursor-pointer" onclick="toggleCategory('{{ category|replace(' ', '')|replace('&', '') }}')">
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-chevron-right text-gray-400 text-xs transition-transform {% if loop.first %}rotate-90{% endif %}" id="chevron-{{ category|replace(' ', '')|replace('&', '') }}"></i>
+                <h4 class="font-medium text-gray-900 text-sm">{{ category }}</h4>
+                <span class="bg-tenant-primary text-white text-xs px-1.5 py-0.5 rounded-full" id="count-{{ category|replace(' ', '')|replace('&', '') }}">0</span>
+              </div>
+              <div class="text-xs text-gray-500">
+                {% set category_total = fields|length %}
+                {{ category_total }} fields
               </div>
             </div>
-            <div class="flex-shrink-0">
-              {% if key in mandatory_fields %}
-                <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">Required</span>
-              {% else %}
-                <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-0.5 rounded-full">Optional</span>
-              {% endif %}
+            <div class="{% if loop.first %}{% else %}hidden{% endif %} space-y-1 p-2" id="category-{{ category|replace(' ', '')|replace('&', '') }}">
+              {% for field in fields %}
+                {% if field in demo_credential %}
+                <div class="flex items-center justify-between p-1.5 border border-gray-100 rounded hover:bg-gray-50 transition-colors">
+                  <div class="flex items-center space-x-2 flex-1">
+                    <input
+                      type="checkbox"
+                      name="{{ field }}"
+                      value="{{ demo_credential[field] }}"
+                      id="{{ field }}"
+                      {% if field in mandatory_fields %}checked{% endif %}
+                      class="h-3 w-3 text-tenant-primary border-gray-300 rounded focus:ring-tenant-primary focus:ring-1"
+                      onchange="updateCategoryCount('{{ category|replace(' ', '')|replace('&', '') }}')"
+                    />
+                    <div class="flex-1 min-w-0">
+                      <label for="{{ field }}" class="block font-medium text-gray-900 cursor-pointer text-xs">
+                        {% if field_labels[field] %}
+                          {{ field_labels[field] }}
+                        {% else %}
+                          {{ field|title }}
+                        {% endif %}
+                      </label>
+                      {% if field_descriptions[field] %}
+                        <div class="text-xs text-gray-500">{{ field_descriptions[field] }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="flex-shrink-0">
+                    {% if field in mandatory_fields %}
+                      <span class="bg-red-100 text-red-800 text-xs px-1 py-0.5 rounded">Req</span>
+                    {% else %}
+                      <span class="bg-gray-100 text-gray-600 text-xs px-1 py-0.5 rounded">Opt</span>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
+              {% endfor %}
             </div>
           </div>
           {% endfor %}
         </div>
       </div>
 
-      <!-- Security Verification Policies -->
+      <!-- Security & Authentication Policies -->
       <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
         <h3 class="text-base font-semibold text-tenant-text mb-3 flex items-center">
-          <i class="fas fa-security text-tenant-primary mr-2"></i>
+          <i class="fas fa-shield-alt text-tenant-primary mr-2"></i>
           Security & Authentication Policies
         </h3>
-        <p class="text-sm text-gray-600 mb-3">These security measures are automatically enforced:</p>
+        <p class="text-sm text-gray-600 mb-3">Automatically enforced security measures:</p>
         
-        <div class="space-y-2">
-          <div class="flex items-center p-2 border border-green-200 bg-green-50 rounded">
-            <i class="fas fa-check-circle text-green-600 mr-2 text-sm"></i>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="flex items-start p-2 border border-green-200 bg-green-50 rounded">
+            <i class="fas fa-signature text-green-600 mr-2 text-sm mt-0.5"></i>
             <div>
-              <label class="font-medium text-green-900 text-sm">Cryptographic Signature Verification</label>
-              <p class="text-xs text-green-700">BBS+ signatures ensure authenticity and tamper-proof verification</p>
+              <label class="font-medium text-green-900 text-sm">BBS+ Signature Verification</label>
+              <p class="text-xs text-green-700">Cryptographic proof of authenticity and tamper detection</p>
             </div>
           </div>
           
-          <div class="flex items-center p-2 border border-green-200 bg-green-50 rounded">
-            <i class="fas fa-check-circle text-green-600 mr-2 text-sm"></i>
+          <div class="flex items-start p-2 border border-blue-200 bg-blue-50 rounded">
+            <i class="fas fa-university text-blue-600 mr-2 text-sm mt-0.5"></i>
             <div>
-              <label class="font-medium text-green-900 text-sm">Trusted Issuer Validation</label>
-              <p class="text-xs text-green-700">Validates credentials are issued by authorized universities</p>
+              <label class="font-medium text-blue-900 text-sm">Trusted Issuer Validation</label>
+              <p class="text-xs text-blue-700">Verifies issuer authority and certificate chain</p>
             </div>
           </div>
           
-          <div class="flex items-center p-2 border border-green-200 bg-green-50 rounded">
-            <i class="fas fa-check-circle text-green-600 mr-2 text-sm"></i>
+          <div class="flex items-start p-2 border border-purple-200 bg-purple-50 rounded">
+            <i class="fas fa-clock text-purple-600 mr-2 text-sm mt-0.5"></i>
             <div>
-              <label class="font-medium text-green-900 text-sm">Real-time Status Verification</label>
-              <p class="text-xs text-green-700">Checks if credentials are valid and not revoked</p>
+              <label class="font-medium text-purple-900 text-sm">Real-time Status Check</label>
+              <p class="text-xs text-purple-700">Live revocation status and validity verification</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start p-2 border border-orange-200 bg-orange-50 rounded">
+            <i class="fas fa-mask text-orange-600 mr-2 text-sm mt-0.5"></i>
+            <div>
+              <label class="font-medium text-orange-900 text-sm">Zero-Knowledge Privacy</label>
+              <p class="text-xs text-orange-700">Selective disclosure without revealing other data</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start p-2 border border-red-200 bg-red-50 rounded">
+            <i class="fas fa-shield-virus text-red-600 mr-2 text-sm mt-0.5"></i>
+            <div>
+              <label class="font-medium text-red-900 text-sm">Replay Attack Prevention</label>
+              <p class="text-xs text-red-700">Nonce-based protection against duplicate presentations</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start p-2 border border-indigo-200 bg-indigo-50 rounded">
+            <i class="fas fa-key text-indigo-600 mr-2 text-sm mt-0.5"></i>
+            <div>
+              <label class="font-medium text-indigo-900 text-sm">Cryptographic Key Binding</label>
+              <p class="text-xs text-indigo-700">Ensures holder owns the presented credential</p>
             </div>
           </div>
         </div>
@@ -258,6 +296,45 @@
 
 {% block javascript %}
 <script>
+  // Toggle collapsible categories
+  function toggleCategory(categoryId) {
+    const content = document.getElementById('category-' + categoryId);
+    const chevron = document.getElementById('chevron-' + categoryId);
+    
+    if (!content || !chevron) {
+      console.error('Could not find elements for category:', categoryId);
+      return;
+    }
+    
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+      content.classList.remove('hidden');
+      chevron.classList.add('rotate-90');
+    } else {
+      content.classList.add('hidden');
+      chevron.classList.remove('rotate-90');
+    }
+    
+    // Force a reflow to ensure the transition works
+    void content.offsetHeight;
+  }
+
+  // Update category counts
+  function updateCategoryCount(categoryId) {
+    const categoryDiv = document.getElementById('category-' + categoryId);
+    const countSpan = document.getElementById('count-' + categoryId);
+    
+    if (!categoryDiv || !countSpan) {
+      console.error('Could not find elements for category count:', categoryId);
+      return;
+    }
+    
+    const checkboxes = categoryDiv.querySelectorAll('input[type="checkbox"]:checked');
+    countSpan.textContent = checkboxes.length;
+    updateRequiredFieldsCount();
+  }
+
   // Update required fields counter dynamically
   function updateRequiredFieldsCount() {
     const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([disabled])');
@@ -267,21 +344,52 @@
 
   // Add event listeners to checkboxes
   document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing verifier settings page...');
+    
+    // Initialize category counts
+    const categories = ['StudentIdentity', 'AcademicInformation', 'CredentialMetadata', 'SecurityCryptography', 'UIThemeSettings'];
+    
+    // Check if all category elements exist
+    categories.forEach(category => {
+      const categoryElement = document.getElementById('category-' + category);
+      const chevronElement = document.getElementById('chevron-' + category);
+      const countElement = document.getElementById('count-' + category);
+      
+      if (!categoryElement) {
+        console.warn('Category element not found:', 'category-' + category);
+      }
+      if (!chevronElement) {
+        console.warn('Chevron element not found:', 'chevron-' + category);
+      }
+      if (!countElement) {
+        console.warn('Count element not found:', 'count-' + category);
+      }
+      
+      updateCategoryCount(category);
+    });
+    
     const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([disabled])');
     checkboxes.forEach(checkbox => {
       checkbox.addEventListener('change', function() {
         updateRequiredFieldsCount();
+        
+        // Find which category this checkbox belongs to and update its count
+        const categoryElement = this.closest('[id^="category-"]');
+        if (categoryElement) {
+          const categoryId = categoryElement.id.replace('category-', '');
+          updateCategoryCount(categoryId);
+        }
         
         // Update the status badge
         const container = this.closest('.flex');
         const badge = container.querySelector('.bg-red-100, .bg-gray-100');
         if (badge) {
           if (this.checked) {
-            badge.className = 'bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full';
-            badge.textContent = 'Required';
+            badge.className = 'bg-red-100 text-red-800 text-xs px-1 py-0.5 rounded';
+            badge.textContent = 'Req';
           } else {
-            badge.className = 'bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full';
-            badge.textContent = 'Optional';
+            badge.className = 'bg-gray-100 text-gray-600 text-xs px-1 py-0.5 rounded';
+            badge.textContent = 'Opt';
           }
         }
       });

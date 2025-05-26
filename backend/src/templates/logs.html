@@ -1,0 +1,199 @@
+{% extends "base.html" %} 
+{% block title %}System Logs - {{ tenant_name }}{% endblock %} 
+{% block content %}
+
+<!-- Simple Page Title -->
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-tenant-text mb-2">System Logs</h1>
+  <p class="text-gray-600 text-sm">Monitor system activities, issuance, verification, and security events</p>
+</div>
+
+<!-- Log Filters -->
+<div class="bg-white rounded shadow-sm border border-gray-200 p-4 mb-6">
+  <h3 class="text-base font-semibold text-tenant-text mb-3 flex items-center">
+    <i class="fas fa-filter text-tenant-primary mr-2"></i>
+    Log Filters
+  </h3>
+  
+  <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Category Filter -->
+    <div>
+      <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+      <select name="category" id="category" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-tenant-primary focus:border-tenant-primary">
+        <option value="all" {% if current_category == 'all' %}selected{% endif %}>All Categories</option>
+        {% for category in categories %}
+        <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>{{ category|title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Level Filter -->
+    <div>
+      <label for="level" class="block text-sm font-medium text-gray-700 mb-1">Level</label>
+      <select name="level" id="level" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-tenant-primary focus:border-tenant-primary">
+        <option value="all" {% if current_level == 'all' %}selected{% endif %}>All Levels</option>
+        <option value="DEBUG" {% if current_level == 'DEBUG' %}selected{% endif %}>Debug</option>
+        <option value="INFO" {% if current_level == 'INFO' %}selected{% endif %}>Info</option>
+        <option value="WARNING" {% if current_level == 'WARNING' %}selected{% endif %}>Warning</option>
+        <option value="ERROR" {% if current_level == 'ERROR' %}selected{% endif %}>Error</option>
+        <option value="CRITICAL" {% if current_level == 'CRITICAL' %}selected{% endif %}>Critical</option>
+      </select>
+    </div>
+
+    <!-- Limit -->
+    <div>
+      <label for="limit" class="block text-sm font-medium text-gray-700 mb-1">Entries</label>
+      <select name="limit" id="limit" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-tenant-primary focus:border-tenant-primary">
+        <option value="50" {% if limit == 50 %}selected{% endif %}>50 entries</option>
+        <option value="100" {% if limit == 100 %}selected{% endif %}>100 entries</option>
+        <option value="200" {% if limit == 200 %}selected{% endif %}>200 entries</option>
+        <option value="500" {% if limit == 500 %}selected{% endif %}>500 entries</option>
+      </select>
+    </div>
+
+    <!-- Apply Button -->
+    <div class="flex items-end">
+      <button type="submit" class="w-full bg-tenant-primary text-tenant-primary-text py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors font-medium text-sm flex items-center justify-center">
+        <i class="fas fa-search mr-2"></i>
+        Apply Filters
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Logs Display -->
+<div class="bg-white rounded shadow-sm border border-gray-200">
+  <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+    <h3 class="text-base font-semibold text-tenant-text flex items-center">
+      <i class="fas fa-list text-tenant-primary mr-2"></i>
+      Recent Log Entries
+    </h3>
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-500">{{ logs|length }} entries</span>
+      <button onclick="refreshLogs()" class="text-tenant-primary hover:text-tenant-secondary transition-colors">
+        <i class="fas fa-refresh text-sm"></i>
+      </button>
+    </div>
+  </div>
+
+  {% if logs %}
+  <div class="overflow-x-auto max-h-96 overflow-y-auto">
+    <div class="space-y-1 p-2">
+      {% for log in logs %}
+      <div class="flex items-start p-2 border border-gray-100 rounded hover:bg-gray-50 transition-colors">
+        <!-- Level Badge -->
+        <div class="flex-shrink-0 mr-3">
+          {% set level = log.level|upper %}
+          {% if level == 'ERROR' or level == 'CRITICAL' %}
+            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">{{ level }}</span>
+          {% elif level == 'WARNING' %}
+            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">{{ level }}</span>
+          {% elif level == 'INFO' %}
+            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">{{ level }}</span>
+          {% else %}
+            <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">{{ level }}</span>
+          {% endif %}
+        </div>
+
+        <!-- Log Content -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-medium text-gray-900">{{ log.source }}</span>
+              {% if log.category and log.category != 'system' %}
+                <span class="bg-tenant-light text-tenant-text text-xs px-1.5 py-0.5 rounded">{{ log.category|title }}</span>
+              {% endif %}
+            </div>
+            <span class="text-xs text-gray-500">{{ log.timestamp }}</span>
+          </div>
+          <p class="text-sm text-gray-700 break-words">{{ log.message }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="p-8 text-center">
+    <i class="fas fa-file-alt text-gray-400 text-3xl mb-3"></i>
+    <p class="text-gray-500 text-sm">No log entries found with the current filters.</p>
+    <p class="text-gray-400 text-xs mt-1">Try adjusting your filter criteria or check if the system is generating logs.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Log Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+  <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+    <div class="flex items-center">
+      <div class="bg-blue-100 p-2 rounded-lg mr-3">
+        <i class="fas fa-info-circle text-blue-600"></i>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500">Info Logs</p>
+        <p class="text-lg font-semibold text-gray-900">{{ logs|selectattr("level", "equalto", "INFO")|list|length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+    <div class="flex items-center">
+      <div class="bg-yellow-100 p-2 rounded-lg mr-3">
+        <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500">Warnings</p>
+        <p class="text-lg font-semibold text-gray-900">{{ logs|selectattr("level", "equalto", "WARNING")|list|length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+    <div class="flex items-center">
+      <div class="bg-red-100 p-2 rounded-lg mr-3">
+        <i class="fas fa-times-circle text-red-600"></i>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500">Errors</p>
+        <p class="text-lg font-semibold text-gray-900">{{ logs|selectattr("level", "equalto", "ERROR")|list|length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+    <div class="flex items-center">
+      <div class="bg-tenant-light p-2 rounded-lg mr-3">
+        <i class="fas fa-list text-tenant-primary"></i>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500">Total Shown</p>
+        <p class="text-lg font-semibold text-gray-900">{{ logs|length }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+  function refreshLogs() {
+    window.location.reload();
+  }
+
+  // Auto-refresh every 30 seconds
+  setInterval(refreshLogs, 30000);
+
+  // Auto-submit form when filters change
+  document.addEventListener('DOMContentLoaded', function() {
+    const filters = ['category', 'level', 'limit'];
+    filters.forEach(filterId => {
+      const element = document.getElementById(filterId);
+      if (element) {
+        element.addEventListener('change', function() {
+          this.form.submit();
+        });
+      }
+    });
+  });
+</script>
+{% endblock %}

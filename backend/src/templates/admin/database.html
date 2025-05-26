@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block title %}Database Management - {{ tenant_name }}{% endblock %}
+{% block content %}
+
+<div class="mb-6">
+  <h1 class="text-3xl font-bold text-tenant-text mb-2">Database Management</h1>
+  <p class="text-gray-600">Backup, restore, and manage your database</p>
+</div>
+
+<!-- Backup Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  
+  <!-- Create Backup -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-xl font-semibold text-tenant-text mb-4 flex items-center">
+      <i class="fas fa-download text-tenant-primary mr-2"></i>
+      Create Backup
+    </h2>
+    
+    <div class="space-y-4">
+      <div class="flex items-center space-x-3">
+        <input type="checkbox" id="includeLogs" checked class="rounded border-gray-300 text-tenant-primary focus:ring-tenant-primary">
+        <label for="includeLogs" class="text-sm text-gray-700">Include system logs</label>
+      </div>
+      
+      <div class="flex items-center space-x-3">
+        <input type="checkbox" id="includeMetrics" checked class="rounded border-gray-300 text-tenant-primary focus:ring-tenant-primary">
+        <label for="includeMetrics" class="text-sm text-gray-700">Include performance metrics</label>
+      </div>
+      
+      <button id="createBackupBtn" class="w-full bg-tenant-primary text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors font-medium">
+        <i class="fas fa-database mr-2"></i>
+        Create Database Backup
+      </button>
+    </div>
+  </div>
+  
+  <!-- Restore Backup -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-xl font-semibold text-tenant-text mb-4 flex items-center">
+      <i class="fas fa-upload text-tenant-primary mr-2"></i>
+      Restore Database
+    </h2>
+    
+    <div class="space-y-4">
+      <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-tenant-primary transition-colors cursor-pointer" 
+           onclick="document.getElementById('restoreFile').click()">
+        <div class="text-center">
+          <i class="fas fa-file-archive text-2xl text-gray-400 mb-2"></i>
+          <p class="text-sm text-gray-600">Click to select backup file (.zip)</p>
+        </div>
+      </div>
+      
+      <input type="file" id="restoreFile" accept=".zip" class="hidden">
+      
+      <button id="restoreBackupBtn" disabled class="w-full bg-gray-400 text-white py-2 px-4 rounded-md font-medium cursor-not-allowed">
+        <i class="fas fa-undo mr-2"></i>
+        Restore Database
+      </button>
+      
+      <div class="bg-red-50 border border-red-200 rounded-md p-3">
+        <p class="text-xs text-red-700">
+          <i class="fas fa-exclamation-triangle mr-1"></i>
+          Warning: This will replace all current data!
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Backup History -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+  <h2 class="text-xl font-semibold text-tenant-text mb-4 flex items-center">
+    <i class="fas fa-history text-tenant-primary mr-2"></i>
+    Backup History
+  </h2>
+  
+  <div id="backupList" class="space-y-3">
+    <div class="text-center text-gray-500 py-4">
+      <i class="fas fa-spinner fa-spin text-xl mb-2"></i>
+      <p>Loading backups...</p>
+    </div>
+  </div>
+</div>
+
+<!-- Status Messages -->
+<div id="statusMessages" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load backup list
+    loadBackupList();
+    
+    // Create backup
+    document.getElementById('createBackupBtn').addEventListener('click', createBackup);
+    
+    // Restore file selection
+    document.getElementById('restoreFile').addEventListener('change', function(e) {
+        const restoreBtn = document.getElementById('restoreBackupBtn');
+        if (e.target.files.length > 0) {
+            restoreBtn.disabled = false;
+            restoreBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            restoreBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+        } else {
+            restoreBtn.disabled = true;
+            restoreBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            restoreBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+        }
+    });
+    
+    // Restore backup
+    document.getElementById('restoreBackupBtn').addEventListener('click', restoreBackup);
+});
+
+function createBackup() {
+    const btn = document.getElementById('createBackupBtn');
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Backup...';
+    
+    const data = {
+        include_logs: document.getElementById('includeLogs').checked,
+        include_metrics: document.getElementById('includeMetrics').checked
+    };
+    
+    fetch('/admin/backup/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('success', `Backup created successfully: ${data.filename} (${formatBytes(data.size)})`);
+            loadBackupList(); // Refresh the list
+        } else {
+            showMessage('error', data.error || 'Failed to create backup');
+        }
+    })
+    .catch(error => {
+        showMessage('error', 'Error creating backup: ' + error.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
+
+function restoreBackup() {
+    const fileInput = document.getElementById('restoreFile');
+    const btn = document.getElementById('restoreBackupBtn');
+    
+    if (!fileInput.files[0]) {
+        showMessage('error', 'Please select a backup file');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to restore the database? This will replace all current data!')) {
+        return;
+    }
+    
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Restoring...';
+    
+    const formData = new FormData();
+    formData.append('backup_file', fileInput.files[0]);
+    
+    fetch('/admin/backup/restore', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('success', `Database restored successfully. ${data.restored_records} records restored.`);
+            fileInput.value = '';
+            btn.disabled = true;
+            btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            btn.classList.remove('bg-red-600', 'hover:bg-red-700');
+        } else {
+            showMessage('error', data.error || 'Failed to restore database');
+        }
+    })
+    .catch(error => {
+        showMessage('error', 'Error restoring database: ' + error.message);
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+    });
+}
+
+function loadBackupList() {
+    fetch('/admin/backup/list')
+    .then(response => response.json())
+    .then(data => {
+        const backupList = document.getElementById('backupList');
+        
+        if (data.success && data.backups.length > 0) {
+            backupList.innerHTML = data.backups.map(backup => `
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900">${backup.filename}</h3>
+                        <div class="text-sm text-gray-500 space-y-1">
+                            <p><i class="fas fa-calendar mr-1"></i>Created: ${formatDate(backup.created_at)}</p>
+                            <p><i class="fas fa-weight-hanging mr-1"></i>Size: ${formatBytes(backup.size)}</p>
+                            ${backup.metadata.total_records ? `<p><i class="fas fa-database mr-1"></i>Records: ${backup.metadata.total_records}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="downloadBackup('${backup.filename}')" 
+                                class="bg-tenant-primary text-white px-3 py-1 rounded text-sm hover:bg-opacity-90 transition-colors">
+                            <i class="fas fa-download mr-1"></i>Download
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            backupList.innerHTML = `
+                <div class="text-center text-gray-500 py-8">
+                    <i class="fas fa-database text-3xl mb-2"></i>
+                    <p>No backups found</p>
+                    <p class="text-sm">Create your first backup to get started</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        document.getElementById('backupList').innerHTML = `
+            <div class="text-center text-red-500 py-4">
+                <i class="fas fa-exclamation-triangle text-xl mb-2"></i>
+                <p>Error loading backups</p>
+            </div>
+        `;
+    });
+}
+
+function downloadBackup(filename) {
+    window.location.href = `/admin/backup/download/${filename}`;
+}
+
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleString();
+}
+
+function showMessage(type, message) {
+    const container = document.getElementById('statusMessages');
+    const messageDiv = document.createElement('div');
+    
+    const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    
+    messageDiv.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 opacity-0 transform translate-x-full transition-all duration-300`;
+    messageDiv.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    container.appendChild(messageDiv);
+    
+    // Animate in
+    setTimeout(() => {
+        messageDiv.classList.remove('opacity-0', 'translate-x-full');
+    }, 100);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (messageDiv.parentElement) {
+            messageDiv.classList.add('opacity-0', 'translate-x-full');
+            setTimeout(() => messageDiv.remove(), 300);
+        }
+    }, 5000);
+}
+</script>
+
+{% endblock %}

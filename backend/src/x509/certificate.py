@@ -176,7 +176,7 @@ def is_certificate_valid(
         Tuple of (is_valid, reason)
     """
     # Check if certificate is expired
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now(timezone.utc)
     if now < certificate.not_valid_before:
         return False, "Certificate is not yet valid"
     if now > certificate.not_valid_after:

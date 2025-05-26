@@ -8,154 +8,150 @@
   <p class="text-gray-600 text-sm">Verify authenticity and validity of credentials</p>
 </div>
 
-<!-- QR Code Display -->
-{% if img_data %}
-<div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8 p-6">
-  <div class="text-center">
-    <h3 class="text-xl font-semibold text-tenant-text mb-4">
-      <i class="fas fa-qrcode text-tenant-primary mr-2"></i>
-      Verification Request QR Code
-    </h3>
-    <div class="bg-gray-50 rounded-lg p-6 inline-block">
-      <img id="picture" src="data:image/png;base64,{{ img_data }}" class="mx-auto max-w-full h-auto" style="max-width: 300px;" />
-    </div>
-    <p class="text-sm text-gray-600 mt-4">Student scans this QR code to initiate credential verification</p>
-  </div>
-</div>
-{% endif %}
-
-<!-- Real-time Verification Status -->
-<div class="bg-white rounded-lg shadow-sm border border-gray-200">
-  <div class="px-6 py-4 border-b border-gray-200">
-    <h3 class="text-lg font-semibold text-tenant-text flex items-center">
-      <i class="fas fa-tasks text-tenant-primary mr-2"></i>
-      Real-time Verification Process
-    </h3>
-    <p class="text-sm text-gray-600 mt-1">Monitor each step of the credential verification process</p>
-  </div>
+<!-- Side-by-Side Layout: QR Code LEFT and Verification Results RIGHT -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
   
-  <div class="p-6">
-    <div class="space-y-4">
-      <!-- Verification Steps -->
-      <div class="grid gap-4">
-        
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-          <div class="flex items-center space-x-3">
-            <div class="text-2xl" id="presentation_requested">⏳</div>
-            <div>
-              <div class="font-medium text-gray-900">Presentation Requested</div>
-              <div class="text-sm text-gray-500">Verification request initiated</div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 1</div>
-        </div>
-
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-          <div class="flex items-center space-x-3">
-            <div class="text-2xl" id="key_extraction">⏳</div>
-            <div>
-              <div class="font-medium text-gray-900">Keys Extracted from Credential</div>
-              <div class="text-sm text-gray-500">Cryptographic keys extracted and verified</div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 2</div>
-        </div>
-
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-          <div class="flex items-center space-x-3">
-            <div class="text-2xl" id="signature_verification">⏳</div>
-            <div>
-              <div class="font-medium text-gray-900">Holder Key matches Presentation</div>
-              <div class="text-sm text-gray-500">Verifying credential holder authenticity</div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 3</div>
-        </div>
-
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-          <div class="flex items-center space-x-3">
-            <div class="text-2xl" id="issuer_pub_key_verification">⏳</div>
-            <div>
-              <div class="font-medium text-gray-900">Issuer Public Key is Trusted</div>
-              <div class="text-sm text-gray-500">Validating issuer authority and trustworthiness</div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 4</div>
-        </div>
-
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-          <div class="flex items-center space-x-3">
-            <div class="text-2xl" id="mandatory_fields_verification">⏳</div>
-            <div>
-              <div class="font-medium text-gray-900">All Mandatory Fields Present</div>
-              <div class="text-sm text-gray-500">Checking required credential attributes</div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 5</div>
-        </div>
-
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-          <div class="flex items-center space-x-3">
-            <div class="text-2xl" id="credential_validity_status">⏳</div>
-            <div>
-              <div class="font-medium text-gray-900">Credential is not Revoked</div>
-              <div class="text-sm text-gray-500">Checking revocation status</div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 6</div>
-        </div>
-
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-          <div class="flex items-center space-x-3">
-            <div class="text-2xl" id="issuer_bbs_key_verification">⏳</div>
-            <div>
-              <div class="font-medium text-gray-900">BBS Key is Valid</div>
-              <div class="text-sm text-gray-500">Validating BBS+ signature key</div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 7</div>
-        </div>
-
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-          <div class="flex items-center space-x-3">
-            <div class="text-2xl" id="verification_result">⏳</div>
-            <div>
-              <div class="font-medium text-gray-900">Signature matches Messages</div>
-              <div class="text-sm text-gray-500">Final cryptographic verification</div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Step 8</div>
-        </div>
-
-        <!-- Final Result -->
-        <div class="flex items-center justify-between p-6 border-2 border-tenant-primary rounded-lg bg-tenant-light">
-          <div class="flex items-center space-x-3">
-            <div class="text-3xl" id="verification_result_all">⏳</div>
-            <div>
-              <div class="font-bold text-tenant-text text-lg">VERIFICATION RESULT</div>
-              <div class="text-sm text-gray-600">Overall verification outcome</div>
-            </div>
-          </div>
-          <div class="text-xs bg-tenant-primary text-white px-3 py-1 rounded-full font-semibold">FINAL</div>
-        </div>
-      </div>
+  <!-- LEFT SIDE: QR Code Display -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-tenant-text flex items-center">
+        <i class="fas fa-qrcode text-tenant-primary mr-2"></i>
+        Verification Request QR Code
+      </h3>
+      <p class="text-sm text-gray-600 mt-1">Student scans this code to initiate verification</p>
     </div>
+    
+    <div class="p-6">
+      {% if img_data %}
+        <div class="text-center">
+          <div class="bg-gray-50 rounded-lg p-6 inline-block">
+            <img id="picture" src="data:image/png;base64,{{ img_data }}" class="mx-auto max-w-full h-auto" style="max-width: 300px;" />
+          </div>
+          <p class="text-sm text-gray-600 mt-4">Ready for scanning</p>
+        </div>
+      {% else %}
+        <div class="text-center py-12">
+          <div class="bg-gray-100 rounded-lg p-8">
+            <i class="fas fa-qrcode text-4xl text-gray-400 mb-4"></i>
+            <p class="text-gray-500">Generate verification request to display QR code</p>
+            <button class="mt-4 bg-tenant-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors">
+              Generate QR Code
+            </button>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 
-    <!-- Status Legend -->
-    <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-      <h4 class="font-semibold text-gray-900 mb-3">Status Legend</h4>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-        <div class="flex items-center space-x-2">
-          <span class="text-xl">⏳</span>
-          <span class="text-gray-600">Pending verification</span>
+  <!-- RIGHT SIDE: Real-time Verification Status -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-tenant-text flex items-center">
+        <i class="fas fa-tasks text-tenant-primary mr-2"></i>
+        Real-time Verification Process
+      </h3>
+      <p class="text-sm text-gray-600 mt-1">Monitor each step of the verification process</p>
+    </div>
+    
+    <div class="p-6">
+      <div class="space-y-3">
+        <!-- Verification Steps -->
+        <div class="grid gap-3">
+          
+          <div class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-2">
+              <div class="text-sm" id="presentation_requested">⏳</div>
+              <div class="font-medium text-gray-900 text-xs">Presentation Requested</div>
+            </div>
+            <div class="text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">1</div>
+          </div>
+
+          <div class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-2">
+              <div class="text-sm" id="key_extraction">⏳</div>
+              <div class="font-medium text-gray-900 text-xs">Keys Extracted</div>
+            </div>
+            <div class="text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">2</div>
+          </div>
+
+          <div class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-2">
+              <div class="text-sm" id="signature_verification">⏳</div>
+              <div class="font-medium text-gray-900 text-xs">Holder Key Verified</div>
+            </div>
+            <div class="text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">3</div>
+          </div>
+
+          <div class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-2">
+              <div class="text-sm" id="issuer_pub_key_verification">⏳</div>
+              <div class="font-medium text-gray-900 text-xs">Issuer Key Trusted</div>
+            </div>
+            <div class="text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">4</div>
+          </div>
+
+          <div class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-2">
+              <div class="text-sm" id="mandatory_fields_verification">⏳</div>
+              <div class="font-medium text-gray-900 text-xs">Fields Complete</div>
+            </div>
+            <div class="text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">5</div>
+          </div>
+
+          <div class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-2">
+              <div class="text-sm" id="credential_validity_status">⏳</div>
+              <div class="font-medium text-gray-900 text-xs">Not Revoked</div>
+            </div>
+            <div class="text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">6</div>
+          </div>
+
+          <div class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-2">
+              <div class="text-sm" id="issuer_bbs_key_verification">⏳</div>
+              <div class="font-medium text-gray-900 text-xs">BBS Key Valid</div>
+            </div>
+            <div class="text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">7</div>
+          </div>
+
+          <div class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+            <div class="flex items-center space-x-2">
+              <div class="text-sm" id="verification_result">⏳</div>
+              <div class="font-medium text-gray-900 text-xs">Signature Valid</div>
+            </div>
+            <div class="text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">8</div>
+          </div>
+
+          <!-- Final Result -->
+          <div class="flex items-center justify-between p-4 border-2 border-tenant-primary rounded-lg bg-tenant-light mt-3">
+            <div class="flex items-center space-x-3">
+              <div class="text-2xl" id="verification_result_all">⏳</div>
+              <div>
+                <div class="font-bold text-tenant-text text-base">VERIFICATION RESULT</div>
+                <div class="text-xs text-gray-600">Overall verification outcome</div>
+              </div>
+            </div>
+            <div class="text-xs bg-tenant-primary text-white px-2 py-1 rounded-full font-semibold">FINAL</div>
+          </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <span class="text-xl">✅</span>
-          <span class="text-gray-600">Verification successful</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <span class="text-xl">⛔</span>
-          <span class="text-gray-600">Verification failed</span>
+        
+        <!-- Status Legend -->
+        <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+          <h4 class="font-semibold text-gray-900 mb-2 text-sm">Status Legend</h4>
+          <div class="grid grid-cols-1 gap-2 text-xs">
+            <div class="flex items-center space-x-2">
+              <span class="text-base">⏳</span>
+              <span class="text-gray-600">Pending verification</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-base">✅</span>
+              <span class="text-gray-600">Verification successful</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-base">⛔</span>
+              <span class="text-gray-600">Verification failed</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -180,28 +176,22 @@
 
 <script type="text/javascript" charset="utf-8">
   function updateImagePath(id, condition, allowChangeFromSuccess = true) {
-    // Define the text for each condition
     const texts = {
       loading: "⏳",
-      success: "✅",
+      success: "✅", 
       error: "⛔",
     };
 
-    // Find the element by ID
     const element = document.getElementById(id);
 
-    // Check if the element exists
     if (element) {
-      // Check if the current text is success and allowChangeFromSuccess is false
       if (element.innerText === texts.success && !allowChangeFromSuccess) {
         return;
       }
 
-      // Update the text content if the condition is valid
       if (texts[condition]) {
         element.innerText = texts[condition];
         
-        // Add visual feedback by updating the parent container
         const parentDiv = element.closest('.border');
         if (parentDiv) {
           parentDiv.classList.remove('bg-gray-50', 'bg-green-50', 'bg-red-50');
@@ -214,9 +204,7 @@
           }
         }
       } else {
-        console.error(
-          "Invalid condition provided. Use 'loading', 'success', or 'error'."
-        );
+        console.error("Invalid condition provided. Use 'loading', 'success', or 'error'.");
       }
     } else {
       console.error(`Element with ID "${id}" not found.`);
@@ -248,7 +236,6 @@
   }
 
   $(document).ready(function () {
-    // Connect to the Socket.IO server.
     var socket = io();
 
     socket.on("presentation_requested", function (msg) {
