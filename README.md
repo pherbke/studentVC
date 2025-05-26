@@ -33,8 +33,9 @@ The project consists of four main components:
 
 1. **Android Application** (`/android`): [Native Android implementation](https://developer.android.com/compose) with credential storage and verification.
 2. **iOS Application** (`/ios`): Native iOS implementation with secure credential management.
-3. **Backend Services** (`/backend`): Server-side implementation for credential issuance and verification.
+3. **Backend Services** (`/backend`): Multi-tenant server-side implementation for credential issuance and verification.
 4. **BBS Core Library** (`/bbs-core`): Core cryptographic library implementing BBS+ signatures.
+5. **CI/CD Pipeline** (`/.github/workflows`): Automated testing, building, and deployment for production environments.
 
 ## Installation & Setup
 
@@ -104,5 +105,58 @@ Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 ## Acknowledgements
 
 This project was developed as part of the Internet of Services Lab (IoSL) at TU Berlin, under the supervision of Prof. Dr. Axel Küpper.
+
+## 🚀 CI/CD & Production Deployment
+
+StudentVC includes a comprehensive CI/CD pipeline for automated testing, building, and deployment to staging and production environments.
+
+### Quick Setup
+
+```bash
+# Set up CI/CD pipeline
+./scripts/setup-ci-cd.sh
+
+# Start multi-tenant development environment
+./scripts/dev-multi-tenant.sh
+```
+
+### Pipeline Features
+
+- **🧪 Automated Testing**: Unit tests, integration tests, and security scans
+- **🏗️ Multi-Platform Builds**: Docker images for AMD64 and ARM64 architectures  
+- **🎯 Multi-Environment**: Separate staging and production deployments
+- **🏫 University-Specific**: Independent deployments for TU Berlin and FU Berlin
+- **📊 Health Monitoring**: Automated health checks and readiness probes
+- **🔄 Rollback Support**: Easy rollback to previous versions
+- **⚡ Auto-Scaling**: Horizontal pod autoscaling based on CPU/memory usage
+
+### Deployment Environments
+
+| Environment | TU Berlin | FU Berlin | Purpose |
+|-------------|-----------|-----------|---------|
+| **Staging** | `tu-berlin-staging.studentvc.org` | `fu-berlin-staging.studentvc.org` | Testing & validation |
+| **Production** | `tu-berlin.studentvc.org` | `fu-berlin.studentvc.org` | Live university instances |
+
+### Manual Deployment Triggers
+
+```bash
+# Deploy to staging
+gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=staging -f university=both
+
+# Deploy specific university to production  
+gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=production -f university=tu-berlin
+
+# Emergency rollback
+gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=rollback
+```
+
+### Required GitHub Secrets
+
+Set these in your repository settings for automated deployments:
+
+- `KUBE_CONFIG_STAGING`: Base64 encoded kubeconfig for staging cluster
+- `KUBE_CONFIG_PRODUCTION`: Base64 encoded kubeconfig for production cluster  
+- `DATABASE_URL_STAGING`: PostgreSQL connection string for staging
+- `DATABASE_URL_PRODUCTION`: PostgreSQL connection string for production
 
 For questions or further information, please contact Patrick Herbke p.herbke#at##tu-berlin.de.

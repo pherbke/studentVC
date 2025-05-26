@@ -1,0 +1,140 @@
+Here is a **tailored development prompt for the StudentVC project**, aligned with your X.509, BBS+, ESI, and credential status integration goals. This prompt mirrors the structure and discipline of your React prompt, adjusted to support backend/API/identity workflows.
+
+---
+
+# 🛡️ Cursor Development Rules & AI Collaboration Guide – StudentVC
+
+## 🧠 Core Mindset
+
+1. **Trust Through Simplicity**  
+   Build clear, auditable, and secure identity infrastructure. Use W3C standards and verifiable cryptography without over-complication.
+2. **Build on What Exists**  
+   Extend and harden existing BBS+/VC code. Never replace functioning components without an explicit architectural reason.
+3. **Identity is Security**  
+   Think like a cryptographer. All keys, identifiers, and signatures must be verifiable by external parties—now and long-term.
+4. **Every Bit Matters**  
+   This is academic infrastructure. Treat each credential, status bit, and certificate as mission-critical.
+
+---
+
+## 📚 Context-Aware Development
+
+### Documentation First
+Before any work:
+- Load and validate `README.md`, `backend/README.md`, `docs/technical.md`, `docs/architecture.md`, `tasks/tasks.md`
+- If conflicting details exist between credential formats, schema usage, or key bindings, **pause and ask** for clarification.
+
+### Identity Architecture Awareness
+- Respect credential lifecycle: Issuer → Wallet → Verifier → Revocation.
+- Do not hardcode identifiers or keys. Use `did:key`, `did:web`, or `did:shac` consistently.
+- Always understand how an entity (Holder, Issuer, Verifier) proves who they are.
+
+---
+
+## 🎯 Task Execution Protocol
+
+### Task Understanding
+1. Identify the nature of the task:
+   - Is it schema-related? Key-related? Identity binding?
+   - Does it affect the revocation system or cryptographic routines?
+
+2. Check Dependencies:
+   - What Flask routes, frontend interfaces, or credential templates does the task touch?
+
+3. Validate Side Effects:
+   - Does it break selective disclosure?
+   - Will it impact the issuer’s certificate trust path?
+
+### Change Discipline
+Before writing code:
+- Announce plan with:  
+  `Confirming understanding: Task = [task], based on [source]. Will start with [step].`
+- Implement in small, traceable blocks.
+- Validate cryptographic changes with test vectors or real wallet interactions.
+
+---
+
+## 🔏 Cryptographic & Identity Policy
+
+1. **BBS+ Only**  
+   All verifiable credentials and selective disclosure mechanisms use BBS+ signatures unless explicitly updated.
+
+2. **X.509 Integration**  
+   - Use `cryptography.x509` to load, verify, and bind certificates to `did:web` or `did:shac`.
+   - Update issuer metadata to include certificate information (as PEM, thumbprint, or URI).
+   - Validate Verifier's trust in the certificate chain (GÉANT or DFN CA).
+
+3. **VC Structure**
+   - Follow W3C VCDM 2.0.
+   - Every VC must have:
+     - `@context`
+     - `type`
+     - `issuer` (with DID + optional X.509 link)
+     - `credentialSubject`
+     - `proof`
+     - `credentialStatus` (where applicable)
+
+4. **Status List**
+   - If status is supported, reference the URI or identifier of the Verkle/IPFS-based revocation mechanism.
+   - Accept states: `active`, `revoked`, `suspended`.
+
+---
+
+## 🧪 Testing & Verification
+
+1. **TDD For Crypto**
+   - Write verification routines before refactoring signature logic.
+   - Use realistic BBS+ credentials in test vectors.
+
+2. **End-to-End Credentials**
+   - Test VC issuance + QR code scan + OID4VP presentation + verification + revocation check.
+
+3. **VC Roundtrip**
+   - Ensure that any issued credential is:
+     - Cryptographically valid,
+     - Selectively disclosable,
+     - Verifiable with DID and X.509,
+     - Status-checkable via shared API.
+
+---
+
+## 🗃️ File & Module Structure Rules
+
+- `src/issuer/` – All credential issuance, keygen, JWT, and X.509 logic.
+- `src/verifier/` – All VC verification, DID resolution, nonce validation, and trust anchor logic.
+- `src/validate/` – VC revocation logic. Replace or augment SQL with shared status list.
+- `bbs-core/` – Do not alter unless cryptographically necessary.
+- `instance/` – Holds private keys, X.509 certs. Never hardcode paths; use `Flask.config`.
+
+---
+
+## ✅ AI Output Expectations
+
+Before coding:
+- `Confirming understanding: Goal is [X]. Proceeding with [Y]. Based on [source].`
+
+Output must include:
+- Code change
+- Explanation
+- Security and side-effect review
+
+If proposing new schema, pattern, or storage:
+- Reference relevant W3C/EBSI standards
+- Use real credential examples
+- Document in `/docs/` and update test suite
+
+---
+
+## 📄 Versioning & Documentation
+
+- All architectural changes update `docs/architecture.md`.
+- Each feature/fix updates `docs/status.md` and `tasks/tasks.md`.
+- `README.md` must stay aligned with current flows (especially credential examples).
+- Use `fixes/` if complex crypto or DID debugging occurs.
+
+---
+
+### 🚨 Reminder
+You are building academic-grade infrastructure for millions of students across Europe. Every signature, claim, and status bit must be verifiable for decades. Code like it matters—because it does.
+
+---

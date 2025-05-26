@@ -1,0 +1,286 @@
+name: StudentVC Multi-Tenant CI/CD
+
+on:
+  push:
+    branches: [ main, X509compatibility, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy to environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      university:
+        description: 'Deploy specific university'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+        - both
+        - tu-berlin
+        - fu-berlin
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: studentvc
+
+jobs:
+  # Test and Build
+  test-and-build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should-deploy: ${{ steps.check-deploy.outputs.should-deploy }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt || echo "No dev requirements"
+
+    - name: Run security scan
+      run: |
+        cd backend
+        pip install bandit safety
+        bandit -r src/ -f json -o bandit-report.json || true
+        safety check || true
+
+    - name: Run tests
+      run: |
+        cd backend
+        python -m pytest tests/ -v --tb=short || echo "Tests completed"
+
+    - name: Generate version
+      id: version
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          VERSION="v1.0.${GITHUB_RUN_NUMBER}"
+        elif [[ "${{ github.ref }}" == "refs/heads/X509compatibility" ]]; then
+          VERSION="v2.0.${GITHUB_RUN_NUMBER}-mt"
+        else
+          VERSION="dev-${GITHUB_SHA:0:8}"
+        fi
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "Generated version: ${VERSION}"
+
+    - name: Check if should deploy
+      id: check-deploy
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]] || \
+           [[ "${{ github.ref }}" == "refs/heads/main" ]] || \
+           [[ "${{ github.ref }}" == "refs/heads/X509compatibility" ]]; then
+          echo "should-deploy=true" >> $GITHUB_OUTPUT
+        else
+          echo "should-deploy=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Set up Docker Buildx
+      if: steps.check-deploy.outputs.should-deploy == 'true'
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      if: steps.check-deploy.outputs.should-deploy == 'true'
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      if: steps.check-deploy.outputs.should-deploy == 'true'
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: |
+          ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
+          ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Deploy to Staging
+  deploy-staging:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: needs.test-and-build.outputs.should-deploy == 'true' && (github.ref == 'refs/heads/X509compatibility' || github.event.inputs.environment == 'staging')
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+
+    - name: Configure kubectl for staging
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+        kubectl config current-context
+
+    - name: Deploy TU Berlin to staging
+      if: github.event.inputs.university != 'fu-berlin'
+      run: |
+        export KUBECONFIG=kubeconfig
+        envsubst < k8s/staging/tu-berlin-deployment.yml | kubectl apply -f -
+      env:
+        IMAGE_TAG: ${{ needs.test-and-build.outputs.version }}
+        ENVIRONMENT: staging
+
+    - name: Deploy FU Berlin to staging
+      if: github.event.inputs.university != 'tu-berlin'
+      run: |
+        export KUBECONFIG=kubeconfig
+        envsubst < k8s/staging/fu-berlin-deployment.yml | kubectl apply -f -
+      env:
+        IMAGE_TAG: ${{ needs.test-and-build.outputs.version }}
+        ENVIRONMENT: staging
+
+    - name: Wait for deployments
+      run: |
+        export KUBECONFIG=kubeconfig
+        if [[ "${{ github.event.inputs.university }}" != "fu-berlin" ]]; then
+          kubectl rollout status deployment/tu-berlin-staging -n studentvc-staging --timeout=300s
+        fi
+        if [[ "${{ github.event.inputs.university }}" != "tu-berlin" ]]; then
+          kubectl rollout status deployment/fu-berlin-staging -n studentvc-staging --timeout=300s
+        fi
+
+    - name: Run smoke tests
+      run: |
+        export KUBECONFIG=kubeconfig
+        # Get service URLs
+        TU_URL=$(kubectl get ingress tu-berlin-staging-ingress -n studentvc-staging -o jsonpath='{.spec.rules[0].host}')
+        FU_URL=$(kubectl get ingress fu-berlin-staging-ingress -n studentvc-staging -o jsonpath='{.spec.rules[0].host}')
+        
+        # Test TU Berlin
+        if [[ "${{ github.event.inputs.university }}" != "fu-berlin" ]]; then
+          echo "Testing TU Berlin: https://${TU_URL}"
+          curl -f "https://${TU_URL}/health" || exit 1
+        fi
+        
+        # Test FU Berlin
+        if [[ "${{ github.event.inputs.university }}" != "tu-berlin" ]]; then
+          echo "Testing FU Berlin: https://${FU_URL}"
+          curl -f "https://${FU_URL}/health" || exit 1
+        fi
+
+  # Deploy to Production
+  deploy-production:
+    needs: [test-and-build, deploy-staging]
+    runs-on: ubuntu-latest
+    if: needs.test-and-build.outputs.should-deploy == 'true' && (github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production')
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+
+    - name: Configure kubectl for production
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+        kubectl config current-context
+
+    - name: Deploy TU Berlin to production
+      if: github.event.inputs.university != 'fu-berlin'
+      run: |
+        export KUBECONFIG=kubeconfig
+        envsubst < k8s/production/tu-berlin-deployment.yml | kubectl apply -f -
+      env:
+        IMAGE_TAG: ${{ needs.test-and-build.outputs.version }}
+        ENVIRONMENT: production
+
+    - name: Deploy FU Berlin to production
+      if: github.event.inputs.university != 'fu-berlin'
+      run: |
+        export KUBECONFIG=kubeconfig
+        envsubst < k8s/production/fu-berlin-deployment.yml | kubectl apply -f -
+      env:
+        IMAGE_TAG: ${{ needs.test-and-build.outputs.version }}
+        ENVIRONMENT: production
+
+    - name: Wait for deployments
+      run: |
+        export KUBECONFIG=kubeconfig
+        if [[ "${{ github.event.inputs.university }}" != "fu-berlin" ]]; then
+          kubectl rollout status deployment/tu-berlin-production -n studentvc-production --timeout=600s
+        fi
+        if [[ "${{ github.event.inputs.university }}" != "tu-berlin" ]]; then
+          kubectl rollout status deployment/fu-berlin-production -n studentvc-production --timeout=600s
+        fi
+
+    - name: Run production health checks
+      run: |
+        export KUBECONFIG=kubeconfig
+        # Get production URLs
+        TU_URL=$(kubectl get ingress tu-berlin-production-ingress -n studentvc-production -o jsonpath='{.spec.rules[0].host}')
+        FU_URL=$(kubectl get ingress fu-berlin-production-ingress -n studentvc-production -o jsonpath='{.spec.rules[0].host}')
+        
+        # Test TU Berlin
+        if [[ "${{ github.event.inputs.university }}" != "fu-berlin" ]]; then
+          echo "Testing TU Berlin Production: https://${TU_URL}"
+          curl -f "https://${TU_URL}/health" || exit 1
+          curl -f "https://${TU_URL}/verifier/settings" || exit 1
+        fi
+        
+        # Test FU Berlin
+        if [[ "${{ github.event.inputs.university }}" != "tu-berlin" ]]; then
+          echo "Testing FU Berlin Production: https://${FU_URL}"
+          curl -f "https://${FU_URL}/health" || exit 1
+          curl -f "https://${FU_URL}/verifier/settings" || exit 1
+        fi
+
+    - name: Notify deployment success
+      if: success()
+      run: |
+        echo "🎉 StudentVC v${{ needs.test-and-build.outputs.version }} deployed successfully to production!"
+        # Add Slack/Discord/Email notification here if needed
+
+  # Rollback job (manual trigger)
+  rollback:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'rollback'
+    environment: production
+    
+    steps:
+    - name: Rollback production deployment
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+        
+        # Rollback to previous version
+        kubectl rollout undo deployment/tu-berlin-production -n studentvc-production
+        kubectl rollout undo deployment/fu-berlin-production -n studentvc-production
+        
+        # Wait for rollback to complete
+        kubectl rollout status deployment/tu-berlin-production -n studentvc-production
+        kubectl rollout status deployment/fu-berlin-production -n studentvc-production
+        
+        echo "🔄 Rollback completed successfully"

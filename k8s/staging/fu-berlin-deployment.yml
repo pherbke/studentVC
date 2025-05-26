@@ -1,0 +1,160 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fu-berlin-config
+  namespace: studentvc-staging
+data:
+  TENANT_NAME: "FU Berlin"
+  SERVER_URL: "https://fu-berlin-staging.studentvc.org"
+  ENVIRONMENT: "staging"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fu-berlin-secrets
+  namespace: studentvc-staging
+type: Opaque
+data:
+  # Base64 encoded secrets - replace with actual values
+  DATABASE_URL: cG9zdGdyZXNxbDovL3VzZXI6cGFzc0BkYi9zdHVkZW50dmM=
+  SECRET_KEY: c3VwZXItc2VjcmV0LWtleQ==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fu-berlin-staging
+  namespace: studentvc-staging
+  labels:
+    app: fu-berlin
+    environment: staging
+    university: fu-berlin
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: fu-berlin
+      environment: staging
+  template:
+    metadata:
+      labels:
+        app: fu-berlin
+        environment: staging
+        university: fu-berlin
+    spec:
+      containers:
+      - name: studentvc
+        image: ghcr.io/pherbke/studentvc:${IMAGE_TAG}
+        ports:
+        - containerPort: 8080
+          name: http
+        envFrom:
+        - configMapRef:
+            name: fu-berlin-config
+        - secretRef:
+            name: fu-berlin-secrets
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: instance-storage
+          mountPath: /src/instance
+        - name: logs
+          mountPath: /var/log/studentvc
+      volumes:
+      - name: instance-storage
+        persistentVolumeClaim:
+          claimName: fu-berlin-staging-pvc
+      - name: logs
+        emptyDir: {}
+      imagePullSecrets:
+      - name: ghcr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fu-berlin-staging-service
+  namespace: studentvc-staging
+spec:
+  selector:
+    app: fu-berlin
+    environment: staging
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fu-berlin-staging-ingress
+  namespace: studentvc-staging
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "16m"
+spec:
+  tls:
+  - hosts:
+    - fu-berlin-staging.studentvc.org
+    secretName: fu-berlin-staging-tls
+  rules:
+  - host: fu-berlin-staging.studentvc.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: fu-berlin-staging-service
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fu-berlin-staging-pvc
+  namespace: studentvc-staging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 10Gi

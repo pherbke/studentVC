@@ -1,0 +1,30 @@
+2025-04-05 17:41:25,127 - __main__ - INFO - Starting Student Data API on port 5000
+2025-04-05 17:41:25,127 - __main__ - INFO - Debug mode: True
+2025-04-05 17:41:25,127 - __main__ - INFO - Shibboleth URL: https://shibboleth.example.edu/metadata
+2025-04-05 17:41:25,127 - __main__ - INFO - Student DB API URL: https://university-db.example.edu/api
+2025-04-05 17:41:33,124 - __main__ - INFO - Starting Student Data API on port 8080
+2025-04-05 17:41:33,124 - __main__ - INFO - Debug mode: True
+2025-04-05 17:41:33,124 - __main__ - INFO - Shibboleth URL: https://shibboleth.example.edu/metadata
+2025-04-05 17:41:33,124 - __main__ - INFO - Student DB API URL: https://university-db.example.edu/api
+2025-04-05 17:41:33,250 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://192.168.178.122:8080
+2025-04-05 17:41:33,250 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-04-05 17:41:33,251 - werkzeug - INFO -  * Restarting with stat
+2025-04-05 17:41:33,388 - __main__ - INFO - Starting Student Data API on port 8080
+2025-04-05 17:41:33,388 - __main__ - INFO - Debug mode: True
+2025-04-05 17:41:33,388 - __main__ - INFO - Shibboleth URL: https://shibboleth.example.edu/metadata
+2025-04-05 17:41:33,388 - __main__ - INFO - Student DB API URL: https://university-db.example.edu/api
+2025-04-05 17:41:33,404 - werkzeug - WARNING -  * Debugger is active!
+2025-04-05 17:41:33,411 - werkzeug - INFO -  * Debugger PIN: 540-587-415
+2025-04-05 17:41:35,248 - __main__ - ERROR - Error connecting to Shibboleth service: HTTPSConnectionPool(host='shibboleth.example.edu', port=443): Max retries exceeded with url: /metadata/validate?session=SHIB_SESSION_12345 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x102333e00>: Failed to resolve 'shibboleth.example.edu' ([Errno 8] nodename nor servname provided, or not known)"))
+2025-04-05 17:41:35,248 - __main__ - WARNING - DEBUG MODE: Using mock Shibboleth session
+2025-04-05 17:41:35,587 - __main__ - ERROR - Error fetching employee data: HTTPSConnectionPool(host='university-db.example.edu', port=443): Max retries exceeded with url: /api/employees/E12345 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x102490550>: Failed to resolve 'university-db.example.edu' ([Errno 8] nodename nor servname provided, or not known)"))
+2025-04-05 17:41:35,587 - __main__ - WARNING - DEBUG MODE: Using mock employee data for E12345
+2025-04-05 17:41:35,588 - werkzeug - INFO - 127.0.0.1 - - [05/Apr/2025 17:41:35] "GET /api/v1/student/data HTTP/1.1" 200 -
+2025-04-05 17:41:41,171 - __main__ - ERROR - Error connecting to Shibboleth service: HTTPSConnectionPool(host='shibboleth.example.edu', port=443): Max retries exceeded with url: /metadata/validate?session=SHIB_SESSION_23456 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x102491950>: Failed to resolve 'shibboleth.example.edu' ([Errno 8] nodename nor servname provided, or not known)"))
+2025-04-05 17:41:41,171 - __main__ - WARNING - DEBUG MODE: Using mock Shibboleth session
+2025-04-05 17:41:41,173 - __main__ - ERROR - Error fetching employee data: HTTPSConnectionPool(host='university-db.example.edu', port=443): Max retries exceeded with url: /api/employees/E23456 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x102491d10>: Failed to resolve 'university-db.example.edu' ([Errno 8] nodename nor servname provided, or not known)"))
+2025-04-05 17:41:41,173 - __main__ - WARNING - DEBUG MODE: Using mock employee data for E23456
+2025-04-05 17:41:41,173 - werkzeug - INFO - 127.0.0.1 - - [05/Apr/2025 17:41:41] "GET /api/v1/student/data HTTP/1.1" 200 -

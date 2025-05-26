@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  tu-berlin-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - TENANT_NAME=TU Berlin
+      - SERVER_URL=https://localhost:8080
+      - ENVIRONMENT=test
+    volumes:
+      - ./backend/instance/tu-berlin-test:/instance
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  fu-berlin-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - TENANT_NAME=FU Berlin
+      - SERVER_URL=https://localhost:8081
+      - ENVIRONMENT=test
+    volumes:
+      - ./backend/instance/fu-berlin-test:/instance
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  test-runner:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./backend:/app
+      - ./backend/tests:/app/tests
+    command: |
+      sh -c "
+        echo 'Running tests...'
+        python -m pytest tests/ -v --tb=short
+        echo 'Running integration tests...'
+        python -m pytest tests/integration/ -v
+        echo 'Testing TU Berlin endpoint...'
+        curl -f http://tu-berlin-test:8080/health
+        echo 'Testing FU Berlin endpoint...'
+        curl -f http://fu-berlin-test:8080/health
+      "
+    depends_on:
+      tu-berlin-test:
+        condition: service_healthy
+      fu-berlin-test:
+        condition: service_healthy
+
+networks:
+  default:
+    driver: bridge

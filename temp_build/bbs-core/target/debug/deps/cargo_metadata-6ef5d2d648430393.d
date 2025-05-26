@@ -1,0 +1,9 @@
+/Users/patrickherbke/Documents/studentVC/bbs-core/target/debug/deps/libcargo_metadata-6ef5d2d648430393.rmeta: /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/lib.rs /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/dependency.rs /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/diagnostic.rs /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/errors.rs /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/messages.rs
+
+/Users/patrickherbke/Documents/studentVC/bbs-core/target/debug/deps/cargo_metadata-6ef5d2d648430393.d: /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/lib.rs /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/dependency.rs /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/diagnostic.rs /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/errors.rs /Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/messages.rs
+
+/Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/lib.rs:
+/Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/dependency.rs:
+/Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/diagnostic.rs:
+/Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/errors.rs:
+/Users/patrickherbke/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cargo_metadata-0.15.4/src/messages.rs:
