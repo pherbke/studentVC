@@ -127,7 +127,7 @@ def index():
         img = generate_qr_code(link)
         logger.info("QR code generated successfully")
         
-        # Create debug information for the template
+        # Create debug information for the template (always show for all submissions)
         debug_info = {
             "qr_url": link,
             "credential_data": full_credential_data,
