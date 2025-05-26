@@ -29,11 +29,11 @@ COPY --from=builder /bbs-core /bbs-core
 
 # Copy application files
 WORKDIR /
-COPY requirements.txt /
+COPY backend/requirements.txt /
 RUN pip install --no-cache-dir -r requirements.txt
-COPY main.py /
-COPY gunicorn.conf.py /
-COPY src/ /src/
+COPY backend/main.py /
+COPY backend/gunicorn.conf.py /
+COPY backend/src/ /src/
 
 # Run the Python service
 ENTRYPOINT ["python", "main.py"]
