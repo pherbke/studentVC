@@ -2,12 +2,16 @@ services:
   # Local development (default)
   tu-berlin-local:
     build:
-      context: .
+      context: ..
+      dockerfile: backend/Dockerfile
     environment:
-      - TENANT_NAME=TU Berlin
+      - TENANT_NAME=tu-berlin
       - ENVIRONMENT=local
       - FLASK_ENV=development
       - FLASK_DEBUG=1
+      - PORT=8080
+      - USE_NETWORK_IP=true
+      - NETWORK_IP=141.23.183.168
     volumes:
       - ./instance/tu-berlin-local:/instance
       - ./src:/src  # Live reload for source code
@@ -18,10 +22,14 @@ services:
 
   fu-berlin-local:
     build:
-      context: .
+      context: ..
+      dockerfile: backend/Dockerfile
     environment:
-      - TENANT_NAME=FU Berlin
+      - TENANT_NAME=fu-berlin
       - ENVIRONMENT=local
+      - PORT=8080
+      - USE_NETWORK_IP=true
+      - NETWORK_IP=141.23.183.168
     volumes:
       - ./instance/fu-berlin-local:/instance
     ports:
@@ -33,9 +41,9 @@ services:
   # Development environment (shared development/testing)
   tu-berlin-dev:
     build:
-      context: .
+      context: ..
     environment:
-      - TENANT_NAME=TU Berlin
+      - TENANT_NAME=tu-berlin
       - ENVIRONMENT=dev
       - UNIVERSITY_TYPE=technical
       - CREDENTIAL_SCHEMA_VERSION=v1.0-dev
@@ -61,9 +69,9 @@ services:
 
   fu-berlin-dev:
     build:
-      context: .
+      context: ..
     environment:
-      - TENANT_NAME=FU Berlin
+      - TENANT_NAME=fu-berlin
       - ENVIRONMENT=dev
       - UNIVERSITY_TYPE=comprehensive
       - CREDENTIAL_SCHEMA_VERSION=v1.0-dev
@@ -92,9 +100,9 @@ services:
   # Staging environment (pre-production simulation)
   tu-berlin-staging:
     build:
-      context: .
+      context: ..
     environment:
-      - TENANT_NAME=TU Berlin
+      - TENANT_NAME=tu-berlin
       - ENVIRONMENT=staging
       - UNIVERSITY_TYPE=technical
       - CREDENTIAL_SCHEMA_VERSION=v1.0
@@ -114,9 +122,9 @@ services:
 
   fu-berlin-staging:
     build:
-      context: .
+      context: ..
     environment:
-      - TENANT_NAME=FU Berlin
+      - TENANT_NAME=fu-berlin
       - ENVIRONMENT=staging
       - UNIVERSITY_TYPE=comprehensive
       - CREDENTIAL_SCHEMA_VERSION=v1.0
