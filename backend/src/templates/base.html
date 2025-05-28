@@ -102,19 +102,19 @@
               <i class="fas fa-home mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Home</span>
             </a>
-            <a href="/issuer" data-nav-link="/issuer" class="nav-item {% if request.endpoint and 'issuer' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+            <a href="/issuer" class="nav-item {% if request.endpoint and 'issuer' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
               <i class="fas fa-id-card mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Issuer</span>
             </a>
-            <a href="/verifier/" data-nav-link="/verifier/" class="nav-item {% if request.endpoint and 'verifier' in request.endpoint and 'settings' not in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+            <a href="/verifier/" class="nav-item {% if request.endpoint and 'verifier' in request.endpoint and 'settings' not in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
               <i class="fas fa-shield-alt mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Verifier</span>
             </a>
-            <a href="/verifier/settings" data-nav-link="/verifier/settings" class="nav-item {% if request.endpoint and 'settings' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+            <a href="/verifier/settings" class="nav-item {% if request.endpoint and 'settings' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
               <i class="fas fa-cog mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Settings</span>
             </a>
-            <a href="/validate/" data-nav-link="/validate/" class="nav-item {% if request.endpoint and 'validate' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+            <a href="/validate/" class="nav-item {% if request.endpoint and 'validate' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
               <i class="fas fa-chart-line mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Status</span>
             </a>
@@ -122,7 +122,7 @@
               <i class="fas fa-file-alt mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Logs</span>
             </a>
-            <a href="/stats" data-nav-link="/stats" class="nav-item {% if request.endpoint and 'stats' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
+            <a href="/stats" class="nav-item {% if request.endpoint and 'stats' in request.endpoint %}bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary{% else %}text-tenant-text hover:text-tenant-primary hover:bg-tenant-light{% endif %} transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium flex items-center group">
               <i class="fas fa-chart-bar mr-2 text-sm group-hover:scale-110 transition-transform"></i>
               <span>Stats</span>
             </a>
@@ -419,21 +419,34 @@
       document.head.appendChild(style);
       
       // Smooth Navigation System - Prevents header reload
-      class SmoothNavigation {
-        constructor() {
-          this.currentPage = window.location.pathname;
-          this.contentArea = document.querySelector('main');
-          this.isLoading = false;
-          this.init();
-        }
+      if (!window.SmoothNavigation) {
+        window.SmoothNavigation = class {
+          constructor() {
+            this.currentPage = window.location.pathname;
+            this.contentArea = document.querySelector('main');
+            this.isLoading = false;
+            this.init();
+          }
         
-        init() {
+          init() {
           // Intercept navigation clicks
           document.addEventListener('click', (e) => {
             const navLink = e.target.closest('[data-nav-link]');
             if (navLink && !e.ctrlKey && !e.metaKey) {
-              e.preventDefault();
               const url = navLink.getAttribute('data-nav-link');
+              
+              // Skip AJAX navigation for pages with complex scripts
+              // These pages need full reload to ensure script execution
+              const complexPages = ['/issuer', '/verifier/settings', '/verifier/', '/stats', '/validate/'];
+              const isComplexPage = complexPages.some(page => url.includes(page));
+              
+              if (isComplexPage) {
+                console.log('🔄 Complex page detected, using full navigation:', url);
+                window.location.href = url;
+                return;
+              }
+              
+              e.preventDefault();
               this.navigateTo(url);
             }
           });
@@ -447,9 +460,9 @@
           
           // Set initial state
           history.replaceState({ page: this.currentPage }, '', this.currentPage);
-        }
+          }
         
-        async navigateTo(url) {
+          async navigateTo(url) {
           if (this.isLoading || url === this.currentPage) return;
           
           this.isLoading = true;
@@ -466,9 +479,9 @@
           } finally {
             this.isLoading = false;
           }
-        }
+          }
         
-        async loadContent(url, showLoading = true) {
+          async loadContent(url, showLoading = true) {
           if (showLoading) {
             this.showLoadingState();
           }
@@ -508,13 +521,13 @@
           } catch (error) {
             throw error;
           }
-        }
+          }
         
-        showLoadingState() {
+          showLoadingState() {
           this.contentArea.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
-        }
+          }
         
-        updateActiveState(url) {
+          updateActiveState(url) {
           // Remove active state from all nav items
           document.querySelectorAll('.nav-item').forEach(item => {
             item.className = item.className.replace(/bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary/g, 'text-tenant-text hover:text-tenant-primary hover:bg-tenant-light');
@@ -525,9 +538,9 @@
           if (activeLink) {
             activeLink.className = activeLink.className.replace(/text-tenant-text hover:text-tenant-primary hover:bg-tenant-light/g, 'bg-tenant-primary text-tenant-primary-text border-b-2 border-tenant-primary');
           }
-        }
+          }
         
-        initializePageScripts() {
+          initializePageScripts() {
           // Reinitialize any page-specific functionality
           const event = new CustomEvent('pageLoaded');
           document.dispatchEvent(event);
@@ -537,18 +550,54 @@
           scripts.forEach(script => {
             if (script.innerHTML) {
               try {
-                eval(script.innerHTML);
+                // Create new script element to ensure proper execution context
+                const newScript = document.createElement('script');
+                newScript.textContent = script.innerHTML;
+                
+                // Copy attributes if any
+                Array.from(script.attributes).forEach(attr => {
+                  newScript.setAttribute(attr.name, attr.value);
+                });
+                
+                // Replace old script with new one
+                script.parentNode.replaceChild(newScript, script);
+                console.log('✅ Executed page script successfully');
               } catch (e) {
-                console.error('Error executing page script:', e);
+                console.error('❌ Error executing page script:', e);
+                
+                // Fallback: try direct eval
+                try {
+                  eval(script.innerHTML);
+                  console.log('✅ Fallback eval succeeded');
+                } catch (evalError) {
+                  console.error('❌ Fallback eval also failed:', evalError);
+                }
               }
             }
           });
-        }
+          
+          // Force re-initialization of any window functions that might have been defined
+          setTimeout(() => {
+            if (typeof window.switchTab === 'function') {
+              console.log('✅ switchTab function available after navigation');
+            }
+            if (typeof window.switchCredentialTab === 'function') {
+              console.log('✅ switchCredentialTab function available after navigation');
+            }
+            if (typeof window.toggleCategory === 'function') {
+              console.log('✅ toggleCategory function available after navigation');
+            }
+          }, 100);
+          }
+        };
       }
       
       // Initialize smooth navigation
       document.addEventListener('DOMContentLoaded', () => {
-        new SmoothNavigation();
+        if (window.SmoothNavigation && !window.smoothNavigationInitialized) {
+          new window.SmoothNavigation();
+          window.smoothNavigationInitialized = true;
+        }
       });
     </script>
 

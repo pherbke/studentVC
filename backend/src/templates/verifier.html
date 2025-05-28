@@ -158,9 +158,272 @@
   </div>
 </div>
 
+<!-- Verifier Configuration Information (Collapsible) -->
+<div class="mt-6 bg-white rounded-lg shadow-sm border border-gray-200">
+  <div class="px-6 py-4 border-b border-gray-200 cursor-pointer" onclick="toggleVerifierInfo()">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fas fa-info-circle text-tenant-primary mr-2"></i>
+        <h3 class="text-lg font-semibold text-tenant-text">Verifier Configuration & URLs</h3>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="text-sm text-gray-500">Click to expand</span>
+        <i id="verifier-info-chevron" class="fas fa-chevron-down transition-transform duration-200"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div id="verifier-info-content" class="hidden">
+    <div class="p-6 space-y-4">
+      
+      <!-- Network Configuration Status -->
+      <div class="bg-tenant-light rounded-lg p-4">
+        <h4 class="font-semibold text-tenant-text mb-3 flex items-center">
+          <i class="fas fa-network-wired text-tenant-primary mr-2"></i>
+          Network Configuration
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <span class="font-medium text-gray-700">Verifier URL:</span>
+            <code class="block bg-white px-2 py-1 rounded border text-xs mt-1" id="verifier-url">{{ config.get('NGROK_VERIFIER_URL', config.get('SERVER_URL', 'Not configured')) }}/verifier</code>
+          </div>
+          <div>
+            <span class="font-medium text-gray-700">Direct Post URL:</span>
+            <code class="block bg-white px-2 py-1 rounded border text-xs mt-1" id="verifier-direct-post">{{ config.get('NGROK_VERIFIER_URL', config.get('SERVER_URL', 'Not configured')) }}/verifier/direct_post</code>
+          </div>
+          <div>
+            <span class="font-medium text-gray-700">Authorization URL:</span>
+            <code class="block bg-white px-2 py-1 rounded border text-xs mt-1" id="verifier-authorize">{{ config.get('NGROK_VERIFIER_URL', config.get('SERVER_URL', 'Not configured')) }}/verifier/authorize</code>
+          </div>
+          <div>
+            <span class="font-medium text-gray-700">Network Mode:</span>
+            {% if config.get('NGROK_VERIFIER_URL') %}
+              <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Ngrok Tunnel</span>
+            {% else %}
+              <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Local Network</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification Requirements -->
+      <div class="bg-blue-50 rounded-lg p-4">
+        <h4 class="font-semibold text-tenant-text mb-3 flex items-center">
+          <i class="fas fa-shield-check text-tenant-primary mr-2"></i>
+          Required Verification Fields ({{ mandatory_fields|length }})
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+          {% for field in mandatory_fields %}
+          <div class="bg-white rounded px-2 py-1 border flex items-center">
+            <i class="fas fa-check-circle text-green-500 mr-1"></i>
+            <code class="text-gray-700">{{ field }}</code>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="mt-3 text-xs text-gray-600">
+          Students must provide all these fields during verification. 
+          <a href="/verifier/settings" class="text-tenant-primary hover:underline">Configure requirements →</a>
+        </div>
+      </div>
+
+      <!-- Protocol Information -->
+      <div class="bg-purple-50 rounded-lg p-4">
+        <h4 class="font-semibold text-tenant-text mb-3 flex items-center">
+          <i class="fas fa-exchange-alt text-tenant-primary mr-2"></i>
+          OpenID4VP Protocol Details
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div>
+            <span class="font-medium text-gray-700">Protocol:</span>
+            <code class="block bg-white px-2 py-1 rounded border mt-1">OpenID for Verifiable Presentations</code>
+          </div>
+          <div>
+            <span class="font-medium text-gray-700">Response Mode:</span>
+            <code class="block bg-white px-2 py-1 rounded border mt-1">direct_post</code>
+          </div>
+          <div>
+            <span class="font-medium text-gray-700">Response Type:</span>
+            <code class="block bg-white px-2 py-1 rounded border mt-1">vp_token</code>
+          </div>
+          <div>
+            <span class="font-medium text-gray-700">Signature Algorithm:</span>
+            <code class="block bg-white px-2 py-1 rounded border mt-1">BBS+ (Selective Disclosure)</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Status -->
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h4 class="font-semibold text-tenant-text mb-3 flex items-center">
+          <i class="fas fa-heartbeat text-tenant-primary mr-2"></i>
+          Real-time Status
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="text-center">
+            <div class="text-2xl mb-1" id="verifier-status">🟢</div>
+            <div class="font-medium">Verifier Status</div>
+            <div class="text-gray-600">Ready to verify</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl mb-1" id="connection-status">🔗</div>
+            <div class="font-medium">Network Status</div>
+            <div class="text-gray-600">Connected</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl mb-1" id="presentation-count">📊</div>
+            <div class="font-medium">Presentations</div>
+            <div class="text-gray-600" id="presentation-counter">0 today</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Troubleshooting -->
+      <div class="bg-yellow-50 rounded-lg p-4">
+        <h4 class="font-semibold text-tenant-text mb-3 flex items-center">
+          <i class="fas fa-tools text-tenant-primary mr-2"></i>
+          Troubleshooting
+        </h4>
+        <div class="text-xs space-y-2">
+          <div class="flex items-start space-x-2">
+            <i class="fas fa-mobile-alt text-gray-500 mt-0.5"></i>
+            <div>
+              <strong>Mobile App Issues:</strong> Ensure the verifier URL is accessible from external networks (use ngrok for local development)
+            </div>
+          </div>
+          <div class="flex items-start space-x-2">
+            <i class="fas fa-shield-alt text-gray-500 mt-0.5"></i>
+            <div>
+              <strong>Verification Failures:</strong> Check that all required fields are configured and the issuer's public key is trusted
+            </div>
+          </div>
+          <div class="flex items-start space-x-2">
+            <i class="fas fa-clock text-gray-500 mt-0.5"></i>
+            <div>
+              <strong>Timeout Issues:</strong> Credentials may have expired or network connectivity problems between mobile app and verifier
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CRITICAL FIX: Make toggle functions available immediately -->
+  <script>
+    // Toggle verifier info section - AVAILABLE IMMEDIATELY
+    window.toggleVerifierInfo = function() {
+      console.log('🔽 toggleVerifierInfo called IMMEDIATELY');
+      
+      try {
+        const content = document.getElementById('verifier-info-content');
+        const chevron = document.getElementById('verifier-info-chevron');
+        
+        if (!content) {
+          console.error('❌ Could not find verifier-info-content element');
+          return;
+        }
+        
+        if (!chevron) {
+          console.error('❌ Could not find verifier-info-chevron element');
+          return;
+        }
+        
+        console.log('📋 Content hidden:', content.classList.contains('hidden'));
+        
+        // Toggle visibility with smooth transition
+        if (content.classList.contains('hidden')) {
+          content.classList.remove('hidden');
+          chevron.classList.add('rotate-180');
+          console.log('✅ Expanded verifier info');
+        } else {
+          content.classList.add('hidden');
+          chevron.classList.remove('rotate-180');
+          console.log('✅ Collapsed verifier info');
+        }
+      } catch (error) {
+        console.error('❌ Error in toggleVerifierInfo:', error);
+      }
+    };
+
+    // Toggle debug logs section - AVAILABLE IMMEDIATELY
+    window.toggleDebugLogs = function() {
+      console.log('🔽 toggleDebugLogs called IMMEDIATELY');
+      
+      try {
+        const container = document.getElementById('debug-logs-container');
+        const chevron = document.getElementById('debug-chevron');
+        
+        if (!container) {
+          console.error('❌ Could not find debug-logs-container element');
+          return;
+        }
+        
+        if (!chevron) {
+          console.error('❌ Could not find debug-chevron element');
+          return;
+        }
+        
+        console.log('📋 Debug logs hidden:', container.classList.contains('hidden'));
+        
+        // Toggle visibility with smooth transition
+        if (container.classList.contains('hidden')) {
+          container.classList.remove('hidden');
+          chevron.classList.add('rotate-90');
+          console.log('✅ Expanded debug logs');
+        } else {
+          container.classList.add('hidden');
+          chevron.classList.remove('rotate-90');
+          console.log('✅ Collapsed debug logs');
+        }
+      } catch (error) {
+        console.error('❌ Error in toggleDebugLogs:', error);
+      }
+    };
+
+    // Make functions globally available for compatibility
+    window.toggleVerifierInfo = window.toggleVerifierInfo;
+    window.toggleDebugLogs = window.toggleDebugLogs;
+    
+    console.log('🚀 VERIFIER TOGGLE FUNCTIONS LOADED AND READY IMMEDIATELY');
+    console.log('📋 toggleVerifierInfo available:', typeof window.toggleVerifierInfo);
+    console.log('📋 toggleDebugLogs available:', typeof window.toggleDebugLogs);
+  </script>
+  
+  <!-- Live Debug Logs Section - NOW COLLAPSIBLE -->
+  <div class="col-span-12 mt-6">
+    <div class="bg-white rounded shadow-sm border border-gray-200">
+      <div class="p-4 cursor-pointer hover:bg-gray-50 transition-colors" onclick="toggleDebugLogs()">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-tenant-text flex items-center">
+            <i class="fas fa-chevron-right text-gray-400 transition-transform duration-200" id="debug-chevron"></i>
+            <i class="fas fa-terminal text-tenant-primary mr-2 ml-2"></i>
+            Live Debug Logs
+          </h2>
+          <div class="flex items-center space-x-2">
+            <button onclick="clearLogs(); event.stopPropagation();" class="text-xs px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600">
+              <i class="fas fa-trash mr-1"></i>Clear
+            </button>
+            <button onclick="toggleAutoScroll(); event.stopPropagation();" id="autoscroll-btn" class="text-xs px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+              <i class="fas fa-arrow-down mr-1"></i>Auto-scroll: ON
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="debug-logs-container" class="hidden border-t border-gray-200 p-4">
+        <div id="debug-logs" class="bg-gray-900 text-green-400 p-3 rounded font-mono text-xs h-64 overflow-y-auto border">
+          <div class="text-gray-500">[SYSTEM] Verifier initialized. Waiting for presentation request...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block javascript %}
+<!-- Toggle functions are now defined in immediate script blocks above -->
+
 <!-- Socket.IO and jQuery for real-time verification -->
 <script
   src="https://cdn.socket.io/4.7.5/socket.io.min.js"
@@ -235,16 +498,157 @@
     updateImagePath("verification_result_all", "error", false);
   }
 
+  // Debug logging functions
+  let autoScroll = true;
+  
+  function addDebugLog(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    const debugLogs = document.getElementById('debug-logs');
+    
+    let colorClass = 'text-green-400';
+    let icon = '🔍';
+    
+    switch(type) {
+      case 'success': colorClass = 'text-green-400'; icon = '✅'; break;
+      case 'error': colorClass = 'text-red-400'; icon = '❌'; break;
+      case 'warning': colorClass = 'text-yellow-400'; icon = '⚠️'; break;
+      case 'request': colorClass = 'text-blue-400'; icon = '🚀'; break;
+      case 'data': colorClass = 'text-cyan-400'; icon = '📋'; break;
+      default: colorClass = 'text-green-400'; icon = '🔍'; break;
+    }
+    
+    const logEntry = document.createElement('div');
+    logEntry.className = `${colorClass} mb-1`;
+    logEntry.innerHTML = `<span class="text-gray-500">[${timestamp}]</span> ${icon} ${message}`;
+    
+    debugLogs.appendChild(logEntry);
+    
+    if (autoScroll) {
+      debugLogs.scrollTop = debugLogs.scrollHeight;
+    }
+    
+    // Keep only last 100 logs to prevent memory issues
+    while (debugLogs.children.length > 100) {
+      debugLogs.removeChild(debugLogs.firstChild);
+    }
+  }
+  
+  function clearLogs() {
+    const debugLogs = document.getElementById('debug-logs');
+    debugLogs.innerHTML = '<div class="text-gray-500">[SYSTEM] Logs cleared by user</div>';
+  }
+  
+  function toggleAutoScroll() {
+    autoScroll = !autoScroll;
+    const btn = document.getElementById('autoscroll-btn');
+    if (autoScroll) {
+      btn.innerHTML = '<i class="fas fa-arrow-down mr-1"></i>Auto-scroll: ON';
+      btn.className = 'text-xs px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600';
+    } else {
+      btn.innerHTML = '<i class="fas fa-pause mr-1"></i>Auto-scroll: OFF';
+      btn.className = 'text-xs px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600';
+    }
+  }
+
+
+  // Ensure DOM is ready before jQuery
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Verifier page DOM loaded - all functions should now be available');
+    
+    // Test that all required elements exist
+    const requiredElements = ['verifier-info-content', 'verifier-info-chevron', 'debug-logs-container', 'debug-chevron'];
+    requiredElements.forEach(id => {
+      const element = document.getElementById(id);
+      console.log(`📋 Element ${id}:`, element ? 'found' : 'NOT FOUND');
+    });
+  });
+
   $(document).ready(function () {
-    var socket = io();
+    // Initialize Socket.IO with enhanced configuration for HTTPS
+    var socket = io({
+      transports: ['websocket', 'polling'],
+      forceNew: true,
+      reconnection: true,
+      timeout: 20000,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 1000
+    });
+    
+    // Enhanced connection event handlers
+    socket.on('connect', function() {
+      addDebugLog('Socket.IO connection established successfully', 'success');
+      addDebugLog(`Connected with transport: ${socket.io.engine.transport.name}`, 'data');
+      document.getElementById('connection-status').textContent = '🟢';
+    });
+    
+    socket.on('connect_error', function(error) {
+      addDebugLog(`Connection error: ${error.message}`, 'error');
+      addDebugLog('Trying fallback transports...', 'warning');
+      document.getElementById('connection-status').textContent = '🔴';
+    });
+    
+    socket.on('disconnect', function(reason) {
+      addDebugLog(`Disconnected: ${reason}`, 'warning');
+      document.getElementById('connection-status').textContent = '🟡';
+    });
+    
+    socket.on('reconnect', function(attemptNumber) {
+      addDebugLog(`Reconnected after ${attemptNumber} attempts`, 'success');
+      document.getElementById('connection-status').textContent = '🟢';
+    });
+    
+    socket.on('reconnect_error', function(error) {
+      addDebugLog(`Reconnection failed: ${error.message}`, 'error');
+    });
+    
+    // Initial connection status
+    addDebugLog('Initializing Socket.IO connection...', 'data');
+    
+    // Additional event listener for verifier toggle (backup method)
+    $(document).on('click', '.cursor-pointer', function(e) {
+      if (e.target.closest('[onclick="toggleVerifierInfo()"]')) {
+        console.log('Alternative toggle method triggered');
+      }
+    });
+    
+    // Listen for debug log events from backend
+    socket.on("debug_log", function (msg) {
+      addDebugLog(msg.message, msg.type || 'info');
+    });
 
     socket.on("presentation_requested", function (msg) {
+      addDebugLog('Presentation request event received', 'request');
+      addDebugLog(`Status: ${msg.status}`, 'data');
+      
+      if (msg.message) {
+        addDebugLog(`Message: ${msg.message}`, 'data');
+      }
+      
+      if (msg.mandatory_fields) {
+        addDebugLog(`Required fields: [${msg.mandatory_fields.join(', ')}]`, 'data');
+      }
+      
+      if (msg.redirect_uri) {
+        addDebugLog(`Redirect URI length: ${msg.redirect_uri.length} chars`, 'data');
+        addDebugLog(`Redirect URI: ${msg.redirect_uri.substring(0, 200)}...`, 'data');
+      }
+      
+      if (msg.client_id) {
+        addDebugLog(`Client ID: ${msg.client_id}`, 'data');
+      }
+      
+      if (msg.response_uri) {
+        addDebugLog(`Response URI: ${msg.response_uri}`, 'data');
+      }
+      
       set_all_loading();
       if (msg.status === "error") {
+        addDebugLog(`ERROR: ${msg.message}`, 'error');
         fail_loading();
         return;
       }
       updateImagePath("presentation_requested", "success");
+      addDebugLog('Presentation request completed successfully', 'success');
     });
 
     socket.on("key_extraction", function (msg) {
@@ -304,5 +708,6 @@
       updateImagePath("verification_result_all", "success");
     });
   });
+
 </script>
 {% endblock %}

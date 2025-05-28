@@ -61,7 +61,12 @@ def revokation():
     # get all credential statuses
     credentials = VC_validity.query.all()
     if not credentials:
-        return render_template("validate.html", credentials=[])
+        # Import stats function from home.py
+        from ..home import get_credential_stats
+        stats = {
+            'credentials': get_credential_stats()
+        }
+        return render_template("validate.html", credentials=[], stats=stats)
 
     presentation_credentials = []
     for credential in credentials:
@@ -80,8 +85,14 @@ def revokation():
         }
         presentation_credentials.append(data)
 
+    # Import stats function from home.py and get comprehensive credential stats
+    from ..home import get_credential_stats
+    stats = {
+        'credentials': get_credential_stats()
+    }
+
     logger.debug(f"Credentials: {presentation_credentials}")
-    return render_template("validate.html", credentials=presentation_credentials)
+    return render_template("validate.html", credentials=presentation_credentials, stats=stats)
 
 
 @validate.route('/isvalid/<string:identifier>', methods=['GET', 'POST'])
@@ -194,3 +205,54 @@ def status_list(purpose=STATUS_PURPOSE_REVOCATION):
     status_list_credential = get_status_list_credential(purpose)
     
     return jsonify(status_list_credential)
+
+
+@validate.route('/credential/toggle/<int:credential_id>', methods=['POST'])
+def toggle_credential_status(credential_id):
+    """Toggle credential status between issued and revoked"""
+    try:
+        credential = VC_validity.query.get_or_404(credential_id)
+        
+        # Toggle the status
+        if credential.validity and credential.status == 'active':
+            # Revoke the credential
+            credential.validity = False
+            credential.status = 'revoked'
+            action = 'revoked'
+        else:
+            # Reactivate the credential  
+            credential.validity = True
+            credential.status = 'active'
+            action = 'reactivated'
+        
+        db.session.commit()
+        
+        # Get credential info for response
+        cred_info = ''
+        if credential.credential_data and isinstance(credential.credential_data, dict):
+            if 'vc' in credential.credential_data and 'credentialSubject' in credential.credential_data['vc']:
+                subject = credential.credential_data['vc']['credentialSubject']
+                first_name = subject.get('firstName', '')
+                last_name = subject.get('lastName', '')
+                student_id = subject.get('studentId', '')
+                cred_info = f"{first_name} {last_name} ({student_id})"
+        
+        if not cred_info:
+            cred_info = f"Credential {credential.identifier}"
+        
+        logger.info(f"✅ Credential {action}: {cred_info}")
+        
+        return jsonify({
+            'success': True,
+            'action': action,
+            'credential_info': cred_info,
+            'new_status': credential.status,
+            'new_validity': credential.validity
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error toggling credential status: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500

@@ -65,73 +65,308 @@ def index():
 
     global presentation_definition
     if request.method == "GET":
-        return render_template("verifier.html", img_data=img, mandatory_fields=presentation_definition["mandatory_fields"], demo_credential=get_demo_credential())
+        return render_template("verifier.html", 
+                             img_data=img, 
+                             mandatory_fields=presentation_definition["mandatory_fields"], 
+                             demo_credential=get_demo_credential(),
+                             config=current_app.config)
 
-    # update the mandatory fields
+    # update the mandatory fields (filter out network configuration fields)
     selected_fields = request.form.keys()
     if len(selected_fields) > 0:
-        presentation_definition["mandatory_fields"] = list(selected_fields)
+        # Filter out network configuration fields that shouldn't be in presentation definition
+        network_config_fields = {
+            'server_ip', 'use_network_ip', 'ngrok_issuer_url', 'ngrok_verifier_url'
+        }
+        credential_fields = [field for field in selected_fields if field not in network_config_fields]
+        if credential_fields:  # Only update if we have actual credential fields
+            presentation_definition["mandatory_fields"] = credential_fields
+            logger.info(f"Updated mandatory fields to: {credential_fields}")
 
-    return render_template("verifier.html", img_data=img, mandatory_fields=presentation_definition["mandatory_fields"], demo_credential=get_demo_credential())
+    return render_template("verifier.html", 
+                         img_data=img, 
+                         mandatory_fields=presentation_definition["mandatory_fields"], 
+                         demo_credential=get_demo_credential(),
+                         config=current_app.config)
 
 
 @verifier.route('/settings', methods=['GET', 'POST'])
 def verifier_settings():
     global presentation_definition
-    if request.method == "POST":
-        # update the mandatory fields
-        selected_fields = request.form.keys()
-        if len(selected_fields) > 0:
-            presentation_definition["mandatory_fields"] = list(selected_fields)
     
-    return render_template("verifier_settings.html", mandatory_fields=presentation_definition["mandatory_fields"], demo_credential=get_demo_credential())
+    if request.method == "POST":
+        # Handle network configuration updates
+        server_ip = request.form.get('server_ip')
+        use_network_ip = request.form.get('use_network_ip') == 'true'
+        ngrok_issuer_url = request.form.get('ngrok_issuer_url', '').strip()
+        ngrok_verifier_url = request.form.get('ngrok_verifier_url', '').strip()
+        
+        # Update app configuration - this will persist for the current session
+        current_app.config['NGROK_ISSUER_URL'] = ngrok_issuer_url
+        current_app.config['NGROK_VERIFIER_URL'] = ngrok_verifier_url
+        current_app.config['LOCAL_IP'] = server_ip
+        current_app.config['USE_NETWORK_IP'] = use_network_ip
+        
+        # Update SERVER_URL with priority: ngrok > network IP > localhost
+        if ngrok_issuer_url:
+            current_app.config['SERVER_URL'] = ngrok_issuer_url
+            logger.info(f"Using ngrok issuer URL for SERVER_URL: {ngrok_issuer_url}")
+        else:
+            port = current_app.config.get('PORT', 8080)
+            ip_to_use = server_ip if use_network_ip else '127.0.0.1'
+            new_server_url = f"https://{ip_to_use}:{port}"
+            current_app.config['SERVER_URL'] = new_server_url
+            logger.info(f"Using network IP for SERVER_URL: {new_server_url}")
+        
+        logger.info(f"Updated configuration: ngrok_issuer={ngrok_issuer_url}, ngrok_verifier={ngrok_verifier_url}")
+        
+        # Get selected fields from form
+        selected_fields = list(request.form.keys())
+        
+        # Filter out network config and non-field form data
+        network_fields = ['server_ip', 'use_network_ip', 'ngrok_issuer_url', 'ngrok_verifier_url', '_csrf_token']
+        filtered_fields = [field for field in selected_fields if not field.startswith('_') and field not in network_fields]
+        
+        # Update mandatory fields
+        if len(filtered_fields) > 0:
+            presentation_definition["mandatory_fields"] = filtered_fields
+            logger.info(f"Updated mandatory fields: {filtered_fields}")
+        else:
+            logger.warning("No fields selected for mandatory verification")
+        
+        # Return JSON response for AJAX requests
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'success': True, 
+                'message': f'Verification settings saved successfully! {len(filtered_fields)} fields are now required.',
+                'field_count': len(filtered_fields)
+            })
+        else:
+            from flask import flash
+            flash(f"Settings saved successfully! {len(filtered_fields)} fields are now required for verification.", "success")
+    
+    # Prepare network configuration data for template
+    network_config = {
+        'server_url': current_app.config.get('SERVER_URL', ''),
+        'local_ip': current_app.config.get('LOCAL_IP', '127.0.0.1'),
+        'use_network_ip': current_app.config.get('USE_NETWORK_IP', True),
+        'port': current_app.config.get('PORT', 8080),
+        'ngrok_issuer_url': current_app.config.get('NGROK_ISSUER_URL', ''),
+        'ngrok_verifier_url': current_app.config.get('NGROK_VERIFIER_URL', '')
+    }
+    
+    return render_template("verifier_settings.html", 
+                         mandatory_fields=presentation_definition["mandatory_fields"], 
+                         demo_credential=get_demo_credential(),
+                         network_config=network_config)
+
+
+@verifier.route('/network', methods=['POST'])
+def network_settings():
+    """Handle network configuration updates separately"""
+    try:
+        # Handle network configuration updates
+        server_ip = request.form.get('server_ip')
+        use_network_ip = request.form.get('use_network_ip') == 'true'
+        ngrok_issuer_url = request.form.get('ngrok_issuer_url', '').strip()
+        ngrok_verifier_url = request.form.get('ngrok_verifier_url', '').strip()
+        
+        # Update app configuration
+        current_app.config['NGROK_ISSUER_URL'] = ngrok_issuer_url
+        current_app.config['NGROK_VERIFIER_URL'] = ngrok_verifier_url
+        current_app.config['LOCAL_IP'] = server_ip
+        current_app.config['USE_NETWORK_IP'] = use_network_ip
+        
+        # Update SERVER_URL with priority: ngrok > network IP > localhost
+        if ngrok_issuer_url:
+            current_app.config['SERVER_URL'] = ngrok_issuer_url
+            logger.info(f"Using ngrok issuer URL for SERVER_URL: {ngrok_issuer_url}")
+        else:
+            port = current_app.config.get('PORT', 8080)
+            ip_to_use = server_ip if use_network_ip else '127.0.0.1'
+            new_server_url = f"https://{ip_to_use}:{port}"
+            current_app.config['SERVER_URL'] = new_server_url
+            logger.info(f"Using network IP for SERVER_URL: {new_server_url}")
+        
+        logger.info(f"Network configuration updated: ngrok_issuer={ngrok_issuer_url}, ngrok_verifier={ngrok_verifier_url}, ip={server_ip}, use_network={use_network_ip}")
+        
+        # Return JSON response for AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': True, 'message': 'Network settings saved successfully!'})
+        else:
+            from flask import flash
+            flash("Network settings saved successfully!", "success")
+            return redirect(request.url)
+            
+    except Exception as e:
+        logger.error(f"Error saving network settings: {e}")
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'error': str(e)}), 500
+        else:
+            from flask import flash
+            flash(f"Error saving network settings: {str(e)}", "error")
+            return redirect(request.url)
 
 
 @verifier.route('/request_uri', methods=['GET', 'POST'])
 def request_uri():
-    server_url = current_app.config["SERVER_URL"] + "/verifier/"
+    # Use ngrok verifier URL if available, otherwise use SERVER_URL
+    ngrok_verifier_url = current_app.config.get('NGROK_VERIFIER_URL', '').strip()
+    if ngrok_verifier_url:
+        server_url = f"{ngrok_verifier_url}/verifier/"
+        logger.info(f"Using ngrok verifier URL for presentation request: {server_url}")
+    else:
+        server_url = current_app.config["SERVER_URL"] + "/verifier/"
+        logger.info(f"Using SERVER_URL for presentation request: {server_url}")
+    
     redirect_uri = f"openid4vp://?request_uri={server_url}presentation-request"
     return redirect(redirect_uri)
 
 
 @verifier.route("/presentation-request", methods=["POST"])
 def offer():
+    logger.info("🚀 ===== PRESENTATION REQUEST STARTED =====")
     try:
+        # Log current presentation definition state
+        logger.info(f"📋 Current presentation_definition: {presentation_definition}")
+        logger.info(f"📋 Mandatory fields count: {len(presentation_definition.get('mandatory_fields', []))}")
+        logger.info(f"📋 Mandatory fields: {presentation_definition.get('mandatory_fields', [])}")
+        
         params = {}
         params["response_type"] = "vp_token"
-        params["response_uri"] = current_app.config["SERVER_URL"] + \
-            "/verifier/direct_post"
+        
+        # Use ngrok verifier URL if available, otherwise use SERVER_URL
+        ngrok_verifier_url = current_app.config.get('NGROK_VERIFIER_URL', '').strip()
+        logger.info(f"🔍 Retrieved NGROK_VERIFIER_URL: '{ngrok_verifier_url}'")
+        
+        if ngrok_verifier_url:
+            params["response_uri"] = f"{ngrok_verifier_url}/verifier/direct_post"
+            logger.info(f"✅ Using ngrok verifier URL for response_uri: {params['response_uri']}")
+        else:
+            params["response_uri"] = current_app.config["SERVER_URL"] + "/verifier/direct_post"
+            logger.info(f"⚠️  Using SERVER_URL for response_uri: {params['response_uri']}")
+            
         params["response_mode"] = "direct_post"
         params["state"] = randomString(10)
         params["nonce"] = randomString(10)
-        explained_presentation_definition = {"mandatory_fields": presentation_definition["mandatory_fields"],
-                                             "explanation": {key: presentation_explanation.get(key, "No Explanation") for key in presentation_definition["mandatory_fields"]}}
-        params["presentation_definition"] = json.dumps(
-            explained_presentation_definition, ensure_ascii=False)
-        logger.debug(f"presentation_definition: {presentation_definition}")
-        logger.debug(
-            f"type(presentation_definition): {type(presentation_definition)}")
+        
+        logger.info(f"🎲 Generated state: {params['state']}")
+        logger.info(f"🎲 Generated nonce: {params['nonce']}")
+        
+        # Create explained presentation definition
+        mandatory_fields = presentation_definition.get("mandatory_fields", [])
+        logger.info(f"📝 Creating explained presentation definition for {len(mandatory_fields)} fields")
+        
+        explained_presentation_definition = {
+            "mandatory_fields": mandatory_fields,
+            "explanation": {key: presentation_explanation.get(key, "No Explanation") for key in mandatory_fields}
+        }
+        
+        logger.info(f"📝 Explained presentation definition created:")
+        logger.info(f"   - Fields: {explained_presentation_definition['mandatory_fields']}")
+        logger.info(f"   - Explanations: {list(explained_presentation_definition['explanation'].keys())}")
+        
+        params["presentation_definition"] = json.dumps(explained_presentation_definition, ensure_ascii=False)
+        logger.info(f"📤 presentation_definition JSON length: {len(params['presentation_definition'])}")
+        logger.info(f"📤 presentation_definition JSON: {params['presentation_definition']}")
 
-        redirect_uri = "openid4vp://?client_id=" + \
-            current_app.config["SERVER_URL"] + "/verifier/authorize" + "&"
-        redirect_uri += urlencode(params)
+        # Use ngrok verifier URL for client_id if available
+        logger.info(f"🔍 Checking ngrok_verifier_url for client_id: '{ngrok_verifier_url}'")
+        if ngrok_verifier_url:
+            client_id = f"{ngrok_verifier_url}/verifier/authorize"
+            logger.info(f"✅ Using ngrok verifier URL for client_id: {client_id}")
+        else:
+            client_id = current_app.config["SERVER_URL"] + "/verifier/authorize"
+            logger.info(f"⚠️  Using SERVER_URL for client_id: {client_id}")
+        
+        # Build the final redirect URI
+        base_redirect = f"openid4vp://?client_id={client_id}&"
+        encoded_params = urlencode(params)
+        redirect_uri = base_redirect + encoded_params
+        
+        logger.info(f"🔗 Final redirect URI components:")
+        logger.info(f"   - Base: {base_redirect}")
+        logger.info(f"   - Encoded params length: {len(encoded_params)}")
+        logger.info(f"   - Full URI length: {len(redirect_uri)}")
+        logger.info(f"   - Full URI: {redirect_uri}")
+        
+        # Emit success event
         socketio.emit('presentation_requested', {
-                      'status': 'success', 'message': 'Presentation request created successfully.'})
+            'status': 'success', 
+            'message': f'Presentation request created successfully with {len(mandatory_fields)} required fields.',
+            'redirect_uri': redirect_uri,
+            'mandatory_fields': mandatory_fields,
+            'client_id': client_id,
+            'response_uri': params["response_uri"]
+        })
+        
+        logger.info("✅ ===== PRESENTATION REQUEST COMPLETED SUCCESSFULLY =====")
+        return redirect(redirect_uri)
+        
     except Exception as e:
-        logger.error(e)
+        logger.error(f"❌ ===== PRESENTATION REQUEST FAILED =====")
+        logger.error(f"❌ Error type: {type(e).__name__}")
+        logger.error(f"❌ Error message: {str(e)}")
+        logger.error(f"❌ Traceback:", exc_info=True)
+        
         socketio.emit('presentation_requested', {
-                      'status': 'error', 'message': str(e)})
-        return jsonify({"error": "something went wrong when requesting params"}), 500
-
-    return redirect(redirect_uri)
+            'status': 'error', 
+            'message': f'Presentation request failed: {str(e)}'
+        })
+        
+        return jsonify({"error": "Presentation request failed", "details": str(e)}), 500
 
 
 @verifier.route("/direct_post", methods=["POST"])
 def verify_access_token():
     start_time = time.time()
     from ..data_collector import track_operation
+    
+    # Log incoming request details for debugging
+    logger.info(f"📥 Received direct_post request:")
+    logger.info(f"   Method: {request.method}")
+    logger.info(f"   Content-Type: {request.content_type}")
+    logger.info(f"   Form data keys: {list(request.form.keys()) if request.form else 'None'}")
+    logger.info(f"   URL args keys: {list(request.args.keys()) if request.args else 'None'}")
+    if request.form:
+        logger.debug(f"   Form data: {dict(request.form)}")
+    if request.args:
+        logger.debug(f"   URL args: {dict(request.args)}")
+    
+    # Emit to frontend for real-time debugging
+    socketio.emit('debug_log', {
+        'message': f'Direct POST received - Method: {request.method}, Content-Type: {request.content_type}',
+        'type': 'request'
+    })
+    socketio.emit('debug_log', {
+        'message': f'Form keys: {list(request.form.keys()) if request.form else "None"}',
+        'type': 'data'
+    })
+    socketio.emit('debug_log', {
+        'message': f'URL args: {list(request.args.keys()) if request.args else "None"}',
+        'type': 'data'
+    })
+    
     try:
-        vp = request.args["vp_token"]
+        # Try to get vp_token from form data first (POST body), then fall back to URL args
+        vp = request.form.get("vp_token") or request.args.get("vp_token")
+        if not vp:
+            logger.error("❌ No vp_token found in request form data or URL parameters")
+            socketio.emit('debug_log', {
+                'message': 'ERROR: No vp_token found in request',
+                'type': 'error'
+            })
+            socketio.emit('verification_error', {
+                'status': 'error',
+                'message': 'Missing vp_token in request'
+            })
+            return jsonify({"error": "Missing vp_token parameter"}), 400
+        
+        logger.info(f"✅ Found vp_token (length: {len(vp)})")
+        socketio.emit('debug_log', {
+            'message': f'SUCCESS: Found vp_token with {len(vp)} characters',
+            'type': 'success'
+        })
 
         # Decode the VP token without verifying the signature
         decoded_vp = jwt.decode(vp, options={"verify_signature": False})

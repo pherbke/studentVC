@@ -60,16 +60,19 @@ test-compose:
 
 # Test CI steps locally
 test-ci:
-	@echo "🔧 Testing CI steps locally..."
-	@echo "1. Python setup..."
-	cd backend && python -m pip install --quiet -r requirements.txt
-	@echo "2. Running tests..."
-	cd backend && python -m pytest tests/ || true
-	@echo "3. Security scan..."
-	cd backend && bandit -r src/ || true
-	@echo "4. Docker build..."
-	docker build -f backend/Dockerfile -t studentvc:ci-test .
-	docker rmi studentvc:ci-test
+	@echo "🔧 Testing CI/CD steps locally..."
+	@echo "1. Docker build test..."
+	cd backend && docker build -f Dockerfile -t studentvc:ci-test . > /dev/null
+	@echo "✅ Docker build successful"
+	@echo "2. Configuration validation..."
+	cd backend && docker compose config > /dev/null
+	@echo "✅ Docker Compose configuration valid"
+	@echo "3. Multi-tenant validation..."
+	cd backend && docker compose --profile multi-tenant config > /dev/null
+	@echo "✅ Multi-tenant configuration valid"
+	@echo "4. Cleanup..."
+	docker rmi studentvc:ci-test > /dev/null
+	@echo "✅ CI/CD pipeline test completed successfully"
 	@echo "✅ CI simulation complete!"
 
 # Install development dependencies

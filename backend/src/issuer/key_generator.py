@@ -101,7 +101,9 @@ def generate_keys():
         public_file.write(public_pem)
 
     logger.debug(f"Public key saved to {public_key_path}")
-    return private_key, public_pem.decode("utf-8")
+    
+    # Return PEM-formatted strings for both keys for consistency
+    return private_pem.decode("utf-8"), public_pem.decode("utf-8")
 
 
 def load_existing_keys():
@@ -112,14 +114,21 @@ def load_existing_keys():
     logger.debug("Keys exist. Loading keys...")
     # Load the existing private key
     with open(private_key_path, "rb") as private_file:
-        private_key = serialization.load_pem_private_key(
+        private_key_obj = serialization.load_pem_private_key(
             private_file.read(), password=None)
+    
+    # Serialize private key to PEM format for JWT library compatibility
+    private_key_pem = private_key_obj.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    ).decode("utf-8")
 
     # Load the existing public key
     with open(public_key_path, "rb") as public_file:
         public_key = public_file.read().decode("utf-8")
 
-    return private_key, public_key
+    return private_key_pem, public_key
 
 
 def generate_did(public_key_pem):

@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 @log_function_call(LogCategory.ISSUANCE, include_args=False)
-def generate_credential(auth_header, public_key, private_key, issuer_did, issuer_kid, bbs_dpk, bbs_secret, issuer_cert=None):
+def generate_credential(auth_header, public_key, private_key, issuer_did, issuer_kid, bbs_dpk, bbs_secret, issuer_cert=None, requested_format='bbs+_vc'):
     start_time = time.time()
     from ..data_collector import track_operation
     try:
@@ -175,12 +175,32 @@ def generate_credential(auth_header, public_key, private_key, issuer_did, issuer
         c_nonce_expires_in = 86400  # 24 hours
 
         # Send the response with the VC JWT and nonce
+        # Return the format that was requested by the client
+        # Both jwt_vc_json and bbs+_vc use the same JWT credential structure with BBS+ signatures
+        response_format = requested_format
+        logger.info(f"🔄 Format Processing: requested='{requested_format}', response='{response_format}'")
+        
+        if requested_format == 'jwt_vc_json':
+            # iOS app requests jwt_vc_json format - return exactly what was requested
+            # The credential itself is a JWT with BBS+ signature, which is compatible with jwt_vc_json format
+            logger.info(f"📱 iOS format detected - will return jwt_vc_json format")
+            log_issuance("iOS format requested - returning jwt_vc_json format as requested", 
+                        level=LogLevel.INFO,
+                        credential_identifier=credential_identifier,
+                        credential_id=uniqID,
+                        requested_format=requested_format,
+                        response_format=response_format,
+                        operation="format_mapping")
+        else:
+            logger.info(f"🔧 Non-iOS format: returning '{response_format}' as requested")
+        
         log_issuance("Credential generated and issued successfully", 
                     level=LogLevel.INFO,
                     credential_identifier=credential_identifier,
                     credential_id=uniqID,
                     status_id=unique_id,
-                    format="bbs+_vc",
+                    format=response_format,
+                    requested_format=requested_format,
                     operation="credential_issued")
         
         # Track successful operation
@@ -188,11 +208,12 @@ def generate_credential(auth_header, public_key, private_key, issuer_did, issuer
         track_operation('credential_issuance', 'success', duration_ms, {
             'credential_id': uniqID,
             'credential_identifier': credential_identifier,
-            'format': 'bbs+_vc'
+            'format': response_format,
+            'requested_format': requested_format
         })
         
         return jsonify({
-            "format": "bbs+_vc",
+            "format": response_format,
             "credential": vc_jwt,
             "signature": signature_bytes,
             "c_nonce": c_nonce,
@@ -218,6 +239,7 @@ def generate_credential(auth_header, public_key, private_key, issuer_did, issuer
 
 @log_function_call(LogCategory.ISSUANCE, include_args=False)
 def get_payload(issuer_did, decoded_token, credential_subject, uniqID, issuer_cert=None):
+    logger.info(f"🔍 [DEBUG] Creating payload with issuer_did: {issuer_did}")
     payload = {
         "iat": int(datetime.now(tz=timezone.utc).timestamp()) - 60,
         "iss": issuer_did,
@@ -238,10 +260,7 @@ def get_payload(issuer_did, decoded_token, credential_subject, uniqID, issuer_ce
                 "StudentIDCard"
             ],
             "id": uniqID,
-            "issuer": {
-                "id": issuer_did,
-                "name": "Technical University of Berlin"
-            },
+            "issuer": issuer_did,
             "issuanceDate": datetime.now(timezone.utc).isoformat(),
             "validFrom": datetime.now(timezone.utc).isoformat(),
             "credentialSubject": credential_subject,
@@ -253,34 +272,33 @@ def get_payload(issuer_did, decoded_token, credential_subject, uniqID, issuer_ce
         },
     }
     
-    # Add X.509 certificate information if available
-    if issuer_cert:
+    logger.info(f"🔍 [DEBUG] Payload vc.issuer after creation: {payload['vc']['issuer']} (type: {type(payload['vc']['issuer']).__name__})")
+    
+    # Add X.509 certificate information if available (temporarily disabled for iOS compatibility)
+    if False and issuer_cert:  # Temporarily disabled
         try:
             # Create a temporary X509Manager to get certificate info
             x509_manager = X509Manager()
             cert_info = x509_manager.get_certificate_info(issuer_cert)
             
-            # Add certificate information to the VC
-            payload["vc"]["issuer"] = {
-                "id": issuer_did,
-                "name": cert_info["subject"]["common_name"] or "Technical University of Berlin",
-                "x509Certificate": {
-                    "subject": {
-                        "commonName": cert_info["subject"]["common_name"],
-                        "organization": cert_info["subject"]["organization"]
-                    },
-                    "issuer": {
-                        "commonName": cert_info["issuer"]["common_name"],
-                        "organization": cert_info["issuer"]["organization"]
-                    },
-                    "serialNumber": cert_info["serial_number"],
-                    "validity": {
-                        "notBefore": cert_info["validity"]["not_before"].isoformat(),
-                        "notAfter": cert_info["validity"]["not_after"].isoformat()
-                    },
-                    "thumbprint": cert_info["thumbprint"],
-                    "thumbprintAlgorithm": "SHA-256"
-                }
+            # Keep issuer as simple string for iOS compatibility
+            # Store X.509 certificate information separately
+            payload["vc"]["x509Certificate"] = {
+                "subject": {
+                    "commonName": cert_info["subject"]["common_name"],
+                    "organization": cert_info["subject"]["organization"]
+                },
+                "issuer": {
+                    "commonName": cert_info["issuer"]["common_name"],
+                    "organization": cert_info["issuer"]["organization"]
+                },
+                "serialNumber": cert_info["serial_number"],
+                "validity": {
+                    "notBefore": cert_info["validity"]["not_before"].isoformat(),
+                    "notAfter": cert_info["validity"]["not_after"].isoformat()
+                },
+                "thumbprint": cert_info["thumbprint"],
+                "thumbprintAlgorithm": "SHA-256"
             }
         except Exception as e:
             logger.warning(f"Error adding X.509 certificate to credential: {str(e)}")
@@ -290,6 +308,7 @@ def get_payload(issuer_did, decoded_token, credential_subject, uniqID, issuer_ce
                      credential_id=uniqID,
                      operation="x509_integration")
 
+    logger.info(f"🔍 [DEBUG] Final payload vc.issuer before return: {payload['vc']['issuer']} (type: {type(payload['vc']['issuer']).__name__})")
     return payload
 
 
@@ -301,7 +320,7 @@ def get_credential_data(credential_data):
         log_issuance("Using default credential data (no stored data found)", 
                     level=LogLevel.INFO,
                     operation="credential_data_fallback")
-        return {
+        default_data = {
             "firstName": "Maxi" + f"{str(generate_nonce(5))}",
             "lastName": "Musterfrau" + f"{str(generate_nonce(5))}",
             "issuanceCount": "1",
@@ -317,59 +336,101 @@ def get_credential_data(credential_data):
                 "fgColorTitle": "FFFFFF"
             }
         }
+        logger.info(f"🔍 [DEBUG] Default credential data created: {type(default_data)} with keys: {list(default_data.keys())}")
+        return default_data
 
+    logger.info(f"🔍 [DEBUG] Using stored credential data: {type(credential_data)} with keys: {list(credential_data.keys()) if isinstance(credential_data, dict) else 'not a dict'}")
     return credential_data
 
 
 @log_function_call(LogCategory.ISSUANCE, include_args=False)
 def resolve_credential_offer(id):
-    offer = VC_Offer.query.filter_by(uuid=id).first()
-
-    # Initialize variables
-    iss_state = None
-    pre_auth_code = None
-    credential_data = None
-
-    if offer:
-        logger.debug(f"Offer: {offer.uuid}")
-        log_issuance("Credential offer found and resolved", 
-                    level=LogLevel.INFO,
-                    credential_identifier=id,
-                    offer_uuid=offer.uuid,
-                    operation="offer_resolution")
-        
-        iss_state = offer.issuer_state
-        pre_auth_code = offer.pre_authorized_code
-        credential_data = offer.credential_data
-
-        logger.info(f"Credential Data: {credential_data}")
-
-        if iss_state:
-            # You can implement logic to store the offer in the database if needed
-            pass
-
-        if pre_auth_code:
-            # You can implement logic to store the offer in the database if needed
-            pass
-
-    logger.info(f"State: {iss_state}, Pre-Auth Code: {pre_auth_code}")
+    import time
+    start_time = time.time()
     
-    if not offer:
-        log_issuance("Credential offer not found, using default response", 
-                    level=LogLevel.WARNING,
-                    credential_identifier=id,
-                    operation="offer_not_found")
+    try:
+        logger.info(f"🔎 [RESOLVE-OFFER] Starting credential offer resolution for ID: {id}")
+        
+        # Query the database for the offer
+        logger.info(f"🔎 [RESOLVE-OFFER] Querying database for offer UUID: {id}")
+        offer = VC_Offer.query.filter_by(uuid=id).first()
 
-    # Prepare the response
-    response = {
-        "credential_issuer": app.config["SERVER_URL"],
-        "credentials": credential_data.get('type', ["UniversityDegreeCredential"]) if credential_data else ["UniversityDegreeCredential"],
-        "grants": {
-            "authorization_code": {
-                # Generate a new UUID if no issuer_state
-                "issuer_state": iss_state or str(uuid4()),
+        # Initialize variables
+        iss_state = None
+        pre_auth_code = None
+        credential_data = None
+
+        if offer:
+            logger.info(f"🔎 [RESOLVE-OFFER] ✅ Offer found in database: {offer.uuid}")
+            log_issuance("Credential offer found and resolved", 
+                        level=LogLevel.INFO,
+                        credential_identifier=id,
+                        offer_uuid=offer.uuid,
+                        operation="offer_resolution")
+            
+            iss_state = offer.issuer_state
+            pre_auth_code = offer.pre_authorized_code
+            credential_data = offer.credential_data
+
+            logger.info(f"🔎 [RESOLVE-OFFER] Issuer state: {iss_state}")
+            logger.info(f"🔎 [RESOLVE-OFFER] Pre-auth code present: {bool(pre_auth_code)}")
+            logger.info(f"🔎 [RESOLVE-OFFER] Credential data type: {type(credential_data)} - Has data: {bool(credential_data)}")
+            
+            if credential_data:
+                if isinstance(credential_data, dict):
+                    logger.info(f"🔎 [RESOLVE-OFFER] Credential data keys: {list(credential_data.keys())}")
+                else:
+                    logger.info(f"🔎 [RESOLVE-OFFER] Credential data content (non-dict): {str(credential_data)[:200]}")
+        else:
+            logger.warning(f"🔎 [RESOLVE-OFFER] ❌ Offer NOT found in database for ID: {id}")
+            log_issuance("Credential offer not found, using default response", 
+                        level=LogLevel.WARNING,
+                        credential_identifier=id,
+                        operation="offer_not_found")
+
+        # Check server configuration
+        server_url = app.config.get("SERVER_URL")
+        logger.info(f"🔎 [RESOLVE-OFFER] Server URL from config: {server_url}")
+        
+        if not server_url:
+            logger.error(f"🔎 [RESOLVE-OFFER] ❌ SERVER_URL not configured!")
+            raise ValueError("SERVER_URL not configured")
+
+        # Prepare the response
+        response = {
+            "credential_issuer": server_url,
+            "credentials": credential_data.get('type', ["UniversityDegreeCredential"]) if credential_data else ["UniversityDegreeCredential"],
+            "grants": {
+                "authorization_code": {
+                    # Generate a new UUID if no issuer_state
+                    "issuer_state": iss_state or str(uuid4()),
+                }
             }
         }
-    }
+        
+        # Add pre-authorized code grant if available
+        if pre_auth_code:
+            response["grants"]["urn:ietf:params:oauth:grant-type:pre-authorized_code"] = {
+                "pre-authorized_code": pre_auth_code,
+                "user_pin_required": True
+            }
+            logger.info(f"🔎 [RESOLVE-OFFER] Added pre-authorized code grant to response")
 
-    return jsonify(response), 200
+        duration_ms = int((time.time() - start_time) * 1000)
+        logger.info(f"🔎 [RESOLVE-OFFER] ✅ Response prepared successfully (duration: {duration_ms}ms)")
+        logger.info(f"🔎 [RESOLVE-OFFER] Response structure: {response}")
+
+        return jsonify(response), 200
+        
+    except Exception as e:
+        duration_ms = int((time.time() - start_time) * 1000)
+        logger.error(f"🔎 [RESOLVE-OFFER] ❌ Error resolving credential offer (duration: {duration_ms}ms)")
+        logger.error(f"🔎 [RESOLVE-OFFER] Error details: {type(e).__name__}: {str(e)}", exc_info=True)
+        
+        log_error("Error in resolve_credential_offer", 
+                 error=e,
+                 level=LogLevel.ERROR,
+                 credential_identifier=id,
+                 operation="resolve_credential_offer")
+        
+        return jsonify({"error": "Internal server error resolving credential offer"}), 500

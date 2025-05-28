@@ -63,6 +63,8 @@ def resolve_authorization_request(request_args, private_key):
         "response_mode": responseMode,
         "response_type": responseType,
         "scope": "openid",
+        "code_challenge": code_challenge,
+        "issuer_state": issuer_state,
     }
 
     # JWT Header

@@ -31,11 +31,17 @@ def resolve_direct_post(state, id_jwt):
             authorization_code_entry = VC_AuthorizationCode.query.filter_by(
                 client_id=iss).first()
 
+            # Extract code_challenge and issuer_state from the JWT token  
+            code_challenge = decoded_id_token.get("code_challenge")
+            issuer_state = decoded_id_token.get("issuer_state")
+            
             if authorization_code_entry:
                 logger.info(
                     f"Entry found for client_id, updating the authorization code to {authorization_code}")
-                # If an entry exists, update the authorization code
+                # If an entry exists, update all the fields
                 authorization_code_entry.auth_code = authorization_code
+                authorization_code_entry.code_challenge = code_challenge
+                authorization_code_entry.issuer_state = issuer_state
                 db.session.commit()  # Commit the changes to the database
             else:
                 logger.info("No entry found for client_id, creating a new one")
@@ -43,8 +49,8 @@ def resolve_direct_post(state, id_jwt):
                 new_entry = VC_AuthorizationCode(
                     client_id=iss,
                     auth_code=authorization_code,
-                    code_challenge=request.json.get("code_challenge"),
-                    issuer_state=request.json.get("issuer_state")
+                    code_challenge=code_challenge,
+                    issuer_state=issuer_state
                 )
                 db.session.add(new_entry)
                 db.session.commit()  # Commit the new entry to the database

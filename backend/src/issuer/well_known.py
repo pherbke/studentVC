@@ -31,7 +31,7 @@ def openid_credential_issuer(issuer_cert=None):
         ],
         "credentials_supported": [
             {
-                "format": "jwt_vc",
+                "format": "jwt_vc_json",
                 "types": [
                     "VerifiableCredential",
                     "VerifiableAttestation",

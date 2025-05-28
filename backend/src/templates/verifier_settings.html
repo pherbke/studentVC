@@ -2,427 +2,943 @@
 {% block title %}Verifier Settings - {{ tenant_name }}{% endblock %} 
 {% block content %}
 
-<!-- Simple Page Title -->
+<!-- Professional Page Header -->
 <div class="mb-6">
-  <h1 class="text-2xl font-bold text-tenant-text mb-2">Verification Configuration</h1>
-  <p class="text-gray-600 text-sm">Configure which student information is required for credential verification</p>
+  <h1 class="text-3xl font-bold text-tenant-text mb-2">Verification Settings</h1>
+  <p class="text-gray-600">Configure credential verification requirements and network settings</p>
 </div>
 
 <!-- Settings Overview -->
-<div class="bg-tenant-light rounded border border-gray-200 p-3 mb-4">
+<div class="bg-gradient-to-r from-tenant-primary/10 to-blue-50 rounded-lg border border-tenant-primary/20 p-4 mb-6">
   <div class="flex items-center justify-between">
     <div class="flex items-center">
-      <i class="fas fa-shield-check text-tenant-primary mr-2"></i>
+      <i class="fas fa-shield-check text-tenant-primary mr-3 text-lg"></i>
       <div>
-        <h3 class="font-semibold text-tenant-text text-sm">Selective Disclosure Verification</h3>
-        <p class="text-xs text-gray-600">Students share only specified information</p>
+        <h3 class="font-semibold text-tenant-text">Selective Disclosure Verification</h3>
+        <p class="text-sm text-gray-600">Students reveal only specified information through zero-knowledge proofs</p>
       </div>
     </div>
     <div class="text-right">
-      <div class="text-xs text-gray-500">Security Level</div>
-      <div class="flex items-center space-x-1">
-        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">High</span>
-        <i class="fas fa-check-circle text-green-500"></i>
+      <div class="text-sm text-gray-500">Security Level</div>
+      <div class="flex items-center space-x-2">
+        <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">Maximum</span>
+        <i class="fas fa-check-circle text-green-500 text-lg"></i>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Settings Form -->
-<div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-  
-  <!-- Main Settings Form -->
-  <div class="lg:col-span-3">
-    <form id="verifierSettingsForm" action="/verifier" method="post" class="space-y-4">
-      
-      <!-- Student Information Requirements -->
-      <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
-        <h3 class="text-base font-semibold text-tenant-text mb-3 flex items-center">
-          <i class="fas fa-user-check text-tenant-primary mr-2"></i>
-          Student Information Requirements
-        </h3>
-        <p class="text-sm text-gray-600 mb-4">
-          <strong>Privacy-First:</strong> Students reveal only selected information below. All other data stays encrypted.
-        </p>
+<!-- Professional Tabbed Interface -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+  <!-- Tab Headers -->
+  <div class="border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+      <button 
+        onclick="switchTab('verifier')" 
+        id="tab-verifier"
+        class="tab-button py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap border-tenant-primary text-tenant-primary"
+        aria-current="page">
+        <i class="fas fa-user-check mr-2"></i>
+        Verifier Settings
+      </button>
+      <button 
+        onclick="switchTab('network')" 
+        id="tab-network"
+        class="tab-button py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+        <i class="fas fa-network-wired mr-2"></i>
+        Network Configuration
+      </button>
+    </nav>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="p-6">
+    <!-- Verifier Settings Tab -->
+    <div id="content-verifier" class="tab-content">
+      <form id="verifierSettingsForm" action="/verifier/settings" method="post" class="space-y-6">
         
-        <!-- Collapsible Categories -->
+        <!-- Student Information Requirements -->
         <div class="space-y-3">
-          {% set field_labels = {
-            'exp': 'Credential Expiration Date',
-            'iat': 'Credential Issue Date', 
-            'iss': 'Issuing University DID',
-            'sub': 'Student DID',
-            'jti': 'Credential ID',
-            'nbf': 'Valid From Date',
-            'bbs_dpk': 'BBS+ Digital Public Key',
-            'nonce': 'Security Nonce',
-            'signed_nonce': 'Signed Security Nonce',
-            'total_messages': 'Total Message Count',
-            'validity_identifier': 'Validity Check URL',
-            'vc.@context.0': 'Credential Context',
-            'vc.id': 'Credential ID',
-            'vc.issuanceDate': 'Issuance Date',
-            'vc.expirationDate': 'Expiration Date',
-            'vc.validFrom': 'Valid From Date',
-            'vc.issuer': 'Issuer DID',
-            'vc.credentialSchema.id': 'Schema ID',
-            'vc.credentialSchema.type': 'Schema Type',
-            'vc.type.0': 'Credential Type 1',
-            'vc.type.1': 'Credential Type 2',
-            'vc.type.2': 'Credential Type 3',
-            'vc.credentialSubject.firstName': 'First Name',
-            'vc.credentialSubject.lastName': 'Last Name',
-            'vc.credentialSubject.studentId': 'Student ID',
-            'vc.credentialSubject.studentIdPrefix': 'Student ID Prefix',
-            'vc.credentialSubject.image': 'Student Photo',
-            'vc.credentialSubject.issuanceCount': 'Issuance Count',
-            'vc.credentialSubject.theme.name': 'University Name',
-            'vc.credentialSubject.theme.icon': 'University Icon',
-            'vc.credentialSubject.theme.bgColorCard': 'Card Background Color',
-            'vc.credentialSubject.theme.bgColorSectionBot': 'Bottom Section Color',
-            'vc.credentialSubject.theme.bgColorSectionTop': 'Top Section Color',
-            'vc.credentialSubject.theme.fgColorTitle': 'Title Text Color'
-          } %}
-          
-          {% set field_categories = {
-            'Student Identity': ['vc.credentialSubject.firstName', 'vc.credentialSubject.lastName', 'vc.credentialSubject.studentId', 'vc.credentialSubject.studentIdPrefix', 'vc.credentialSubject.image'],
-            'Academic Information': ['vc.credentialSubject.theme.name', 'vc.credentialSubject.issuanceCount', 'vc.credentialSubject.theme.icon'],
-            'Credential Metadata': ['exp', 'iat', 'iss', 'sub', 'jti', 'nbf', 'vc.@context.0', 'vc.id', 'vc.issuanceDate', 'vc.expirationDate', 'vc.validFrom', 'vc.credentialSchema.id', 'vc.credentialSchema.type', 'vc.type.0', 'vc.type.1', 'vc.type.2', 'vc.issuer'],
-            'Security & Cryptography': ['bbs_dpk', 'nonce', 'signed_nonce', 'total_messages', 'validity_identifier'],
-            'UI Theme Settings': ['vc.credentialSubject.theme.bgColorCard', 'vc.credentialSubject.theme.bgColorSectionBot', 'vc.credentialSubject.theme.bgColorSectionTop', 'vc.credentialSubject.theme.fgColorTitle']
-          } %}
-          
-          {% set field_descriptions = {
-            'bbs_dpk': 'BBS+ Digital Proving Key for selective disclosure',
-            'base64encodeddpk': 'Base64 encoded BBS+ public key for verification',
-            'bls12381g2_pub_key': 'BLS12-381 G2 elliptic curve public key',
-            'signature': 'BBS+ cryptographic signature for tamper detection',
-            'proof': 'Zero-knowledge proof for selective disclosure',
-            'nonce': 'Random number for replay attack prevention',
-            'challenge': 'Cryptographic challenge for verification protocol',
-            'domain': 'Security domain identifier for signature binding',
-            'context': 'JSON-LD context for semantic interpretation',
-            'exp': 'Unix timestamp when credential expires',
-            'iat': 'Unix timestamp when credential was issued',
-            'nbf': 'Unix timestamp when credential becomes valid',
-            'vc': 'Complete verifiable credential data structure',
-            'credentialSubject': 'All personal information about the student',
-            'credentialStatus': 'Current validity and revocation status'
-          } %}
-          
-          {% for category, fields in field_categories.items() %}
-          <div class="border border-gray-200 rounded">
-            <div class="flex items-center justify-between p-2 bg-gray-50 border-b border-gray-200 cursor-pointer" onclick="toggleCategory('{{ category|replace(' ', '')|replace('&', '') }}')">
-              <div class="flex items-center space-x-2">
-                <i class="fas fa-chevron-right text-gray-400 text-xs transition-transform {% if loop.first %}rotate-90{% endif %}" id="chevron-{{ category|replace(' ', '')|replace('&', '') }}"></i>
-                <h4 class="font-medium text-gray-900 text-sm">{{ category }}</h4>
-                <span class="bg-tenant-primary text-white text-xs px-1.5 py-0.5 rounded-full" id="count-{{ category|replace(' ', '')|replace('&', '') }}">0</span>
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-semibold text-tenant-text">Student Information Requirements</h3>
+              <p class="text-xs text-gray-600 mt-1">
+                Configure which student data fields are required for verification.
+              </p>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-500">Required Fields</div>
+              <div id="required-fields-count" class="text-lg font-bold text-tenant-primary">
+                {{ mandatory_fields|length }}
               </div>
-              <div class="text-xs text-gray-500">
-                {% set category_total = fields|length %}
-                {{ category_total }} fields
+              <div class="text-xs text-gray-500">of {{ demo_credential|length }}</div>
+            </div>
+          </div>
+          
+          <!-- Collapsible Categories -->
+          <div class="space-y-2">
+            {% set field_labels = {
+              'exp': 'Credential Expiration Date',
+              'iat': 'Credential Issue Date', 
+              'iss': 'Issuing University DID',
+              'sub': 'Student DID',
+              'jti': 'Credential ID',
+              'nbf': 'Valid From Date',
+              'bbs_dpk': 'BBS+ Digital Public Key',
+              'nonce': 'Security Nonce',
+              'signed_nonce': 'Signed Security Nonce',
+              'total_messages': 'Total Message Count',
+              'validity_identifier': 'Validity Check URL',
+              'vc.@context.0': 'Credential Context',
+              'vc.id': 'Credential ID',
+              'vc.issuanceDate': 'Issuance Date',
+              'vc.expirationDate': 'Expiration Date',
+              'vc.validFrom': 'Valid From Date',
+              'vc.issuer': 'Issuer DID',
+              'vc.credentialSchema.id': 'Schema ID',
+              'vc.credentialSchema.type': 'Schema Type',
+              'vc.type.0': 'Credential Type 1',
+              'vc.type.1': 'Credential Type 2',
+              'vc.type.2': 'Credential Type 3',
+              'vc.credentialSubject.firstName': 'First Name',
+              'vc.credentialSubject.lastName': 'Last Name',
+              'vc.credentialSubject.studentId': 'Student ID',
+              'vc.credentialSubject.studentIdPrefix': 'Student ID Prefix',
+              'vc.credentialSubject.image': 'Student Photo',
+              'vc.credentialSubject.issuanceCount': 'Issuance Count',
+              'vc.credentialSubject.theme.name': 'University Name',
+              'vc.credentialSubject.theme.icon': 'University Icon',
+              'vc.credentialSubject.theme.bgColorCard': 'Card Background Color',
+              'vc.credentialSubject.theme.bgColorSectionBot': 'Bottom Section Color',
+              'vc.credentialSubject.theme.bgColorSectionTop': 'Top Section Color',
+              'vc.credentialSubject.theme.fgColorTitle': 'Title Text Color'
+            } %}
+            
+            {% set field_categories = {
+              'Student Identity': ['vc.credentialSubject.firstName', 'vc.credentialSubject.lastName', 'vc.credentialSubject.studentId', 'vc.credentialSubject.studentIdPrefix', 'vc.credentialSubject.image'],
+              'Academic Information': ['vc.credentialSubject.theme.name', 'vc.credentialSubject.issuanceCount', 'vc.credentialSubject.theme.icon'],
+              'Credential Metadata': ['exp', 'iat', 'iss', 'sub', 'jti', 'nbf', 'vc.@context.0', 'vc.id', 'vc.issuanceDate', 'vc.expirationDate', 'vc.validFrom', 'vc.credentialSchema.id', 'vc.credentialSchema.type', 'vc.type.0', 'vc.type.1', 'vc.type.2', 'vc.issuer'],
+              'Security & Cryptography': ['bbs_dpk', 'nonce', 'signed_nonce', 'total_messages', 'validity_identifier'],
+              'UI Theme Settings': ['vc.credentialSubject.theme.bgColorCard', 'vc.credentialSubject.theme.bgColorSectionBot', 'vc.credentialSubject.theme.bgColorSectionTop', 'vc.credentialSubject.theme.fgColorTitle']
+            } %}
+            
+            {% set field_descriptions = {
+              'bbs_dpk': 'BBS+ Digital Proving Key for selective disclosure',
+              'base64encodeddpk': 'Base64 encoded BBS+ public key for verification',
+              'bls12381g2_pub_key': 'BLS12-381 G2 elliptic curve public key',
+              'signature': 'BBS+ cryptographic signature for tamper detection',
+              'proof': 'Zero-knowledge proof for selective disclosure',
+              'nonce': 'Random number for replay attack prevention',
+              'challenge': 'Cryptographic challenge for verification protocol',
+              'domain': 'Security domain identifier for signature binding',
+              'context': 'JSON-LD context for semantic interpretation',
+              'exp': 'Unix timestamp when credential expires',
+              'iat': 'Unix timestamp when credential was issued',
+              'nbf': 'Unix timestamp when credential becomes valid',
+              'vc': 'Complete verifiable credential data structure',
+              'credentialSubject': 'All personal information about the student',
+              'credentialStatus': 'Current validity and revocation status'
+            } %}
+            
+            {% for category, fields in field_categories.items() %}
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              {% set category_id = category|replace(' ', '')|replace('&', '') %}
+              <div class="flex items-center justify-between p-2 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onclick="toggleCategory('{{ category_id }}')">
+                <div class="flex items-center space-x-2">
+                  <i class="fas fa-chevron-right text-gray-400 transition-transform duration-200 {% if loop.first %}rotate-90{% endif %}" id="chevron-{{ category_id }}"></i>
+                  <h4 class="text-sm font-medium text-gray-900">{{ category }}</h4>
+                  <span class="bg-tenant-primary text-white text-xs px-2 py-1 rounded-full font-medium" id="count-{{ category_id }}">0</span>
+                </div>
+                <div class="text-xs text-gray-500">
+                  {% set category_total = fields|length %}
+                  {{ category_total }} fields
+                </div>
+              </div>
+              <div class="{% if loop.first %}{% else %}hidden{% endif %} bg-white border-t border-gray-200" id="category-{{ category_id }}">
+                <div class="p-2 space-y-2">
+                  {% for field in fields %}
+                    {% if field in demo_credential %}
+                    <div class="flex items-center justify-between p-2 border border-gray-100 rounded hover:bg-gray-50 transition-colors">
+                      <div class="flex items-center space-x-2 flex-1">
+                        <input
+                          type="checkbox"
+                          name="{{ field }}"
+                          value="{{ demo_credential[field] }}"
+                          id="{{ field }}"
+                          {% if field in mandatory_fields %}checked{% endif %}
+                          class="h-4 w-4 text-tenant-primary border-gray-300 rounded focus:ring-tenant-primary focus:ring-2"
+                          onchange="updateCategoryCount('{{ category_id }}')"
+                        />
+                        <div class="flex-1 min-w-0">
+                          <label for="{{ field }}" class="block text-sm font-medium text-gray-900 cursor-pointer">
+                            {% if field_labels[field] %}
+                              {{ field_labels[field] }}
+                            {% else %}
+                              {{ field|title }}
+                            {% endif %}
+                          </label>
+                          {% if field_descriptions[field] %}
+                            <div class="text-xs text-gray-500">{{ field_descriptions[field] }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <div class="flex-shrink-0">
+                        {% if field in mandatory_fields %}
+                          <span class="bg-red-100 text-red-800 text-xs px-1.5 py-0.5 rounded-full font-medium">Required</span>
+                        {% else %}
+                          <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full">Optional</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
               </div>
             </div>
-            <div class="{% if loop.first %}{% else %}hidden{% endif %} space-y-1 p-2" id="category-{{ category|replace(' ', '')|replace('&', '') }}">
-              {% for field in fields %}
-                {% if field in demo_credential %}
-                <div class="flex items-center justify-between p-1.5 border border-gray-100 rounded hover:bg-gray-50 transition-colors">
-                  <div class="flex items-center space-x-2 flex-1">
-                    <input
-                      type="checkbox"
-                      name="{{ field }}"
-                      value="{{ demo_credential[field] }}"
-                      id="{{ field }}"
-                      {% if field in mandatory_fields %}checked{% endif %}
-                      class="h-3 w-3 text-tenant-primary border-gray-300 rounded focus:ring-tenant-primary focus:ring-1"
-                      onchange="updateCategoryCount('{{ category|replace(' ', '')|replace('&', '') }}')"
-                    />
-                    <div class="flex-1 min-w-0">
-                      <label for="{{ field }}" class="block font-medium text-gray-900 cursor-pointer text-xs">
-                        {% if field_labels[field] %}
-                          {{ field_labels[field] }}
-                        {% else %}
-                          {{ field|title }}
-                        {% endif %}
-                      </label>
-                      {% if field_descriptions[field] %}
-                        <div class="text-xs text-gray-500">{{ field_descriptions[field] }}</div>
-                      {% endif %}
-                    </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Security & Authentication Policies -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold text-tenant-text mb-4">Security & Authentication Policies</h3>
+          <p class="text-sm text-gray-600 mb-4">Automatically enforced security measures for all verifications:</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="flex items-start p-4 border border-green-200 bg-green-50 rounded-lg">
+              <i class="fas fa-signature text-green-600 mr-3 text-lg mt-1"></i>
+              <div>
+                <h4 class="font-medium text-green-900">BBS+ Signature Verification</h4>
+                <p class="text-sm text-green-700 mt-1">Cryptographic proof of authenticity and tamper detection</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 border border-blue-200 bg-blue-50 rounded-lg">
+              <i class="fas fa-university text-blue-600 mr-3 text-lg mt-1"></i>
+              <div>
+                <h4 class="font-medium text-blue-900">Trusted Issuer Validation</h4>
+                <p class="text-sm text-blue-700 mt-1">Verifies issuer authority and certificate chain</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 border border-purple-200 bg-purple-50 rounded-lg">
+              <i class="fas fa-clock text-purple-600 mr-3 text-lg mt-1"></i>
+              <div>
+                <h4 class="font-medium text-purple-900">Real-time Status Check</h4>
+                <p class="text-sm text-purple-700 mt-1">Live revocation status and validity verification</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 border border-orange-200 bg-orange-50 rounded-lg">
+              <i class="fas fa-mask text-orange-600 mr-3 text-lg mt-1"></i>
+              <div>
+                <h4 class="font-medium text-orange-900">Zero-Knowledge Privacy</h4>
+                <p class="text-sm text-orange-700 mt-1">Selective disclosure without revealing other data</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 border border-red-200 bg-red-50 rounded-lg">
+              <i class="fas fa-shield-virus text-red-600 mr-3 text-lg mt-1"></i>
+              <div>
+                <h4 class="font-medium text-red-900">Replay Attack Prevention</h4>
+                <p class="text-sm text-red-700 mt-1">Nonce-based protection against duplicate presentations</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start p-4 border border-indigo-200 bg-indigo-50 rounded-lg">
+              <i class="fas fa-key text-indigo-600 mr-3 text-lg mt-1"></i>
+              <div>
+                <h4 class="font-medium text-indigo-900">Cryptographic Key Binding</h4>
+                <p class="text-sm text-indigo-700 mt-1">Ensures holder owns the presented credential</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Settings Button -->
+        <div class="border-t pt-6">
+          <button type="submit" class="w-full bg-tenant-primary text-white py-3 px-6 rounded-lg hover:bg-opacity-90 transition-colors font-semibold flex items-center justify-center">
+            <i class="fas fa-save mr-2"></i>
+            Apply Verification Settings
+          </button>
+          <p class="text-sm text-gray-500 mt-2 text-center">Changes take effect immediately for new verification requests</p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Network Configuration Tab -->
+    <div id="content-network" class="tab-content hidden">
+      <form id="networkSettingsForm" action="/verifier/network" method="post" class="space-y-6">
+        
+        <!-- Server Configuration -->
+        <div class="space-y-4">
+          <div>
+            <h3 class="text-lg font-semibold text-tenant-text">Server Configuration</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              Configure server URLs for mobile device connectivity. Use your machine's IP address for same-network access.
+            </p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Server IP Address -->
+            <div>
+              <label for="server_ip" class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-server text-tenant-primary mr-2"></i>
+                Server IP Address
+              </label>
+              <div class="relative">
+                <input type="text" id="server_ip" name="server_ip" 
+                       value="{{ network_config.local_ip }}"
+                       placeholder="192.168.1.100"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-tenant-primary focus:border-tenant-primary">
+                <button type="button" onclick="detectLocalIP()" 
+                        class="absolute right-3 top-3 text-tenant-primary hover:text-tenant-text transition-colors">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+              <p class="text-sm text-gray-500 mt-1">Your machine's network IP for mobile access</p>
+            </div>
+            
+            <!-- Use Network IP Toggle -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-toggle-on text-tenant-primary mr-2"></i>
+                Network Access Mode
+              </label>
+              <div class="space-y-3">
+                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input type="radio" name="use_network_ip" value="true" 
+                         {{ 'checked' if network_config.use_network_ip else '' }}
+                         class="form-radio h-5 w-5 text-tenant-primary">
+                  <div class="ml-3">
+                    <span class="font-medium text-gray-900">Network IP (Mobile Access)</span>
+                    <p class="text-sm text-gray-500">Allow mobile devices to connect over local network</p>
                   </div>
-                  <div class="flex-shrink-0">
-                    {% if field in mandatory_fields %}
-                      <span class="bg-red-100 text-red-800 text-xs px-1 py-0.5 rounded">Req</span>
-                    {% else %}
-                      <span class="bg-gray-100 text-gray-600 text-xs px-1 py-0.5 rounded">Opt</span>
-                    {% endif %}
+                </label>
+                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input type="radio" name="use_network_ip" value="false"
+                         {{ 'checked' if not network_config.use_network_ip else '' }}
+                         class="form-radio h-5 w-5 text-tenant-primary">
+                  <div class="ml-3">
+                    <span class="font-medium text-gray-900">Localhost (Local Only)</span>
+                    <p class="text-sm text-gray-500">Only accessible from this machine</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Ngrok Configuration -->
+        <div class="border-t pt-6">
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold text-tenant-text">Public Internet Access (Ngrok)</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              Configure ngrok tunnels for public internet access. When ngrok URLs are provided, they will be used instead of IP addresses for credential offers.
+            </p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Ngrok Issuer URL -->
+            <div>
+              <label for="ngrok_issuer_url" class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-certificate text-tenant-primary mr-2"></i>
+                Ngrok Issuer URL
+              </label>
+              <input type="url" id="ngrok_issuer_url" name="ngrok_issuer_url" 
+                     value="{{ network_config.ngrok_issuer_url or '' }}"
+                     placeholder="https://abc123.ngrok.io"
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-tenant-primary focus:border-tenant-primary">
+              <p class="text-sm text-gray-500 mt-1">For credential issuance (mobile wallet connections)</p>
+            </div>
+            
+            <!-- Ngrok Verifier URL -->
+            <div>
+              <label for="ngrok_verifier_url" class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-shield-check text-tenant-primary mr-2"></i>
+                Ngrok Verifier URL
+              </label>
+              <input type="url" id="ngrok_verifier_url" name="ngrok_verifier_url" 
+                     value="{{ network_config.ngrok_verifier_url or '' }}"
+                     placeholder="https://def456.ngrok.io"
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-tenant-primary focus:border-tenant-primary">
+              <p class="text-sm text-gray-500 mt-1">For credential verification (separate tunnel recommended)</p>
+            </div>
+          </div>
+          
+          <!-- Ngrok Setup Instructions -->
+          <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div class="flex items-start">
+              <i class="fas fa-info-circle text-blue-600 mr-3 mt-1"></i>
+              <div>
+                <h4 class="font-medium text-blue-900 mb-2">Ngrok Setup Instructions:</h4>
+                <div class="space-y-2 text-sm text-blue-800">
+                  <div class="flex items-center">
+                    <span class="bg-blue-100 text-blue-900 px-2 py-1 rounded font-mono text-xs mr-2">1.</span>
+                    <span>Install ngrok: <code class="bg-blue-100 px-2 py-1 rounded font-mono">brew install ngrok</code></span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="bg-blue-100 text-blue-900 px-2 py-1 rounded font-mono text-xs mr-2">2.</span>
+                    <span>Start issuer tunnel: <code class="bg-blue-100 px-2 py-1 rounded font-mono">ngrok http 8080</code></span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="bg-blue-100 text-blue-900 px-2 py-1 rounded font-mono text-xs mr-2">3.</span>
+                    <span>Start verifier tunnel: <code class="bg-blue-100 px-2 py-1 rounded font-mono">ngrok http 8080 --subdomain=myverifier</code></span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="bg-blue-100 text-blue-900 px-2 py-1 rounded font-mono text-xs mr-2">4.</span>
+                    <span>Copy the HTTPS URLs and paste them in the fields above</span>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Generated URLs Preview -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold text-tenant-text mb-4">Active URLs (Live Preview)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h4 class="font-medium text-gray-700 mb-2">Credential Issuer</h4>
+              <code id="issuer_url" class="block text-tenant-primary text-sm break-all">
+                {% if network_config.ngrok_issuer_url %}
+                  {{ network_config.ngrok_issuer_url }}
+                {% else %}
+                  {{ network_config.server_url or 'https://127.0.0.1:8080' }}
                 {% endif %}
-              {% endfor %}
+              </code>
+              <span id="issuer_source" class="text-xs text-gray-500 mt-1 block">
+                {% if network_config.ngrok_issuer_url %}
+                  (Ngrok tunnel)
+                {% else %}
+                  (Network IP)
+                {% endif %}
+              </span>
             </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- Security & Authentication Policies -->
-      <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
-        <h3 class="text-base font-semibold text-tenant-text mb-3 flex items-center">
-          <i class="fas fa-shield-alt text-tenant-primary mr-2"></i>
-          Security & Authentication Policies
-        </h3>
-        <p class="text-sm text-gray-600 mb-3">Automatically enforced security measures:</p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div class="flex items-start p-2 border border-green-200 bg-green-50 rounded">
-            <i class="fas fa-signature text-green-600 mr-2 text-sm mt-0.5"></i>
-            <div>
-              <label class="font-medium text-green-900 text-sm">BBS+ Signature Verification</label>
-              <p class="text-xs text-green-700">Cryptographic proof of authenticity and tamper detection</p>
-            </div>
-          </div>
-          
-          <div class="flex items-start p-2 border border-blue-200 bg-blue-50 rounded">
-            <i class="fas fa-university text-blue-600 mr-2 text-sm mt-0.5"></i>
-            <div>
-              <label class="font-medium text-blue-900 text-sm">Trusted Issuer Validation</label>
-              <p class="text-xs text-blue-700">Verifies issuer authority and certificate chain</p>
-            </div>
-          </div>
-          
-          <div class="flex items-start p-2 border border-purple-200 bg-purple-50 rounded">
-            <i class="fas fa-clock text-purple-600 mr-2 text-sm mt-0.5"></i>
-            <div>
-              <label class="font-medium text-purple-900 text-sm">Real-time Status Check</label>
-              <p class="text-xs text-purple-700">Live revocation status and validity verification</p>
-            </div>
-          </div>
-          
-          <div class="flex items-start p-2 border border-orange-200 bg-orange-50 rounded">
-            <i class="fas fa-mask text-orange-600 mr-2 text-sm mt-0.5"></i>
-            <div>
-              <label class="font-medium text-orange-900 text-sm">Zero-Knowledge Privacy</label>
-              <p class="text-xs text-orange-700">Selective disclosure without revealing other data</p>
-            </div>
-          </div>
-          
-          <div class="flex items-start p-2 border border-red-200 bg-red-50 rounded">
-            <i class="fas fa-shield-virus text-red-600 mr-2 text-sm mt-0.5"></i>
-            <div>
-              <label class="font-medium text-red-900 text-sm">Replay Attack Prevention</label>
-              <p class="text-xs text-red-700">Nonce-based protection against duplicate presentations</p>
-            </div>
-          </div>
-          
-          <div class="flex items-start p-2 border border-indigo-200 bg-indigo-50 rounded">
-            <i class="fas fa-key text-indigo-600 mr-2 text-sm mt-0.5"></i>
-            <div>
-              <label class="font-medium text-indigo-900 text-sm">Cryptographic Key Binding</label>
-              <p class="text-xs text-indigo-700">Ensures holder owns the presented credential</p>
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h4 class="font-medium text-gray-700 mb-2">Verifier Endpoint</h4>
+              <code id="verifier_url" class="block text-tenant-primary text-sm break-all">
+                {% if network_config.ngrok_verifier_url %}
+                  {{ network_config.ngrok_verifier_url }}/verifier
+                {% else %}
+                  {{ network_config.server_url or 'https://127.0.0.1:8080' }}/verifier
+                {% endif %}
+              </code>
+              <span id="verifier_source" class="text-xs text-gray-500 mt-1 block">
+                {% if network_config.ngrok_verifier_url %}
+                  (Ngrok tunnel)
+                {% else %}
+                  (Network IP)
+                {% endif %}
+              </span>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Save Settings Button -->
-      <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
-        <button type="submit" class="w-full bg-tenant-primary text-tenant-primary-text py-2 px-4 rounded hover:bg-opacity-90 transition-colors font-semibold text-sm flex items-center justify-center">
-          <i class="fas fa-save mr-2"></i>
-          Apply Verification Settings
-        </button>
-        <p class="text-xs text-gray-500 mt-2 text-center">Changes take effect immediately</p>
-      </div>
-    </form>
-  </div>
-
-  <!-- Compact Settings Sidebar -->
-  <div class="lg:col-span-1">
-    <div class="space-y-3">
-      
-      <!-- Live Settings Summary -->
-      <div class="bg-white rounded shadow-sm border border-gray-200 p-3 sticky top-4">
-        <h3 class="text-sm font-semibold text-tenant-text mb-2 flex items-center">
-          <i class="fas fa-chart-bar text-tenant-primary mr-2"></i>
-          Current Configuration
-        </h3>
-        
-        <div class="space-y-2">
-          <div class="text-center">
-            <div class="text-xs font-medium text-gray-700 mb-1">Required Information</div>
-            <div id="required-fields-count" class="text-xl font-bold text-tenant-primary">
-              {{ mandatory_fields|length }}
-            </div>
-            <div class="text-xs text-gray-500">of {{ demo_credential|length }} available</div>
-          </div>
-          
-          <div class="border-t pt-2 text-center">
-            <div class="text-xs font-medium text-gray-700 mb-1">Privacy Level</div>
-            <div class="inline-flex items-center space-x-1">
-              <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">Maximum</span>
-            </div>
-            <div class="text-xs text-gray-500 mt-1">Zero-knowledge verification</div>
-          </div>
+        <!-- Save Network Settings Button -->
+        <div class="border-t pt-6">
+          <button type="submit" class="w-full bg-tenant-primary text-white py-3 px-6 rounded-lg hover:bg-opacity-90 transition-colors font-semibold flex items-center justify-center">
+            <i class="fas fa-save mr-2"></i>
+            Apply Network Settings
+          </button>
+          <p class="text-sm text-gray-500 mt-2 text-center">Changes require restart to take full effect</p>
         </div>
-      </div>
-
-      <!-- Quick Guide -->
-      <div class="bg-tenant-light rounded border border-gray-200 p-3">
-        <h4 class="font-semibold text-tenant-text mb-2 text-sm flex items-center">
-          <i class="fas fa-lightbulb text-tenant-primary mr-2"></i>
-          How It Works
-        </h4>
-        <div class="text-xs text-gray-600 space-y-1">
-          <p><strong>Selective Disclosure:</strong> Students reveal only required information.</p>
-          <p><strong>Privacy-First:</strong> All other data stays encrypted.</p>
-        </div>
-      </div>
-
-      <!-- Best Practices -->
-      <div class="bg-yellow-50 rounded border border-yellow-200 p-3">
-        <h4 class="font-semibold text-yellow-900 mb-2 text-sm flex items-center">
-          <i class="fas fa-shield-check text-yellow-600 mr-2"></i>
-          Best Practice
-        </h4>
-        <div class="text-xs text-yellow-800">
-          <p>Only request essential information to maintain student privacy.</p>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 </div>
+
+<!-- Sidebar Information -->
+<div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Current Configuration Summary -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+    <h3 class="text-lg font-semibold text-tenant-text mb-3 flex items-center">
+      <i class="fas fa-chart-bar text-tenant-primary mr-2"></i>
+      Configuration Summary
+    </h3>
+    
+    <div class="space-y-3">
+      <div class="text-center p-3 bg-tenant-light rounded-lg">
+        <div class="text-sm font-medium text-gray-700 mb-1">Required Information</div>
+        <div id="required-fields-summary" class="text-2xl font-bold text-tenant-primary">
+          {{ mandatory_fields|length }}
+        </div>
+        <div class="text-xs text-gray-500">of {{ demo_credential|length }} available fields</div>
+      </div>
+      
+      <div class="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+        <div class="text-sm font-medium text-green-700 mb-1">Privacy Level</div>
+        <div class="inline-flex items-center space-x-1">
+          <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">Maximum</span>
+        </div>
+        <div class="text-xs text-green-600 mt-1">Zero-knowledge verification</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works Guide -->
+  <div class="bg-tenant-light rounded-lg border border-gray-200 p-4">
+    <h4 class="font-semibold text-tenant-text mb-3 flex items-center">
+      <i class="fas fa-lightbulb text-tenant-primary mr-2"></i>
+      How It Works
+    </h4>
+    <div class="text-sm text-gray-600 space-y-2">
+      <p><strong>Selective Disclosure:</strong> Students reveal only required information you specify.</p>
+      <p><strong>Privacy-First:</strong> All other credential data stays encrypted and hidden.</p>
+      <p><strong>Zero-Knowledge:</strong> Cryptographic proofs verify authenticity without exposing data.</p>
+    </div>
+  </div>
+
+  <!-- Best Practices -->
+  <div class="bg-yellow-50 rounded-lg border border-yellow-200 p-4">
+    <h4 class="font-semibold text-yellow-900 mb-3 flex items-center">
+      <i class="fas fa-shield-check text-yellow-600 mr-2"></i>
+      Best Practices
+    </h4>
+    <div class="text-sm text-yellow-800 space-y-2">
+      <p><strong>Minimal Data:</strong> Only request essential information to maintain student privacy.</p>
+      <p><strong>Network Security:</strong> Use HTTPS and secure tunnels for production.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CRITICAL FIX: Make switchTab function available immediately -->
+<script>
+  // Tab switching functionality - AVAILABLE IMMEDIATELY
+  window.switchTab = function(tabName) {
+    console.log('🔄 switchTab called IMMEDIATELY with:', tabName);
+    
+    try {
+      // Hide all tab contents
+      const tabContents = document.querySelectorAll('.tab-content');
+      console.log('📋 Found tab contents:', tabContents.length);
+      tabContents.forEach(content => {
+        content.classList.add('hidden');
+        console.log('  - Hidden tab:', content.id);
+      });
+      
+      // Remove active state from all tabs
+      const tabButtons = document.querySelectorAll('.tab-button');
+      console.log('🔘 Found tab buttons:', tabButtons.length);
+      tabButtons.forEach(button => {
+        button.classList.remove('border-tenant-primary', 'text-tenant-primary');
+        button.classList.add('border-transparent', 'text-gray-500');
+      });
+      
+      // Show selected tab content
+      const targetContent = document.getElementById('content-' + tabName);
+      if (!targetContent) {
+        console.error('❌ Target tab content not found:', 'content-' + tabName);
+        return;
+      }
+      targetContent.classList.remove('hidden');
+      console.log('✅ Showed tab content:', targetContent.id);
+      
+      // Add active state to selected tab
+      const activeTab = document.getElementById('tab-' + tabName);
+      if (!activeTab) {
+        console.error('❌ Target tab button not found:', 'tab-' + tabName);
+        return;
+      }
+      activeTab.classList.remove('border-transparent', 'text-gray-500');
+      activeTab.classList.add('border-tenant-primary', 'text-tenant-primary');
+      console.log('✅ Activated tab button:', activeTab.id);
+      
+      // Save tab state
+      localStorage.setItem('activeVerifierTab', tabName);
+      console.log('💾 Saved tab state:', tabName);
+      
+    } catch (error) {
+      console.error('❌ Error in switchTab:', error);
+    }
+  };
+
+  // Toggle collapsible categories - AVAILABLE IMMEDIATELY
+  window.toggleCategory = function(categoryId) {
+    console.log('🔽 toggleCategory called IMMEDIATELY with:', categoryId);
+    
+    try {
+      const content = document.getElementById('category-' + categoryId);
+      const chevron = document.getElementById('chevron-' + categoryId);
+      
+      if (!content || !chevron) {
+        console.error('❌ Could not find elements for category:', categoryId);
+        console.error('  - Looking for content:', 'category-' + categoryId);
+        console.error('  - Looking for chevron:', 'chevron-' + categoryId);
+        console.error('  - Available elements:', 
+          Array.from(document.querySelectorAll('[id^="category-"]')).map(el => el.id),
+          Array.from(document.querySelectorAll('[id^="chevron-"]')).map(el => el.id)
+        );
+        return;
+      }
+      
+      const isHidden = content.classList.contains('hidden');
+      
+      if (isHidden) {
+        content.classList.remove('hidden');
+        chevron.classList.add('rotate-90');
+        console.log('✅ Opened category:', categoryId);
+      } else {
+        content.classList.add('hidden');
+        chevron.classList.remove('rotate-90');
+        console.log('✅ Closed category:', categoryId);
+      }
+    } catch (error) {
+      console.error('❌ Error in toggleCategory:', error);
+    }
+  };
+
+  // Ensure the function is available globally for onclick handlers
+  if (typeof window !== 'undefined') {
+    window.toggleCategory = window.toggleCategory;
+  }
+
+  // Update category counts - AVAILABLE IMMEDIATELY
+  window.updateCategoryCount = function(categoryId) {
+    console.log('📊 updateCategoryCount called IMMEDIATELY with:', categoryId);
+    
+    try {
+      const categoryDiv = document.getElementById('category-' + categoryId);
+      const countSpan = document.getElementById('count-' + categoryId);
+      
+      if (!categoryDiv || !countSpan) {
+        console.error('❌ Could not find elements for category count:', categoryId);
+        console.error('  - Looking for category div:', 'category-' + categoryId, categoryDiv ? 'found' : 'not found');
+        console.error('  - Looking for count span:', 'count-' + categoryId, countSpan ? 'found' : 'not found');
+        return;
+      }
+      
+      const checkboxes = categoryDiv.querySelectorAll('input[type="checkbox"]:checked');
+      const count = checkboxes.length;
+      countSpan.textContent = count;
+      
+      console.log(`✅ Updated ${categoryId}: ${count} selected`);
+      
+      // Also update the overall required fields count
+      if (typeof window.updateRequiredFieldsCount === 'function') {
+        window.updateRequiredFieldsCount();
+      }
+    } catch (error) {
+      console.error('❌ Error in updateCategoryCount:', error);
+    }
+  };
+
+  // Update required fields counter - AVAILABLE IMMEDIATELY  
+  window.updateRequiredFieldsCount = function() {
+    console.log('🔢 updateRequiredFieldsCount called IMMEDIATELY');
+    
+    try {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([disabled])');
+      const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+      
+      const counters = ['required-fields-count', 'required-fields-summary'];
+      counters.forEach(counterId => {
+        const element = document.getElementById(counterId);
+        if (element) {
+          element.textContent = checkedCount;
+          console.log(`✅ Updated counter ${counterId}: ${checkedCount}`);
+        }
+      });
+    } catch (error) {
+      console.error('❌ Error in updateRequiredFieldsCount:', error);
+    }
+  };
+
+  // Make functions globally available for compatibility
+  window.switchTab = window.switchTab;
+  window.toggleCategory = window.toggleCategory;
+  window.updateCategoryCount = window.updateCategoryCount;
+  window.updateRequiredFieldsCount = window.updateRequiredFieldsCount;
+  
+  console.log('📋 Functions available:');
+  console.log('  - switchTab:', typeof window.switchTab);
+  console.log('  - toggleCategory:', typeof window.toggleCategory);
+  console.log('  - updateCategoryCount:', typeof window.updateCategoryCount);
+  console.log('  - updateRequiredFieldsCount:', typeof window.updateRequiredFieldsCount);
+</script>
 
 {% endblock %}
 
 {% block javascript %}
 <script>
-  // Toggle collapsible categories
-  function toggleCategory(categoryId) {
-    const content = document.getElementById('category-' + categoryId);
-    const chevron = document.getElementById('chevron-' + categoryId);
+  // switchTab and toggleCategory functions are now defined in the immediate script section above
+  // This ensures they're available immediately when the page loads
+
+  // updateCategoryCount and updateRequiredFieldsCount functions are now defined in the immediate script section above
+  // This ensures they're available immediately when the page loads
+
+  // Form submission handling
+  document.getElementById('verifierSettingsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     
-    if (!content || !chevron) {
-      console.error('Could not find elements for category:', categoryId);
-      return;
+    const checkedCount = document.querySelectorAll('input[type="checkbox"]:not([disabled]):checked').length;
+    
+    if (checkedCount === 0) {
+      showToast('Please select at least one required field for verification.', 'error');
+      return false;
     }
     
-    const isHidden = content.classList.contains('hidden');
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving Settings...';
+    submitButton.disabled = true;
     
-    if (isHidden) {
-      content.classList.remove('hidden');
-      chevron.classList.add('rotate-90');
+    const formData = new FormData(this);
+    
+    fetch('/verifier/settings', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        submitButton.innerHTML = '<i class="fas fa-check mr-2"></i>Settings Saved!';
+        submitButton.classList.remove('bg-tenant-primary');
+        submitButton.classList.add('bg-green-600');
+        
+        showToast(`Settings saved successfully! ${checkedCount} fields are now required for verification.`, 'success');
+        
+        setTimeout(() => {
+          submitButton.innerHTML = originalText;
+          submitButton.classList.remove('bg-green-600');
+          submitButton.classList.add('bg-tenant-primary');
+          submitButton.disabled = false;
+        }, 2000);
+      } else {
+        throw new Error('Failed to save settings');
+      }
+    })
+    .catch(error => {
+      console.error('Error saving settings:', error);
+      submitButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Save Failed';
+      submitButton.classList.remove('bg-tenant-primary');
+      submitButton.classList.add('bg-red-600');
+      
+      showToast('Failed to save settings. Please try again.', 'error');
+      
+      setTimeout(() => {
+        submitButton.innerHTML = originalText;
+        submitButton.classList.remove('bg-red-600');
+        submitButton.classList.add('bg-tenant-primary');
+        submitButton.disabled = false;
+      }, 3000);
+    });
+  });
+
+  // Network form submission
+  document.getElementById('networkSettingsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving Network Settings...';
+    submitButton.disabled = true;
+    
+    const formData = new FormData(this);
+    
+    fetch('/verifier/network', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        submitButton.innerHTML = '<i class="fas fa-check mr-2"></i>Network Settings Saved!';
+        submitButton.classList.remove('bg-tenant-primary');
+        submitButton.classList.add('bg-green-600');
+        
+        showToast('Network settings saved successfully!', 'success');
+        
+        setTimeout(() => {
+          submitButton.innerHTML = originalText;
+          submitButton.classList.remove('bg-green-600');
+          submitButton.classList.add('bg-tenant-primary');
+          submitButton.disabled = false;
+        }, 2000);
+      } else {
+        throw new Error('Failed to save network settings');
+      }
+    })
+    .catch(error => {
+      console.error('Error saving network settings:', error);
+      submitButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Save Failed';
+      submitButton.classList.remove('bg-tenant-primary');
+      submitButton.classList.add('bg-red-600');
+      
+      showToast('Failed to save network settings. Please try again.', 'error');
+      
+      setTimeout(() => {
+        submitButton.innerHTML = originalText;
+        submitButton.classList.remove('bg-red-600');
+        submitButton.classList.add('bg-tenant-primary');
+        submitButton.disabled = false;
+      }, 3000);
+    });
+  });
+  
+  // Toast notification function
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full shadow-lg max-w-md ${
+      type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.remove('translate-x-full');
+    }, 100);
+    
+    setTimeout(() => {
+      toast.classList.add('translate-x-full');
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 300);
+    }, 4000);
+  }
+  
+  // IP Detection function
+  function detectLocalIP() {
+    console.log('🔍 Detecting local IP address...');
+    
+    const button = event.target.closest('button');
+    const originalIcon = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+    const pc = new RTCPeerConnection({iceServers: []});
+    pc.createDataChannel('');
+    
+    pc.createOffer().then(offer => pc.setLocalDescription(offer));
+    
+    pc.onicecandidate = function(event) {
+      if (event.candidate) {
+        const candidate = event.candidate.candidate;
+        const match = candidate.match(/(\\d+\\.\\d+\\.\\d+\\.\\d+)/);
+        if (match && !match[1].startsWith('127.')) {
+          const ip = match[1];
+          console.log('✅ Detected IP:', ip);
+          document.getElementById('server_ip').value = ip;
+          updateURLPreviews();
+          showToast(`Detected IP address: ${ip}`, 'success');
+        }
+      }
+      
+      setTimeout(() => {
+        button.innerHTML = originalIcon;
+      }, 1000);
+    };
+    
+    setTimeout(() => {
+      if (button.innerHTML.includes('spinner')) {
+        button.innerHTML = originalIcon;
+        showToast('IP detection failed. Please enter manually.', 'error');
+      }
+    }, 3000);
+  }
+  
+  // Update URL previews
+  function updateURLPreviews() {
+    const serverIP = document.getElementById('server_ip').value || '127.0.0.1';
+    const useNetworkIP = document.querySelector('input[name="use_network_ip"]:checked').value === 'true';
+    const ngrokIssuerURL = document.getElementById('ngrok_issuer_url').value.trim();
+    const ngrokVerifierURL = document.getElementById('ngrok_verifier_url').value.trim();
+    
+    let issuerURL, verifierURL;
+    let issuerSource, verifierSource;
+    
+    if (ngrokIssuerURL) {
+      issuerURL = ngrokIssuerURL;
+      issuerSource = '(Ngrok tunnel)';
     } else {
-      content.classList.add('hidden');
-      chevron.classList.remove('rotate-90');
+      const ip = useNetworkIP ? serverIP : '127.0.0.1';
+      const port = '{{ network_config.port }}';
+      issuerURL = `https://${ip}:${port}`;
+      issuerSource = useNetworkIP ? '(Network IP)' : '(Localhost)';
     }
     
-    // Force a reflow to ensure the transition works
-    void content.offsetHeight;
-  }
-
-  // Update category counts
-  function updateCategoryCount(categoryId) {
-    const categoryDiv = document.getElementById('category-' + categoryId);
-    const countSpan = document.getElementById('count-' + categoryId);
-    
-    if (!categoryDiv || !countSpan) {
-      console.error('Could not find elements for category count:', categoryId);
-      return;
+    if (ngrokVerifierURL) {
+      verifierURL = `${ngrokVerifierURL}/verifier`;
+      verifierSource = '(Ngrok tunnel)';
+    } else {
+      const ip = useNetworkIP ? serverIP : '127.0.0.1';
+      const port = '{{ network_config.port }}';
+      verifierURL = `https://${ip}:${port}/verifier`;
+      verifierSource = useNetworkIP ? '(Network IP)' : '(Localhost)';
     }
     
-    const checkboxes = categoryDiv.querySelectorAll('input[type="checkbox"]:checked');
-    countSpan.textContent = checkboxes.length;
-    updateRequiredFieldsCount();
+    document.getElementById('issuer_url').textContent = issuerURL;
+    document.getElementById('verifier_url').textContent = verifierURL;
+    document.getElementById('issuer_source').textContent = issuerSource;
+    document.getElementById('verifier_source').textContent = verifierSource;
   }
 
-  // Update required fields counter dynamically
-  function updateRequiredFieldsCount() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([disabled])');
-    const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-    document.getElementById('required-fields-count').textContent = checkedCount;
-  }
-
-  // Add event listeners to checkboxes
+  // Initialize everything
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing verifier settings page...');
+    console.log('🚀 Initializing verifier settings page...');
+    
+    // Restore saved tab or default to verifier
+    const savedTab = localStorage.getItem('activeVerifierTab') || 'verifier';
+    switchTab(savedTab);
+    
+    // Dynamically detect categories from the DOM instead of hardcoding
+    const categoryElements = document.querySelectorAll('[id^="category-"]');
+    const categories = Array.from(categoryElements).map(el => el.id.replace('category-', ''));
+    
+    console.log('📋 Found categories:', categories);
     
     // Initialize category counts
-    const categories = ['StudentIdentity', 'AcademicInformation', 'CredentialMetadata', 'SecurityCryptography', 'UIThemeSettings'];
-    
-    // Check if all category elements exist
     categories.forEach(category => {
-      const categoryElement = document.getElementById('category-' + category);
-      const chevronElement = document.getElementById('chevron-' + category);
-      const countElement = document.getElementById('count-' + category);
-      
-      if (!categoryElement) {
-        console.warn('Category element not found:', 'category-' + category);
-      }
-      if (!chevronElement) {
-        console.warn('Chevron element not found:', 'chevron-' + category);
-      }
-      if (!countElement) {
-        console.warn('Count element not found:', 'count-' + category);
-      }
-      
       updateCategoryCount(category);
     });
     
+    // Add event listeners to checkboxes
     const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([disabled])');
     checkboxes.forEach(checkbox => {
       checkbox.addEventListener('change', function() {
         updateRequiredFieldsCount();
         
-        // Find which category this checkbox belongs to and update its count
         const categoryElement = this.closest('[id^="category-"]');
         if (categoryElement) {
           const categoryId = categoryElement.id.replace('category-', '');
           updateCategoryCount(categoryId);
         }
         
-        // Update the status badge
         const container = this.closest('.flex');
         const badge = container.querySelector('.bg-red-100, .bg-gray-100');
         if (badge) {
           if (this.checked) {
-            badge.className = 'bg-red-100 text-red-800 text-xs px-1 py-0.5 rounded';
-            badge.textContent = 'Req';
+            badge.className = 'bg-red-100 text-red-800 text-sm px-2 py-1 rounded-full font-medium';
+            badge.textContent = 'Required';
           } else {
-            badge.className = 'bg-gray-100 text-gray-600 text-xs px-1 py-0.5 rounded';
-            badge.textContent = 'Opt';
+            badge.className = 'bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded-full';
+            badge.textContent = 'Optional';
           }
         }
       });
     });
     
-    // Initialize counter
-    updateRequiredFieldsCount();
-  });
-
-  // Form submission confirmation
-  document.getElementById('verifierSettingsForm').addEventListener('submit', function(e) {
-    const checkedCount = document.querySelectorAll('input[type="checkbox"]:not([disabled]):checked').length;
-    
-    if (checkedCount === 0) {
-      e.preventDefault();
-      alert('Please select at least one required field for verification.');
-      return false;
+    // Network configuration event listeners
+    if (document.getElementById('server_ip')) {
+      document.getElementById('server_ip').addEventListener('input', updateURLPreviews);
+      document.getElementById('ngrok_issuer_url').addEventListener('input', updateURLPreviews);
+      document.getElementById('ngrok_verifier_url').addEventListener('input', updateURLPreviews);
+      
+      document.querySelectorAll('input[name="use_network_ip"]').forEach(radio => {
+        radio.addEventListener('change', updateURLPreviews);
+      });
+      
+      updateURLPreviews();
     }
     
-    // Show success message
-    const submitButton = this.querySelector('button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving Settings...';
-    submitButton.disabled = true;
-    
-    // Re-enable button after a short delay (for demo purposes)
-    setTimeout(() => {
-      submitButton.innerHTML = '<i class="fas fa-check mr-2"></i>Settings Saved!';
-      setTimeout(() => {
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-      }, 2000);
-    }, 1000);
+    updateRequiredFieldsCount();
   });
 </script>
 {% endblock %}

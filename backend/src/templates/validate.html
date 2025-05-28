@@ -2,154 +2,195 @@
 {% block title %}Credential Status - {{ tenant_name }}{% endblock %} 
 {% block content %}
 
-<!-- Simple Page Title -->
+<!-- Page Header -->
 <div class="mb-6">
   <h1 class="text-2xl font-bold text-tenant-text mb-2">Credential Status</h1>
   <p class="text-gray-600 text-sm">Monitor and manage the status of issued credentials</p>
 </div>
 
-<!-- Statistics Overview -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+<!-- Credential Overview Cards (moved from Stats) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <!-- Total Credentials -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
     <div class="flex items-center">
-      <div class="p-3 rounded-full bg-green-100 text-green-600">
-        <i class="fas fa-check-circle text-xl"></i>
+      <div class="bg-blue-100 p-3 rounded-lg mr-3">
+        <i class="fas fa-certificate text-blue-600 text-lg"></i>
       </div>
-      <div class="ml-4">
-        <div class="text-sm font-medium text-gray-500">Valid Credentials</div>
-        <div class="text-2xl font-bold text-gray-900">
-          {% set valid_count = credentials|selectattr('valid', 'equalto', 'Valid')|list|length %}
-          {{ valid_count }}
-        </div>
+      <div>
+        <p class="text-xs text-gray-500 uppercase font-medium">Total Credentials</p>
+        <p class="text-xl font-bold text-gray-900">{{ stats.credentials.total_credentials }}</p>
+        <p class="text-xs text-gray-600">All issued</p>
       </div>
     </div>
   </div>
-  
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+
+  <!-- Issued/Active Credentials -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
     <div class="flex items-center">
-      <div class="p-3 rounded-full bg-red-100 text-red-600">
-        <i class="fas fa-times-circle text-xl"></i>
+      <div class="bg-green-100 p-3 rounded-lg mr-3">
+        <i class="fas fa-check-circle text-green-600 text-lg"></i>
       </div>
-      <div class="ml-4">
-        <div class="text-sm font-medium text-gray-500">Revoked Credentials</div>
-        <div class="text-2xl font-bold text-gray-900">
-          {% set revoked_count = credentials|selectattr('valid', 'equalto', 'Revoked')|list|length %}
-          {{ revoked_count }}
-        </div>
+      <div>
+        <p class="text-xs text-gray-500 uppercase font-medium">Issued Credentials</p>
+        <p class="text-xl font-bold text-gray-900">{{ stats.credentials.issued_credentials }}</p>
+        <p class="text-xs text-gray-600">Active & Valid</p>
       </div>
     </div>
   </div>
-  
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+
+  <!-- Revoked Credentials -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
     <div class="flex items-center">
-      <div class="p-3 rounded-full bg-tenant-primary bg-opacity-10 text-tenant-primary">
-        <i class="fas fa-list text-xl"></i>
+      <div class="bg-red-100 p-3 rounded-lg mr-3">
+        <i class="fas fa-times-circle text-red-600 text-lg"></i>
       </div>
-      <div class="ml-4">
-        <div class="text-sm font-medium text-gray-500">Total Credentials</div>
-        <div class="text-2xl font-bold text-gray-900">{{ credentials|length }}</div>
+      <div>
+        <p class="text-xs text-gray-500 uppercase font-medium">Revoked Credentials</p>
+        <p class="text-xl font-bold text-gray-900">{{ stats.credentials.revoked_credentials }}</p>
+        <p class="text-xs text-gray-600">Invalidated</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Credentials Management Table -->
+<!-- Credential Management Tabs (moved from Stats) -->
 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-  <div class="px-6 py-4 border-b border-gray-200">
-    <h3 class="text-lg font-semibold text-tenant-text flex items-center">
-      <i class="fas fa-table text-tenant-primary mr-2"></i>
-      Credential Management
-    </h3>
-    <p class="text-sm text-gray-600 mt-1">Manage the validity status of issued credentials</p>
+  <!-- Tab Headers -->
+  <div class="border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+      <button 
+        onclick="switchCredentialTab('issued')" 
+        id="tab-issued"
+        class="credential-tab-button py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap border-tenant-primary text-tenant-primary"
+        aria-current="page">
+        <i class="fas fa-check-circle mr-2"></i>
+        Issued Credentials
+        <span class="bg-tenant-primary text-white text-xs px-2 py-1 rounded-full ml-2">{{ stats.credentials.issued_credentials }}</span>
+      </button>
+      <button 
+        onclick="switchCredentialTab('revoked')" 
+        id="tab-revoked"
+        class="credential-tab-button py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+        <i class="fas fa-times-circle mr-2"></i>
+        Revoked Credentials
+        <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2">{{ stats.credentials.revoked_credentials }}</span>
+      </button>
+    </nav>
   </div>
-  
-  <div class="overflow-x-auto">
-    {% if credentials %}
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Credential Details
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Identifier
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          {% for credential in credentials %}
-          <tr class="hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4 whitespace-nowrap">
-              {% if credential.valid == 'Valid' %}
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  <i class="fas fa-check-circle mr-1"></i>
-                  Valid
-                </span>
-              {% else %}
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                  <i class="fas fa-times-circle mr-1"></i>
-                  Revoked
-                </span>
-              {% endif %}
-            </td>
-            <td class="px-6 py-4">
-              <div class="text-sm text-gray-900 font-medium">{{ credential.view }}</div>
-              <div class="text-sm text-gray-500">Credential information and metadata</div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded max-w-xs truncate">
-                {{ credential.identifier }}
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <form action="/validate/" method="post" class="inline">
-                <input type="hidden" name="identifier" value="{{ credential.identifier }}" />
-                {% if credential.valid == 'Valid' %}
-                  <button type="submit" 
-                          onclick="return confirm('Are you sure you want to revoke this credential? This action cannot be undone.')"
-                          class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center">
-                    <i class="fas fa-ban mr-2"></i>
-                    Revoke
-                  </button>
-                {% else %}
-                  <button type="submit" 
-                          onclick="return confirm('Are you sure you want to reactivate this credential?')"
-                          class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center">
-                    <i class="fas fa-undo mr-2"></i>
-                    Reactivate
-                  </button>
-                {% endif %}
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <!-- Empty State -->
-      <div class="text-center py-12">
-        <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
-          <i class="fas fa-file-alt text-6xl"></i>
+
+  <!-- Tab Content -->
+  <div class="p-6">
+    <!-- Issued Credentials Tab -->
+    <div id="content-issued" class="credential-tab-content">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-tenant-text">Active Credentials</h3>
+        <div class="text-sm text-gray-500">
+          {{ stats.credentials.issued_credentials }} of {{ stats.credentials.total_credentials }} credentials are active
         </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No Credentials Found</h3>
-        <p class="text-gray-500 mb-6">There are no credentials to validate at this time.</p>
-        <a href="/issuer" class="bg-tenant-primary text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors inline-flex items-center">
+      </div>
+      
+      {% if stats.credentials.issued_list %}
+      <div class="space-y-3">
+        {% for credential in stats.credentials.issued_list %}
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-4">
+            <div class="bg-green-100 p-2 rounded-lg">
+              <i class="fas fa-user-graduate text-green-600"></i>
+            </div>
+            <div>
+              {% if credential.credential_data and credential.credential_data.vc and credential.credential_data.vc.credentialSubject %}
+                {% set subject = credential.credential_data.vc.credentialSubject %}
+                <h4 class="font-medium text-gray-900">
+                  {{ subject.firstName }} {{ subject.lastName }}
+                </h4>
+                <p class="text-sm text-gray-600">Student ID: {{ subject.studentId }}</p>
+              {% else %}
+                <h4 class="font-medium text-gray-900">Credential {{ credential.identifier }}</h4>
+                <p class="text-sm text-gray-600">ID: {{ credential.identifier }}</p>
+              {% endif %}
+              <p class="text-xs text-gray-500">Status: <span class="text-green-600 font-medium">{{ credential.status|title }}</span></p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Active</span>
+            <button 
+              onclick="toggleCredentialStatus({{ credential.id }}, 'revoke')"
+              class="bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded-md text-sm font-medium transition-colors">
+              <i class="fas fa-ban mr-1"></i>
+              Revoke
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-8 text-gray-500">
+        <i class="fas fa-certificate text-gray-300 text-4xl mb-3"></i>
+        <p class="text-lg font-medium">No active credentials found</p>
+        <p class="text-sm">All credentials have been revoked or none have been issued yet.</p>
+        <a href="/issuer" class="mt-4 bg-tenant-primary text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors inline-flex items-center">
           <i class="fas fa-plus mr-2"></i>
           Issue New Credential
         </a>
       </div>
-    {% endif %}
+      {% endif %}
+    </div>
+
+    <!-- Revoked Credentials Tab -->
+    <div id="content-revoked" class="credential-tab-content hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-tenant-text">Revoked Credentials</h3>
+        <div class="text-sm text-gray-500">
+          {{ stats.credentials.revoked_credentials }} credentials have been revoked
+        </div>
+      </div>
+      
+      {% if stats.credentials.revoked_list %}
+      <div class="space-y-3">
+        {% for credential in stats.credentials.revoked_list %}
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center space-x-4">
+            <div class="bg-red-100 p-2 rounded-lg">
+              <i class="fas fa-user-slash text-red-600"></i>
+            </div>
+            <div>
+              {% if credential.credential_data and credential.credential_data.vc and credential.credential_data.vc.credentialSubject %}
+                {% set subject = credential.credential_data.vc.credentialSubject %}
+                <h4 class="font-medium text-gray-900">
+                  {{ subject.firstName }} {{ subject.lastName }}
+                </h4>
+                <p class="text-sm text-gray-600">Student ID: {{ subject.studentId }}</p>
+              {% else %}
+                <h4 class="font-medium text-gray-900">Credential {{ credential.identifier }}</h4>
+                <p class="text-sm text-gray-600">ID: {{ credential.identifier }}</p>
+              {% endif %}
+              <p class="text-xs text-gray-500">Status: <span class="text-red-600 font-medium">{{ credential.status|title }}</span></p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">Revoked</span>
+            <button 
+              onclick="toggleCredentialStatus({{ credential.id }}, 'reactivate')"
+              class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded-md text-sm font-medium transition-colors">
+              <i class="fas fa-undo mr-1"></i>
+              Reactivate
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-8 text-gray-500">
+        <i class="fas fa-ban text-gray-300 text-4xl mb-3"></i>
+        <p class="text-lg font-medium">No revoked credentials</p>
+        <p class="text-sm">All issued credentials are currently active.</p>
+      </div>
+      {% endif %}
+    </div>
   </div>
 </div>
 
 <!-- Help Section -->
-{% if credentials %}
 <div class="mt-8 bg-tenant-light rounded-lg border border-gray-200 p-6">
   <h4 class="font-semibold text-tenant-text mb-3 flex items-center">
     <i class="fas fa-info-circle text-tenant-primary mr-2"></i>
@@ -162,6 +203,7 @@
         <li>• Revoked credentials cannot be used for verification</li>
         <li>• Changes are reflected immediately in the system</li>
         <li>• Revocation status is cryptographically verifiable</li>
+        <li>• All verification processes will reject revoked credentials</li>
       </ul>
     </div>
     <div>
@@ -170,63 +212,141 @@
         <li>• Credentials can be reactivated if needed</li>
         <li>• All verification processes will resume normally</li>
         <li>• Status changes are logged for audit purposes</li>
+        <li>• Reactivation is immediate and cryptographically secured</li>
       </ul>
     </div>
   </div>
 </div>
-{% endif %}
+
+<!-- Immediate Script for Tab Switching -->
+<script>
+  // Tab switching functionality - AVAILABLE IMMEDIATELY
+  window.switchCredentialTab = function(tabName) {
+    console.log('🔄 switchCredentialTab called IMMEDIATELY with:', tabName);
+    
+    try {
+      // Hide all tab contents
+      const tabContents = document.querySelectorAll('.credential-tab-content');
+      console.log('📋 Found credential tab contents:', tabContents.length);
+      tabContents.forEach(content => {
+        content.classList.add('hidden');
+        console.log('  - Hidden tab:', content.id);
+      });
+      
+      // Remove active state from all tabs
+      const tabButtons = document.querySelectorAll('.credential-tab-button');
+      console.log('🔘 Found credential tab buttons:', tabButtons.length);
+      tabButtons.forEach(button => {
+        button.classList.remove('border-tenant-primary', 'text-tenant-primary');
+        button.classList.add('border-transparent', 'text-gray-500');
+      });
+      
+      // Show selected tab content
+      const targetContent = document.getElementById('content-' + tabName);
+      if (!targetContent) {
+        console.error('❌ Target tab content not found:', 'content-' + tabName);
+        return;
+      }
+      targetContent.classList.remove('hidden');
+      console.log('✅ Showed tab content:', targetContent.id);
+      
+      // Add active state to selected tab
+      const activeTab = document.getElementById('tab-' + tabName);
+      if (!activeTab) {
+        console.error('❌ Target tab button not found:', 'tab-' + tabName);
+        return;
+      }
+      activeTab.classList.remove('border-transparent', 'text-gray-500');
+      activeTab.classList.add('border-tenant-primary', 'text-tenant-primary');
+      console.log('✅ Activated tab button:', activeTab.id);
+      
+      // Save tab state
+      localStorage.setItem('activeCredentialTab', tabName);
+      console.log('💾 Saved tab state:', tabName);
+      
+    } catch (error) {
+      console.error('❌ Error in switchCredentialTab:', error);
+    }
+  };
+
+  // Toggle credential status - AVAILABLE IMMEDIATELY
+  window.toggleCredentialStatus = function(credentialId, action) {
+    console.log('🔄 toggleCredentialStatus called with:', credentialId, action);
+    
+    const button = event.target.closest('button');
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Processing...';
+    button.disabled = true;
+    
+    fetch(`/validate/credential/toggle/${credentialId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showToast(`Credential ${data.action}: ${data.credential_info}`, 'success');
+        
+        // Refresh the page to update the lists
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        throw new Error(data.error || 'Unknown error');
+      }
+    })
+    .catch(error => {
+      console.error('Error toggling credential status:', error);
+      showToast(`Failed to ${action} credential: ${error.message}`, 'error');
+      
+      button.innerHTML = originalContent;
+      button.disabled = false;
+    });
+  };
+
+  // Toast notification function
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full shadow-lg max-w-md ${
+      type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.remove('translate-x-full');
+    }, 100);
+    
+    setTimeout(() => {
+      toast.classList.add('translate-x-full');
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 300);
+    }, 4000);
+  }
+
+  console.log('📋 Credential functions available:');
+  console.log('  - switchCredentialTab:', typeof window.switchCredentialTab);
+  console.log('  - toggleCredentialStatus:', typeof window.toggleCredentialStatus);
+</script>
 
 {% endblock %}
 
 {% block javascript %}
 <script>
-  // Add confirmation dialogs for status changes
+  // Initialize everything
   document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('form[action="/validate/"]');
+    console.log('🚀 Initializing credential status page...');
     
-    forms.forEach(form => {
-      form.addEventListener('submit', function(e) {
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalText = submitButton.innerHTML;
-        
-        // Show loading state
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
-        submitButton.disabled = true;
-        
-        // Simulate processing time for better UX
-        setTimeout(() => {
-          // The form will actually submit and reload the page
-          // This is just for visual feedback
-        }, 500);
-      });
-    });
+    // Restore saved tab or default to issued
+    const savedTab = localStorage.getItem('activeCredentialTab') || 'issued';
+    switchCredentialTab(savedTab);
   });
-
-  // Add search/filter functionality
-  function filterCredentials() {
-    const searchInput = document.getElementById('credential-search');
-    const statusFilter = document.getElementById('status-filter');
-    
-    if (!searchInput || !statusFilter) return;
-    
-    const searchTerm = searchInput.value.toLowerCase();
-    const statusValue = statusFilter.value;
-    const rows = document.querySelectorAll('tbody tr');
-    
-    rows.forEach(row => {
-      const credentialText = row.cells[1].textContent.toLowerCase();
-      const identifier = row.cells[2].textContent.toLowerCase();
-      const status = row.cells[0].textContent.trim();
-      
-      const matchesSearch = credentialText.includes(searchTerm) || identifier.includes(searchTerm);
-      const matchesStatus = statusValue === 'all' || status.toLowerCase().includes(statusValue.toLowerCase());
-      
-      if (matchesSearch && matchesStatus) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
-  }
 </script>
 {% endblock %}

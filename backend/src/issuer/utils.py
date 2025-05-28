@@ -6,27 +6,48 @@ from functools import lru_cache
 
 
 def preprocess_image(path, resolution, keep_aspect_ratio=False):
-    """Fast image preprocessing with optimization"""
-    img = Image.open(path)
+    """Fast image preprocessing with optimization and robust error handling"""
+    try:
+        # Handle both file paths and FileStorage objects
+        if hasattr(path, 'read'):
+            # It's a FileStorage object
+            img = Image.open(path)
+        else:
+            # It's a file path
+            img = Image.open(path)
 
-    if img.mode != "RGB":
-        img = img.convert("RGB")
+        # Convert to RGB if needed
+        if img.mode != "RGB":
+            img = img.convert("RGB")
 
-    if keep_aspect_ratio:
-        original_width, original_height = img.size
-        max_height = resolution[1]
-        scale_factor = max_height / original_height
-        new_width = int(original_width * scale_factor)
-        img = img.resize((new_width, max_height), Image.LANCZOS)
-    else:
-        img = img.resize(resolution, Image.LANCZOS)
+        # Validate image size (prevent DoS attacks)
+        max_pixels = 50 * 1024 * 1024  # 50MP max
+        if img.size[0] * img.size[1] > max_pixels:
+            raise ValueError("Image too large")
 
-    # base 64 encode the image as jpg with optimized quality
-    buffered = BytesIO()
-    img.save(buffered, format="JPEG", quality=85, optimize=True)
-    img = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        # Resize image
+        if keep_aspect_ratio:
+            original_width, original_height = img.size
+            max_height = resolution[1]
+            scale_factor = max_height / original_height
+            new_width = int(original_width * scale_factor)
+            img = img.resize((new_width, max_height), Image.LANCZOS)
+        else:
+            img = img.resize(resolution, Image.LANCZOS)
 
-    return img
+        # Encode as base64 JPEG with optimized quality
+        buffered = BytesIO()
+        img.save(buffered, format="JPEG", quality=85, optimize=True)
+        img_data = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        
+        # Validate the encoded data
+        if not img_data or len(img_data) == 0:
+            raise ValueError("Image encoding failed")
+        
+        return img_data
+
+    except Exception as e:
+        raise ValueError(f"Image processing failed: {str(e)}") from e
 
 
 @lru_cache(maxsize=4)

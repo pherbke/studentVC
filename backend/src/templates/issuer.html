@@ -18,10 +18,112 @@
       
       <!-- Student Information Section -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <h3 class="text-lg font-semibold text-tenant-text mb-3 flex items-center">
-          <i class="fas fa-user text-tenant-primary mr-2"></i>
-          Student Information
-        </h3>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-semibold text-tenant-text flex items-center">
+            <i class="fas fa-user text-tenant-primary mr-2"></i>
+            Student Information
+          </h3>
+          <button type="button" id="fillRandomButton" onclick="fillRandomData()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-md transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-dice mr-2"></i>
+            Fill Random Data
+          </button>
+        </div>
+
+        <!-- CRITICAL FIX: Make fillRandomData function available immediately -->
+        <script>
+          // Fill random data functionality - AVAILABLE IMMEDIATELY
+          if (!window.fillRandomData) {
+            window.fillRandomData = function() {
+            console.log('🎲 fillRandomData called IMMEDIATELY');
+            
+            try {
+              console.log('🎲 Generating random data');
+              
+              // Generate random student data
+              const firstNames = ['Max', 'Anna', 'Lukas', 'Emma', 'Felix', 'Lena', 'Tom', 'Julia', 'Ben', 'Sarah'];
+              const lastNames = ['Müller', 'Schmidt', 'Weber', 'Fischer', 'Meyer', 'Wagner', 'Koch', 'Richter', 'Klein', 'Wolf'];
+              
+              const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+              const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+              const randomStudentId = Math.floor(100000 + Math.random() * 900000).toString();
+              const randomStudentIdPrefix = Math.floor(100000 + Math.random() * 900000).toString();
+              
+              // Fill form fields with immediate DOM queries
+              const firstNameField = document.getElementById('firstName');
+              const lastNameField = document.getElementById('lastName');
+              const studentIdField = document.getElementById('studentId');
+              const studentIdPrefixField = document.getElementById('studentIdPrefix');
+              
+              if (firstNameField) {
+                firstNameField.value = randomFirstName;
+                console.log('✅ Set firstName:', randomFirstName);
+              } else {
+                console.error('❌ firstName field not found');
+              }
+              
+              if (lastNameField) {
+                lastNameField.value = randomLastName;
+                console.log('✅ Set lastName:', randomLastName);
+              } else {
+                console.error('❌ lastName field not found');
+              }
+              
+              if (studentIdField) {
+                studentIdField.value = randomStudentId;
+                console.log('✅ Set studentId:', randomStudentId);
+              } else {
+                console.error('❌ studentId field not found');
+              }
+              
+              if (studentIdPrefixField) {
+                studentIdPrefixField.value = randomStudentIdPrefix;
+                console.log('✅ Set studentIdPrefix:', randomStudentIdPrefix);
+              } else {
+                console.error('❌ studentIdPrefix field not found');
+              }
+              
+              // Trigger change events for form validation
+              [firstNameField, lastNameField, studentIdField, studentIdPrefixField].forEach(field => {
+                if (field) {
+                  field.dispatchEvent(new Event('input', { bubbles: true }));
+                  field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+              });
+              
+              console.log('✅ Random data filled successfully');
+              
+              // Show visual feedback
+              const button = document.getElementById('fillRandomButton');
+              if (button) {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Data Filled!';
+                button.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+                button.classList.add('bg-green-100', 'text-green-700');
+                
+                setTimeout(() => {
+                  button.innerHTML = originalText;
+                  button.classList.remove('bg-green-100', 'text-green-700');
+                  button.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                }, 1500);
+              }
+            } catch (error) {
+              console.error('❌ Error in fillRandomData:', error);
+            }
+          };
+
+            // Make function immediately testable
+            console.log('📋 fillRandomData defined and available immediately:', typeof window.fillRandomData);
+            
+            // Test function availability immediately
+            if (typeof window.fillRandomData === 'function') {
+              console.log('✅ fillRandomData function is ready for use');
+            } else {
+              console.error('❌ fillRandomData function failed to load');
+            }
+          } else {
+            console.log('📋 fillRandomData already exists, skipping redefinition');
+          }
+        </script>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
@@ -50,6 +152,8 @@
         </div>
       </div>
 
+      <!-- fillRandomData function is now defined in the immediate script section above -->
+
       <!-- Profile Image Section -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <h3 class="text-lg font-semibold text-tenant-text mb-3 flex items-center">
@@ -58,10 +162,13 @@
         </h3>
         
         <div class="flex items-center space-x-4">
-          <div class="shrink-0">
+          <div class="shrink-0 relative">
             <img id="profilePreview" class="h-20 w-20 object-cover rounded-lg border-2 border-gray-300 bg-gray-50" 
                  src="data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100' height='100' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' font-size='18' text-anchor='middle' dy='.3em' fill='%239ca3af'%3ePhoto%3c/text%3e%3c/svg%3e"
                  alt="Profile preview">
+            <button type="button" id="removeProfileImage" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors hidden" onclick="removeProfileImage()">
+              <i class="fas fa-times"></i>
+            </button>
           </div>
           <div class="flex-1">
             <label for="profileImage" class="block text-sm font-medium text-gray-700 mb-2">Upload Profile Image</label>
@@ -77,8 +184,123 @@
             </div>
             <input type="file" id="profileImage" name="image" accept="image/*" class="hidden" onchange="previewImage(this, 'profilePreview')">
           </div>
+          
+          <!-- Add Reset Button for Better UX -->
+          <div class="mt-3">
+            <button type="button" id="resetPhotoButton" onclick="resetPhoto()" class="bg-red-100 hover:bg-red-200 text-red-700 py-2 px-4 rounded-md transition-colors text-sm font-medium flex items-center">
+              <i class="fas fa-undo mr-2"></i>
+              Reset Photo
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- CRITICAL FIX: Make image functions available immediately -->
+      <script>
+        // Image preview functionality - AVAILABLE IMMEDIATELY
+        window.previewImage = function(input, previewId) {
+          console.log('🖼️ previewImage called IMMEDIATELY with previewId:', previewId);
+          
+          try {
+            if (input.files && input.files[0]) {
+              console.log('File selected:', input.files[0].name);
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                console.log('FileReader loaded image');
+                const previewElement = document.getElementById(previewId);
+                if (previewElement) {
+                  previewElement.src = e.target.result;
+                }
+                
+                // Show the remove button for uploaded images
+                if (previewId === 'profilePreview') {
+                  console.log('Showing remove button for profile image');
+                  const removeBtn = document.getElementById('removeProfileImage');
+                  if (removeBtn) {
+                    removeBtn.classList.remove('hidden');
+                    console.log('Remove button shown successfully');
+                  } else {
+                    console.error('Remove button not found!');
+                  }
+                } else if (previewId === 'themeIconPreview') {
+                  const removeBtn = document.getElementById('removeThemeIcon');
+                  if (removeBtn) {
+                    removeBtn.classList.remove('hidden');
+                  }
+                }
+              };
+              reader.readAsDataURL(input.files[0]);
+            } else {
+              console.log('No file selected');
+            }
+          } catch (error) {
+            console.error('❌ Error in previewImage:', error);
+          }
+        };
+
+        // Remove profile image functionality - AVAILABLE IMMEDIATELY
+        window.removeProfileImage = function() {
+          console.log('🗑️ removeProfileImage called IMMEDIATELY');
+          
+          try {
+            const defaultSrc = "data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100' height='100' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' font-size='18' text-anchor='middle' dy='.3em' fill='%239ca3af'%3ePhoto%3c/text%3e%3c/svg%3e";
+            
+            const preview = document.getElementById('profilePreview');
+            const removeBtn = document.getElementById('removeProfileImage');
+            const fileInput = document.getElementById('profileImage');
+            
+            if (!preview || !removeBtn || !fileInput) {
+              console.error('❌ Missing required elements');
+              return;
+            }
+            
+            // Remove the image and clear the file input
+            preview.src = defaultSrc;
+            fileInput.value = '';
+            
+            // Hide the X button because there's nothing to remove now
+            removeBtn.classList.add('hidden');
+            
+            console.log('✅ Image removed and X button hidden');
+            
+          } catch (error) {
+            console.error('❌ Error in removeProfileImage:', error);
+          }
+        };
+
+        // NEW: Reset photo functionality with confirmation - AVAILABLE IMMEDIATELY
+        window.resetPhoto = function() {
+          console.log('🔄 resetPhoto called IMMEDIATELY');
+          
+          try {
+            if (confirm('Are you sure you want to reset the profile photo? This action cannot be undone.')) {
+              window.removeProfileImage();
+              console.log('✅ Photo reset confirmed and executed');
+              
+              // Show success message (if showToast is available)
+              if (typeof window.showToast === 'function') {
+                showToast('Profile photo reset successfully!', 'success');
+              } else {
+                console.log('✅ Profile photo reset successfully!');
+              }
+            } else {
+              console.log('📝 Photo reset cancelled by user');
+            }
+          } catch (error) {
+            console.error('❌ Error in resetPhoto:', error);
+          }
+        };
+
+        // Make functions globally available for compatibility
+        window.previewImage = window.previewImage;
+        window.removeProfileImage = window.removeProfileImage;
+        window.resetPhoto = window.resetPhoto;
+        
+        console.log('📋 Image functions available:');
+        console.log('  - previewImage:', typeof window.previewImage);
+        console.log('  - removeProfileImage:', typeof window.removeProfileImage);
+        console.log('  - resetPhoto:', typeof window.resetPhoto);
+      </script>
 
       <!-- Theme Settings Section -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
@@ -90,7 +312,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div class="md:col-span-2">
             <label for="theme_name" class="block text-sm font-medium text-gray-700 mb-2">Institution Name</label>
-            <input type="text" id="theme_name" name="theme[name]" placeholder="{{ tenant_full_name }}"
+            <input type="text" id="theme_name" name="theme[name]" placeholder="{{ tenant_full_name }}" value="{{ tenant_full_name }}"
                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
           </div>
           
@@ -100,7 +322,7 @@
               <input type="color" id="bg_color_card_picker" value="{{ tenant_colors.primary }}" 
                      class="h-10 w-16 border border-gray-300 rounded cursor-pointer" 
                      onchange="document.getElementById('bg_color_card').value = this.value.substring(1)">
-              <input type="text" id="bg_color_card" name="theme[bgColorCard]" placeholder="c40e20"
+              <input type="text" id="bg_color_card" name="theme[bgColorCard]" placeholder="{{ tenant_colors.primary.lstrip('#') }}" value="{{ tenant_colors.primary.lstrip('#') }}"
                      class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
             </div>
           </div>
@@ -111,7 +333,7 @@
               <input type="color" id="bg_color_section_top_picker" value="{{ tenant_colors.primary }}"
                      class="h-10 w-16 border border-gray-300 rounded cursor-pointer"
                      onchange="document.getElementById('bg_color_section_top').value = this.value.substring(1)">
-              <input type="text" id="bg_color_section_top" name="theme[bgColorSectionTop]" placeholder="c40e20"
+              <input type="text" id="bg_color_section_top" name="theme[bgColorSectionTop]" placeholder="{{ tenant_colors.primary.lstrip('#') }}" value="{{ tenant_colors.primary.lstrip('#') }}"
                      class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
             </div>
           </div>
@@ -122,7 +344,7 @@
               <input type="color" id="bg_color_section_bot_picker" value="#FFFFFF"
                      class="h-10 w-16 border border-gray-300 rounded cursor-pointer"
                      onchange="document.getElementById('bg_color_section_bot').value = this.value.substring(1)">
-              <input type="text" id="bg_color_section_bot" name="theme[bgColorSectionBot]" placeholder="FFFFFF"
+              <input type="text" id="bg_color_section_bot" name="theme[bgColorSectionBot]" placeholder="FFFFFF" value="FFFFFF"
                      class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
             </div>
           </div>
@@ -133,7 +355,7 @@
               <input type="color" id="fg_color_title_picker" value="#FFFFFF"
                      class="h-10 w-16 border border-gray-300 rounded cursor-pointer"
                      onchange="document.getElementById('fg_color_title').value = this.value.substring(1)">
-              <input type="text" id="fg_color_title" name="theme[fgColorTitle]" placeholder="FFFFFF"
+              <input type="text" id="fg_color_title" name="theme[fgColorTitle]" placeholder="FFFFFF" value="FFFFFF"
                      class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tenant-primary focus:border-transparent transition-colors">
             </div>
           </div>
@@ -143,9 +365,12 @@
         <div class="mt-4">
           <label for="theme_icon" class="block text-sm font-medium text-gray-700 mb-2">Institution Logo</label>
           <div class="flex items-center space-x-6">
-            <div class="shrink-0">
+            <div class="shrink-0 relative">
               <img id="themeIconPreview" class="h-20 w-20 object-contain rounded-lg border-2 border-gray-300 bg-gray-50 p-2" 
                    src="{{ tenant_logo.main }}" alt="Logo preview">
+              <button type="button" id="removeThemeIcon" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors hidden" onclick="removeThemeIcon()">
+                <i class="fas fa-times"></i>
+              </button>
             </div>
             <div class="flex-1">
               <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-tenant-primary transition-colors cursor-pointer"
@@ -164,21 +389,11 @@
       </div>
 
       <!-- Submit Section -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 space-y-4">
-        <!-- Regular Submit Button -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <button type="submit" id="generateButton" class="w-full bg-tenant-primary text-white py-3 px-6 rounded-md hover:bg-opacity-90 transition-colors font-semibold text-base flex items-center justify-center">
           <i class="fas fa-qrcode mr-2"></i>
           Generate Credential QR Code
         </button>
-        
-        <!-- Demo VC Button -->
-        <button type="button" id="demoButton" class="w-full bg-red-600 text-white py-3 px-6 rounded-md hover:bg-red-700 transition-colors font-semibold text-base flex items-center justify-center">
-          <i class="fas fa-magic mr-2"></i>
-          Demo-Studierenden-VC ausstellen
-        </button>
-        <p class="text-xs text-gray-600 text-center">
-          → Alle Felder automatisch mit Zufallsdaten inkl. Testfoto - erstellt sofort VC mit QR-Code
-        </p>
       </div>
     </form>
   </div>
@@ -222,7 +437,7 @@
       </div>
 
       <!-- QR Code Display Box - Initially Hidden -->
-      <div id="qrCodeBox" class="mt-6 pt-6 border-t border-gray-200 hidden">
+      <div id="qrCodeBox" class="mt-6 pt-6 border-t border-gray-200 hidden" style="transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; opacity: 0;">
         <div class="text-center">
           <h4 class="text-lg font-bold text-tenant-text mb-4 flex items-center justify-center">
             <i class="fas fa-qrcode text-tenant-primary mr-2"></i>
@@ -296,110 +511,353 @@
 <script>
   // Image preview functionality
   function previewImage(input, previewId) {
+    console.log('previewImage called with previewId:', previewId);
+    
     if (input.files && input.files[0]) {
+      console.log('File selected:', input.files[0].name);
       const reader = new FileReader();
       reader.onload = function(e) {
+        console.log('FileReader loaded image');
         document.getElementById(previewId).src = e.target.result;
+        
+        // Show the remove button for uploaded images
+        if (previewId === 'profilePreview') {
+          console.log('Showing remove button for profile image');
+          const removeBtn = document.getElementById('removeProfileImage');
+          if (removeBtn) {
+            removeBtn.classList.remove('hidden');
+            console.log('Remove button shown successfully');
+          } else {
+            console.error('Remove button not found!');
+          }
+        } else if (previewId === 'themeIconPreview') {
+          document.getElementById('removeThemeIcon').classList.remove('hidden');
+        }
       };
       reader.readAsDataURL(input.files[0]);
+    } else {
+      console.log('No file selected');
     }
   }
+  
+  // Remove profile image functionality is now defined in immediate script section
+  // function removeProfileImage() {
+    // Duplicate function body commented out - using immediate script version above
+    /*
+    console.log('🗑️ Removing profile image...');
+    
+    try {
+      const defaultSrc = "data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100' height='100' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' font-size='18' text-anchor='middle' dy='.3em' fill='%239ca3af'%3ePhoto%3c/text%3e%3c/svg%3e";
+      
+      const preview = document.getElementById('profilePreview');
+      const removeBtn = document.getElementById('removeProfileImage');
+      const fileInput = document.getElementById('profileImage');
+      
+      if (!preview || !removeBtn || !fileInput) {
+        console.error('❌ Missing required elements');
+        return;
+      }
+      
+      // Remove the image and clear the file input
+      preview.src = defaultSrc;
+      fileInput.value = '';
+      
+      // Hide the X button because there's nothing to remove now
+      removeBtn.classList.add('hidden');
+      
+      console.log('✅ Image removed and X button hidden (correct behavior)');
+      
+    } catch (error) {
+      console.error('❌ Error in removeProfileImage:', error);
+    }
+    */
+  // }
+  
+  // Remove theme icon functionality is now defined in immediate script section
+  // function removeThemeIcon() {
+    // Duplicate function body commented out - using immediate script version above
+    /*
+    console.log('🗑️ Removing theme icon...');
+    
+    try {
+      const defaultSrc = "{{ tenant_logo.main }}";
+      
+      const preview = document.getElementById('themeIconPreview');
+      const removeBtn = document.getElementById('removeThemeIcon');
+      const fileInput = document.getElementById('theme_icon');
+      
+      if (!preview || !removeBtn || !fileInput) {
+        console.error('❌ Missing required elements');
+        return;
+      }
+      
+      // Remove the icon and clear the file input
+      preview.src = defaultSrc;
+      fileInput.value = '';
+      
+      // Hide the X button because there's nothing to remove now
+      removeBtn.classList.add('hidden');
+      
+      console.log('✅ Theme icon removed and X button hidden');
+      
+    } catch (error) {
+      console.error('❌ Error in removeThemeIcon:', error);
+    }
+    */
+  // }
 
-  // Simplified button handling
+  // Simplified and robust button state management
   let isSubmitting = false;
-
-  // Demo button functionality
-  document.getElementById('demoButton').addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (isSubmitting) return;
-    isSubmitting = true;
-    
-    // Generate random student names
-    const firstNames = ['Max', 'Anna', 'Lukas', 'Emma', 'Felix', 'Lena', 'Tom', 'Julia', 'Ben', 'Sarah'];
-    const lastNames = ['Müller', 'Schmidt', 'Weber', 'Fischer', 'Meyer', 'Wagner', 'Koch', 'Richter', 'Klein', 'Wolf'];
-    
-    const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-    
-    // Generate random 6-digit numbers
-    const randomStudentId = Math.floor(100000 + Math.random() * 900000).toString();
-    const randomStudentIdPrefix = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Fill form fields with demo data
-    document.getElementById('firstName').value = randomFirstName;
-    document.getElementById('lastName').value = randomLastName;
-    document.getElementById('studentId').value = randomStudentId;
-    document.getElementById('studentIdPrefix').value = randomStudentIdPrefix;
-    
-    // Set demo image
-    const demoImageUrl = '/static/profile.jpg';
-    document.getElementById('profilePreview').src = demoImageUrl;
-    
-    // Show processing message
-    const button = this;
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generiere VC...';
-    button.disabled = true;
-    
-    // Store scroll position and submit form
-    sessionStorage.setItem('scrollToButtons', 'true');
-    sessionStorage.setItem('savedScrollY', window.scrollY.toString());
-    
-    // Submit the form
-    document.getElementById('credentialForm').submit();
+  let submissionTimeout = null;
+  let currentRequest = null;
+  const SUBMISSION_TIMEOUT = 10000; // 10 seconds for faster feedback
+  const MAX_RETRIES = 0; // No retries - immediate feedback
+  
+  // Global error handler
+  window.addEventListener('error', function(event) {
+    console.error('JavaScript error detected:', event.error);
+    resetButtonStates();
   });
 
-  // Generate QR Code button functionality
-  document.getElementById('generateButton').addEventListener('click', function(event) {
+  // Function to reset QR code display - Simplified and reliable
+  function resetQRCodeDisplay() {
+    const qrCodeBox = document.getElementById('qrCodeBox');
+    const qrCodeImage = document.getElementById('qrCodeImage');
+    const debugInfo = document.getElementById('debugInfo');
+    const dataTypeIndicator = document.getElementById('dataTypeIndicator');
+    
+    console.log('🔄 Resetting QR code display');
+    
+    // Immediately hide and clear everything
+    if (qrCodeBox) {
+      qrCodeBox.classList.add('hidden');
+      qrCodeBox.style.opacity = '0';
+    }
+    if (qrCodeImage) qrCodeImage.src = '';
+    if (debugInfo) debugInfo.classList.add('hidden');
+    if (dataTypeIndicator) dataTypeIndicator.classList.add('hidden');
+  }
+
+
+  // fillRandomData function is now defined in the immediate script section above
+  // This ensures it's available immediately when the page loads
+
+  // SIMPLIFIED Submit form with AJAX and handle QR code display
+  async function submitCredentialForm(event) {
+    event.preventDefault();
+    
     if (isSubmitting) {
-      event.preventDefault();
+      console.warn('Form already submitting - ignoring duplicate submission');
       return false;
     }
     
-    isSubmitting = true;
-    
-    // Show loading state
-    const originalText = this.innerHTML;
-    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generiere QR Code...';
-    this.disabled = true;
-    
-    // Store scroll position
-    sessionStorage.setItem('scrollToButtons', 'true');
-    sessionStorage.setItem('savedScrollY', window.scrollY.toString());
-  });
+    try {
+      console.log('🔄 Starting QR code generation');
+      isSubmitting = true;
+      resetQRCodeDisplay();
+      
+      // Update button state immediately
+      const generateButton = document.getElementById('generateButton');
+      if (generateButton) {
+        generateButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating QR Code...';
+        generateButton.disabled = true;
+        generateButton.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+      
+      // Get form and create FormData
+      const form = document.getElementById('credentialForm');
+      if (!form) {
+        throw new Error('Form element not found');
+      }
+      
+      const formData = new FormData(form);
+      
+      // Add timestamp to prevent caching
+      formData.append('_timestamp', Date.now().toString());
+      
+      // Send request with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), SUBMISSION_TIMEOUT);
+      
+      const response = await fetch('/generate_qr', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log('✅ QR code generated successfully');
+        
+        // Show QR code
+        showQRCodeInBox(
+          data.qr_image,
+          data.debug_info.qr_url,
+          data.debug_info.credential_data,
+          data.debug_info.is_demo
+        );
+        
+        // Scroll to QR code
+        setTimeout(() => {
+          const qrCodeBox = document.getElementById('qrCodeBox');
+          if (qrCodeBox) {
+            qrCodeBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 300);
+        
+        showToast('QR code generated successfully!', 'success');
+        
+      } else {
+        throw new Error(data.error || 'QR generation failed');
+      }
+      
+    } catch (error) {
+      console.error('❌ QR generation error:', error);
+      
+      if (error.name === 'AbortError') {
+        showToast('Request timeout - please try again', 'error');
+      } else {
+        showToast(error.message || 'Error generating QR code', 'error');
+      }
+      
+    } finally {
+      resetButtonStates();
+    }
+  }
 
-  // Form submission handler
+
+  // SIMPLIFIED Form submission handler
   document.getElementById('credentialForm').addEventListener('submit', function(event) {
-    // Fill empty fields with placeholder values
-    const inputs = document.querySelectorAll('input[type="text"]:not([type="color"])');
-    inputs.forEach(input => {
-      if (!input.value && input.placeholder) {
-        input.value = input.placeholder;
+    event.preventDefault();
+    console.log('📝 Form submission started');
+    
+    // Fill empty required fields with default values
+    const requiredFields = {
+      'firstName': 'Student',
+      'lastName': 'Mustermann', 
+      'studentId': '123456',
+      'studentIdPrefix': '654321'
+    };
+    
+    Object.entries(requiredFields).forEach(([fieldId, defaultValue]) => {
+      const field = document.getElementById(fieldId);
+      if (field && (!field.value || field.value.trim() === '')) {
+        field.value = field.placeholder || defaultValue;
       }
     });
+    
+    // Call submit function
+    submitCredentialForm(event);
   });
 
-  // Restore scroll position after page load if QR code was generated
-  document.addEventListener('DOMContentLoaded', function() {
-    // Reset button states on page load
-    isSubmitting = false;
-    const generateBtn = document.getElementById('generateButton');
-    const demoBtn = document.getElementById('demoButton');
+  // Ensure QR code box elements are ready - Enhanced with creation logic
+  function ensureQRBoxReady() {
+    console.log('🔍 Ensuring QR box is ready...');
     
-    if (generateBtn && generateBtn.disabled) {
+    let qrCodeBox = document.getElementById('qrCodeBox');
+    let qrCodeImage = document.getElementById('qrCodeImage');
+    let debugQrUrl = document.getElementById('debugQrUrl');
+    let debugCredentialData = document.getElementById('debugCredentialData');
+    let dataTypeIndicator = document.getElementById('dataTypeIndicator');
+    let dataTypeIcon = document.getElementById('dataTypeIcon');
+    let dataTypeLabel = document.getElementById('dataTypeLabel');
+    
+    // Check if all required elements exist and create missing ones if necessary
+    let missingElements = [];
+    
+    if (!qrCodeBox) {
+      missingElements.push('qrCodeBox');
+      console.warn('⚠️ qrCodeBox element missing - this suggests a DOM issue');
+    }
+    if (!qrCodeImage) {
+      missingElements.push('qrCodeImage');
+      console.warn('⚠️ qrCodeImage element missing');
+    }
+    if (!debugQrUrl) {
+      missingElements.push('debugQrUrl');
+      console.warn('⚠️ debugQrUrl element missing');
+    }
+    if (!debugCredentialData) {
+      missingElements.push('debugCredentialData');
+      console.warn('⚠️ debugCredentialData element missing');
+    }
+    if (!dataTypeIndicator) {
+      missingElements.push('dataTypeIndicator');
+      console.warn('⚠️ dataTypeIndicator element missing');
+    }
+    if (!dataTypeIcon) {
+      missingElements.push('dataTypeIcon');
+      console.warn('⚠️ dataTypeIcon element missing');
+    }
+    if (!dataTypeLabel) {
+      missingElements.push('dataTypeLabel');
+      console.warn('⚠️ dataTypeLabel element missing');
+    }
+    
+    if (missingElements.length === 0) {
+      console.log('✅ All QR box elements are ready');
+      return true;
+    } else {
+      console.error(`❌ Missing QR box elements: ${missingElements.join(', ')}`);
+      console.error('❌ This indicates a serious DOM structure issue. The page may need to be reloaded.');
+      
+      // Show user-friendly error
+      showToast('QR-Code Anzeige nicht bereit - Seite neu laden', 'error');
+      return false;
+    }
+  }
+  
+  // SIMPLIFIED button state reset
+  function resetButtonStates() {
+    console.log('🔄 Resetting button states');
+    
+    // Reset global submission state
+    isSubmitting = false;
+    
+    // Cancel any pending requests
+    if (currentRequest) {
+      currentRequest.abort();
+      currentRequest = null;
+    }
+    
+    // Clear any timeouts
+    if (submissionTimeout) {
+      clearTimeout(submissionTimeout);
+      submissionTimeout = null;
+    }
+    
+    // Reset generate button
+    const generateBtn = document.getElementById('generateButton');
+    if (generateBtn) {
       generateBtn.disabled = false;
       generateBtn.innerHTML = '<i class="fas fa-qrcode mr-2"></i>Generate Credential QR Code';
+      generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
     }
     
-    if (demoBtn && demoBtn.disabled) {
-      demoBtn.disabled = false;
-      demoBtn.innerHTML = '<i class="fas fa-magic mr-2"></i>Demo-Studierenden-VC ausstellen';
-      demoBtn.classList.remove('bg-blue-600');
-      demoBtn.classList.add('bg-red-600', 'hover:bg-red-700');
-    }
+    console.log('✅ Button states reset');
+  }
 
+  // Initialize page on DOM ready
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOM Content Loaded - Initializing page');
+    
+    // Reset button states on page load - always reset to prevent stuck states
+    resetButtonStates();
+    
+    // Ensure QR box elements are properly initialized
+    ensureQRBoxReady();
+
+    // Handle scroll restoration if QR code was generated
     if (sessionStorage.getItem('scrollToButtons') === 'true') {
       sessionStorage.removeItem('scrollToButtons');
       
@@ -413,14 +871,14 @@
         
         // If QR code exists, gently adjust to show it
         setTimeout(() => {
-          const qrCode = document.querySelector('[class*="border-t border-gray-200"]');
-          if (qrCode) {
-            const qrCodeRect = qrCode.getBoundingClientRect();
+          const qrCodeBox = document.getElementById('qrCodeBox');
+          if (qrCodeBox && !qrCodeBox.classList.contains('hidden')) {
+            const qrCodeRect = qrCodeBox.getBoundingClientRect();
             const windowHeight = window.innerHeight;
             
             // Only adjust if QR code is not fully visible
             if (qrCodeRect.bottom > windowHeight || qrCodeRect.top < 0) {
-              qrCode.scrollIntoView({ 
+              qrCodeBox.scrollIntoView({ 
                 behavior: 'smooth', 
                 block: 'nearest',
                 inline: 'nearest'
@@ -448,40 +906,88 @@
     }
   }
 
-  // Show QR code in the new box
+  // Show QR code in the new box - Fixed with proper timing
   function showQRCodeInBox(imageData, qrUrl, credentialData, isDemo) {
-    const qrCodeBox = document.getElementById('qrCodeBox');
-    const qrCodeImage = document.getElementById('qrCodeImage');
-    const debugQrUrl = document.getElementById('debugQrUrl');
-    const debugCredentialData = document.getElementById('debugCredentialData');
-    const dataTypeIndicator = document.getElementById('dataTypeIndicator');
-    const dataTypeIcon = document.getElementById('dataTypeIcon');
-    const dataTypeLabel = document.getElementById('dataTypeLabel');
+    console.log('📱 Showing QR code in box, isDemo:', isDemo);
     
-    // Set the QR code image
-    qrCodeImage.src = 'data:image/png;base64,' + imageData;
-    
-    // Set debug information
-    debugQrUrl.textContent = qrUrl;
-    debugCredentialData.textContent = JSON.stringify(credentialData, null, 2);
-    
-    // Set data type indicator
-    if (isDemo) {
-      dataTypeIndicator.className = 'mb-4 p-2 rounded-lg bg-orange-100 border border-orange-300';
-      dataTypeIcon.className = 'fas fa-magic mr-2';
-      dataTypeLabel.textContent = 'Demo-Daten (Zufällig generiert)';
-      dataTypeIndicator.querySelector('p').className = 'text-sm font-semibold text-orange-800 flex items-center justify-center';
-    } else {
-      dataTypeIndicator.className = 'mb-4 p-2 rounded-lg bg-green-100 border border-green-300';
-      dataTypeIcon.className = 'fas fa-keyboard mr-2';
-      dataTypeLabel.textContent = 'Eingegebene Daten';
-      dataTypeIndicator.querySelector('p').className = 'text-sm font-semibold text-green-800 flex items-center justify-center';
+    try {
+      const qrCodeBox = document.getElementById('qrCodeBox');
+      const qrCodeImage = document.getElementById('qrCodeImage');
+      const debugQrUrl = document.getElementById('debugQrUrl');
+      const debugCredentialData = document.getElementById('debugCredentialData');
+      const dataTypeIndicator = document.getElementById('dataTypeIndicator');
+      const dataTypeIcon = document.getElementById('dataTypeIcon');
+      const dataTypeLabel = document.getElementById('dataTypeLabel');
+      
+      // Validate all elements exist
+      if (!qrCodeBox || !qrCodeImage || !debugQrUrl || !debugCredentialData || 
+          !dataTypeIndicator || !dataTypeIcon || !dataTypeLabel) {
+        console.error('❌ Missing DOM elements for QR display');
+        showToast('QR-Code Display-Fehler - Seite neu laden', 'error');
+        return;
+      }
+      
+      // Set the QR code image first
+      qrCodeImage.src = 'data:image/png;base64,' + imageData;
+      
+      // Set debug information
+      debugQrUrl.textContent = qrUrl;
+      debugCredentialData.textContent = JSON.stringify(credentialData, null, 2);
+      
+      // Set data type indicator with robust class handling
+      const indicatorParagraph = dataTypeIndicator.querySelector('p');
+      if (!indicatorParagraph) {
+        console.error('❌ Missing indicator paragraph element');
+        return;
+      }
+      
+      if (isDemo) {
+        dataTypeIndicator.className = 'mb-4 p-2 rounded-lg bg-orange-100 border border-orange-300';
+        dataTypeIcon.className = 'fas fa-magic mr-2';
+        dataTypeLabel.textContent = 'Demo-Daten (Zufällig generiert)';
+        indicatorParagraph.className = 'text-sm font-semibold text-orange-800 flex items-center justify-center';
+      } else {
+        dataTypeIndicator.className = 'mb-4 p-2 rounded-lg bg-green-100 border border-green-300';
+        dataTypeIcon.className = 'fas fa-keyboard mr-2';
+        dataTypeLabel.textContent = 'Eingegebene Daten';
+        indicatorParagraph.className = 'text-sm font-semibold text-green-800 flex items-center justify-center';
+      }
+      
+      // Show the elements immediately without transitions initially
+      dataTypeIndicator.classList.remove('hidden');
+      qrCodeBox.classList.remove('hidden');
+      
+      // Force a reflow to ensure the element is displayed
+      qrCodeBox.offsetHeight;
+      
+      // Now apply the fade-in effect
+      qrCodeBox.style.transition = 'opacity 0.3s ease-in-out';
+      qrCodeBox.style.opacity = '1';
+      
+      // Smooth scroll to QR code after display
+      setTimeout(() => {
+        const rect = qrCodeBox.getBoundingClientRect();
+        const isInViewport = (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+        
+        if (!isInViewport) {
+          qrCodeBox.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
+      }, 100);
+      
+      console.log('✅ QR code displayed successfully');
+      
+    } catch (error) {
+      console.error('❌ Error in showQRCodeInBox:', error);
+      showToast('Fehler beim Anzeigen des QR-Codes', 'error');
     }
-    
-    // Show the elements
-    dataTypeIndicator.classList.remove('hidden');
-    qrCodeBox.classList.remove('hidden');
-    qrCodeBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   // Copy functions for the new debug box
@@ -520,13 +1026,12 @@
     });
   }
 
-  // Simple toast notification system
-  document.addEventListener('showToast', function(e) {
-    const { message, type } = e.detail;
+  // Improved toast notification system
+  function showToast(message, type = 'info') {
     const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full ${
-      type === 'success' ? 'bg-green-500' : 'bg-red-500'
-    }`;
+    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+    
+    toast.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-white font-medium shadow-lg transition-all duration-300 transform translate-x-full ${bgColor}`;
     toast.textContent = message;
     
     document.body.appendChild(toast);
@@ -536,13 +1041,21 @@
       toast.classList.remove('translate-x-full');
     }, 100);
     
-    // Animate out and remove
+    // Auto-remove after 3 seconds
     setTimeout(() => {
       toast.classList.add('translate-x-full');
       setTimeout(() => {
-        document.body.removeChild(toast);
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
       }, 300);
-    }, 2500);
+    }, 3000);
+  }
+  
+  // Legacy event listener for backward compatibility
+  document.addEventListener('showToast', function(e) {
+    const { message, type } = e.detail;
+    showToast(message, type);
   });
 
   // Drag and drop functionality
@@ -590,13 +1103,55 @@
   // Auto-show QR code if data is available
   {% if img_data and debug_info %}
   document.addEventListener('DOMContentLoaded', function() {
-    showQRCodeInBox(
-      '{{ img_data }}',
-      '{{ debug_info.qr_url }}',
-      {{ debug_info.credential_data | tojson }},
-      {{ debug_info.is_demo | tojson }}
-    );
+    console.log('📱 QR code data available, displaying...');
+    
+    // Reset button states first to ensure they're not stuck
+    resetButtonStates();
+    
+    // Ensure QR box is ready before displaying
+    ensureQRBoxReady();
+    
+    // Then show the QR code with a slight delay to ensure DOM is fully ready
+    setTimeout(() => {
+      try {
+        showQRCodeInBox(
+          '{{ img_data }}',
+          '{{ debug_info.qr_url }}',
+          {{ debug_info.credential_data | tojson }},
+          {{ debug_info.is_demo | tojson }}
+        );
+        console.log('✅ QR code displayed successfully');
+      } catch (error) {
+        console.error('❌ Error showing QR code:', error);
+        resetButtonStates();
+      }
+    }, 100);
+  });
+  {% else %}
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔍 No QR code data available in response');
+    resetButtonStates();
+    ensureQRBoxReady();
   });
   {% endif %}
+
+  // Global beforeunload handler to reset states
+  window.addEventListener('beforeunload', function() {
+    resetButtonStates();
+  });
+
+  // Global page show handler (for browser back/forward)
+  window.addEventListener('pageshow', function(event) {
+    resetButtonStates();
+  });
+  
+  // Global visibility change handler
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+      // Reset states when page becomes visible again
+      setTimeout(resetButtonStates, 100);
+    }
+  });
+  
 </script>
 {% endblock %}

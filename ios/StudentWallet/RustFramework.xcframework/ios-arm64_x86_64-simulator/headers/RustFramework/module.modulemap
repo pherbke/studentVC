@@ -1,0 +1,4 @@
+module bbs_coreFFI {
+    header "bbs_coreFFI.h"
+    export *
+}

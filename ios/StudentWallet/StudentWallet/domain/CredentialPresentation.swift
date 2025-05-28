@@ -7,7 +7,7 @@
 
 import CryptoKit
 import Foundation
-import BBSCoreIOS
+import RustFramework
 
 private func requestCredentialPresentationURI(url: URL) async throws -> RequestResult<URLComponents> {
     let initialPresentationRequest = createRequest(url: url, method: .Post)

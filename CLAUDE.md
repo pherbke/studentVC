@@ -8,6 +8,21 @@ StudentVC is a cross-platform verifiable credentials system implementing W3C VC 
 
 ## Development Commands
 
+### Quick Start & Environment Management
+```bash
+# Quick development setup (recommended)
+make local              # Start local environment (TU Berlin on :8080)
+make dev               # Start development environment (both universities)
+make staging           # Start staging environment
+
+# Multi-tenant local development
+cd backend && docker compose --profile multi-tenant up
+# TU Berlin: http://localhost:8080, FU Berlin: http://localhost:8081
+
+# Install development dependencies
+make install
+```
+
 ### Backend Setup and Development
 ```bash
 # Initial setup
@@ -19,8 +34,9 @@ pip install -r requirements.txt
 python main.py
 
 # Run tests
-python -m unittest discover tests
-python -m pytest tests/integration/  # For specific test suites
+python -m pytest                    # Full test suite with pytest
+python -m pytest tests/integration/ # Integration tests only
+python -m unittest discover tests   # Alternative with unittest
 
 # X.509 end-to-end testing
 ./run_x509_tests.sh
@@ -28,6 +44,20 @@ python e2e_x509_detailed_simulation.py
 
 # Security analysis
 bandit -r src/ -f json -o bandit_report.json
+```
+
+### CI/CD and Testing
+```bash
+# Quick CI/CD validation
+make test-quick        # Fast Docker build + health check
+make test-full         # Complete CI/CD simulation with Act
+make test-compose      # Validate all docker-compose profiles
+make test-ci          # Test CI steps locally
+make test-perf        # Performance audit
+
+# Cleanup
+make clean            # Remove containers and images
+make clean-all        # Deep clean including volumes
 ```
 
 ### BBS Core Library
@@ -68,10 +98,12 @@ xcodebuild test -scheme "Student Wallet"
 
 ### Key Architectural Patterns
 
-1. **Dual Trust Model**: Credentials can be verified through both X.509 certificate chains AND DID-based verification methods
-2. **Selective Disclosure**: BBS+ signatures enable zero-knowledge proofs for privacy-preserving credential presentation
-3. **Certificate-DID Binding**: X.509 certificates embed DIDs in SubjectAlternativeName extensions with bidirectional verification
-4. **Modular Authentication**: Pluggable authentication (Shibboleth, Keycloak, TU Berlin Authenticator MFA)
+1. **Multi-Tenant SaaS**: Single codebase serves multiple universities (TU Berlin, FU Berlin) with tenant-specific branding and configurations
+2. **Dual Trust Model**: Credentials can be verified through both X.509 certificate chains AND DID-based verification methods
+3. **Selective Disclosure**: BBS+ signatures enable zero-knowledge proofs for privacy-preserving credential presentation
+4. **Certificate-DID Binding**: X.509 certificates embed DIDs in SubjectAlternativeName extensions with bidirectional verification
+5. **Environment Isolation**: Clean separation between local/dev/staging/production with tenant-specific configurations
+6. **Modular Authentication**: Pluggable authentication (Shibboleth, Keycloak, TU Berlin Authenticator MFA)
 
 ### Critical Integration Points
 
@@ -89,6 +121,12 @@ xcodebuild test -scheme "Student Wallet"
 **OID4VC Protocol Flow**:
 1. **Offer Generation** → **Authorization** → **Token Exchange** → **Credential Issuance**
 2. **Presentation Request** → **VP Token Submission** → **Multi-layer Verification**
+
+**Multi-Tenant Configuration**:
+- **Environment Variables**: Each tenant configured via environment variables (TENANT_NAME, UNIVERSITY_TYPE, etc.)
+- **Instance Isolation**: Separate `/instance` directories per tenant with isolated databases and certificates
+- **Docker Profiles**: `multi-tenant`, `dev`, `staging` profiles for different deployment scenarios
+- **Port Mapping**: TU Berlin (8080/8082/8084), FU Berlin (8081/8083/8085) across environments
 
 ## Development Guidelines
 
@@ -115,11 +153,18 @@ xcodebuild test -scheme "Student Wallet"
 - Both platforms share identical JSON protocol structures
 
 ### Testing Strategy
-- **Unit Tests**: Individual component testing
+- **Unit Tests**: Individual component testing with pytest
 - **Integration Tests**: Cross-component flows (`tests/integration/`)
 - **End-to-End Tests**: Complete credential lifecycle (`test_end_to_end_x509_shibboleth.py`)
 - **Security Tests**: Cryptographic validation and attack resistance
 - **Performance Tests**: Load testing and benchmarking
+- **Pytest Configuration**: Configured in `backend/pytest.ini` with verbose output and warning filters
+
+### Multi-Tenant Development Workflow
+- **Local Development**: Single tenant (TU Berlin) on localhost:8080 by default
+- **Multi-Tenant Testing**: Use `--profile multi-tenant` to run both universities simultaneously
+- **Environment-Specific Configs**: Each environment (local/dev/staging) has different feature flags and debug settings
+- **Instance Data**: Tenant-specific data stored in `instance/{tenant-name}-{environment}/` directories
 
 ## File Structure Notes
 

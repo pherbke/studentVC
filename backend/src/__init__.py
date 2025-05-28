@@ -40,8 +40,8 @@ db = SQLAlchemy()
 DB_NAME = "database.db"
 SQLALCHEMY_DATABASE_URI = f"sqlite:///{DB_NAME}"
 
-# Create socketio
-socketio = SocketIO()
+# Create socketio with CORS enabled for HTTPS
+socketio = SocketIO(cors_allowed_origins="*", logger=True, engineio_logger=True)
 
 # Secure random cookie key using secrets module
 SECRET_KEY = ''.join(secrets.choice(
@@ -106,10 +106,78 @@ def create_app():
     def load_user(id):
         return User.query.get(int(id))
 
-    socketio.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*", async_mode='gevent')
     
     # Initialize data collector for real statistics
     from .data_collector import data_collector
     data_collector.init_app(app)
+    
+    # Add comprehensive error handlers for debugging 500 errors
+    @app.errorhandler(500)
+    def handle_500_error(e):
+        import traceback
+        import datetime
+        
+        # Log detailed error information
+        error_details = {
+            'timestamp': datetime.datetime.now().isoformat(),
+            'error_type': type(e).__name__,
+            'error_message': str(e),
+            'request_url': request.url if 'request' in globals() else 'unknown',
+            'request_method': request.method if 'request' in globals() else 'unknown',
+            'tenant': app.config.get('TENANT_ID', 'unknown'),
+            'stack_trace': traceback.format_exc()
+        }
+        
+        logger.error(f"🚨 500 Internal Server Error: {error_details}")
+        
+        # Write to dedicated error log
+        try:
+            error_log_path = os.path.join(app.config.get('INSTANCE_FOLDER', 'instance'), 'detailed_errors.log')
+            with open(error_log_path, 'a') as f:
+                f.write(f"[500 ERROR] {error_details}\n\n")
+        except Exception:
+            pass
+        
+        # Return JSON for AJAX requests, HTML for regular requests
+        from flask import request, jsonify
+        if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'success': False,
+                'error': 'Internal server error',
+                'error_type': type(e).__name__,
+                'timestamp': error_details['timestamp'],
+                'details': str(e) if app.debug else None
+            }), 500
+        else:
+            return f"<h1>500 Internal Server Error</h1><p>Error: {str(e)}</p><p>Check logs for details.</p>", 500
+    
+    @app.errorhandler(Exception)
+    def handle_general_exception(e):
+        import traceback
+        import datetime
+        
+        # Log all unhandled exceptions
+        error_details = {
+            'timestamp': datetime.datetime.now().isoformat(),
+            'error_type': type(e).__name__,
+            'error_message': str(e),
+            'stack_trace': traceback.format_exc()
+        }
+        
+        logger.error(f"🚨 Unhandled Exception: {error_details}")
+        
+        # Return appropriate response
+        from flask import request, jsonify
+        if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'success': False,
+                'error': 'Server error occurred',
+                'error_type': type(e).__name__,
+                'timestamp': error_details['timestamp'],
+                'details': str(e) if app.debug else None
+            }), 500
+        else:
+            return f"<h1>Server Error</h1><p>Error: {str(e)}</p>", 500
     
     return app

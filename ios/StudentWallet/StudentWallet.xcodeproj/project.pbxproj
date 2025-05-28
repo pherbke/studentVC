@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D99F329D2D2D46F000C1BDC8 /* BBSCoreIOS in Frameworks */ = {isa = PBXBuildFile; productRef = D99F329C2D2D46F000C1BDC8 /* BBSCoreIOS */; };
+		929724072DE639CE008871B8 /* BBSCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D99F32912D2D340700C1BDC8 /* BBSCore.xcframework */; };
+		929724082DE639CE008871B8 /* BBSCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D99F32912D2D340700C1BDC8 /* BBSCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9297240A2DE63CDF008871B8 /* RustFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 929724092DE63CDF008871B8 /* RustFramework.xcframework */; };
 		D9FB05382CEB962E00D7373C /* CryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9FB05372CEB962E00D7373C /* CryptoKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -29,12 +31,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		D99F32992D2D349F00C1BDC8 /* Embed Frameworks */ = {
+		929724062DE639BE008871B8 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				929724082DE639CE008871B8 /* BBSCore.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,9 +46,13 @@
 
 /* Begin PBXFileReference section */
 		0E3BD1612CEA09D700E7B256 /* projectBundle.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = projectBundle.xcconfig; sourceTree = "<group>"; };
+		929724092DE63CDF008871B8 /* RustFramework.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = RustFramework.xcframework; sourceTree = "<group>"; };
+		92C46D1C2DE5D3D800EE6578 /* BBSCoreIOS */ = {isa = PBXFileReference; lastKnownFileType = text; name = BBSCoreIOS; path = "/Users/patrickherbke/Documents/bbs-core/BBSCoreIOS"; sourceTree = "<absolute>"; };
+		92C46D1F2DE5D6EC00EE6578 /* BBSCoreIOS */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = BBSCoreIOS; path = "../../bbs-core/BBSCoreIOS"; sourceTree = "<group>"; };
+		92C46D202DE5D70900EE6578 /* bbs_core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = bbs_core.swift; path = "../../bbs-core/BBSCoreIOS/Sources/BBSCoreIOS/bbs_core.swift"; sourceTree = "<group>"; };
+		92C46D212DE5D71400EE6578 /* bbs_core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bbs_core.swift; sourceTree = "<group>"; };
 		D913185F2CED20570045AC2F /* Student-Wallet-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Student-Wallet-Info.plist"; sourceTree = "<group>"; };
 		D99F32912D2D340700C1BDC8 /* BBSCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = BBSCore.xcframework; path = "../bbs-core/BBSCoreIOS/artifacts/BBSCore.xcframework"; sourceTree = "<group>"; };
-		D99F32962D2D349200C1BDC8 /* BBSCoreIOS */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = BBSCoreIOS; path = "../bbs-core/BBSCoreIOS"; sourceTree = SOURCE_ROOT; };
 		D9FB05372CEB962E00D7373C /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
 		D9FFD09B2CE785CA00A1EA84 /* Student Wallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Student Wallet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9FFD0AB2CE785CB00A1EA84 /* Student WalletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Student WalletTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,8 +82,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				929724072DE639CE008871B8 /* BBSCore.xcframework in Frameworks */,
 				D9FB05382CEB962E00D7373C /* CryptoKit.framework in Frameworks */,
-				D99F329D2D2D46F000C1BDC8 /* BBSCoreIOS in Frameworks */,
+				9297240A2DE63CDF008871B8 /* RustFramework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,10 +105,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		92C46D222DE5D71400EE6578 /* BBSCoreIOS */ = {
+			isa = PBXGroup;
+			children = (
+				92C46D212DE5D71400EE6578 /* bbs_core.swift */,
+			);
+			name = BBSCoreIOS;
+			path = "../../bbs-core/BBSCoreIOS/Sources/BBSCoreIOS";
+			sourceTree = "<group>";
+		};
 		D99F32952D2D342300C1BDC8 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				D99F32962D2D349200C1BDC8 /* BBSCoreIOS */,
+				92C46D1C2DE5D3D800EE6578 /* BBSCoreIOS */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -108,8 +125,12 @@
 		D9FB05362CEB962E00D7373C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				929724092DE63CDF008871B8 /* RustFramework.xcframework */,
+				92C46D222DE5D71400EE6578 /* BBSCoreIOS */,
+				92C46D202DE5D70900EE6578 /* bbs_core.swift */,
 				D99F32912D2D340700C1BDC8 /* BBSCore.xcframework */,
 				D9FB05372CEB962E00D7373C /* CryptoKit.framework */,
+				92C46D1F2DE5D6EC00EE6578 /* BBSCoreIOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -148,7 +169,7 @@
 				D9FFD0972CE785CA00A1EA84 /* Sources */,
 				D9FFD0982CE785CA00A1EA84 /* Frameworks */,
 				D9FFD0992CE785CA00A1EA84 /* Resources */,
-				D99F32992D2D349F00C1BDC8 /* Embed Frameworks */,
+				929724062DE639BE008871B8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -159,7 +180,6 @@
 			);
 			name = "Student Wallet";
 			packageProductDependencies = (
-				D99F329C2D2D46F000C1BDC8 /* BBSCoreIOS */,
 			);
 			productName = "Student Wallet";
 			productReference = D9FFD09B2CE785CA00A1EA84 /* Student Wallet.app */;
@@ -353,6 +373,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = KPMNQ4H47Y;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -370,7 +391,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -389,7 +410,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"StudentWallet/Preview Content\"";
+				DEVELOPMENT_TEAM = KPMNQ4H47Y;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Student-Wallet-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Student Wallet";
@@ -489,6 +518,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = KPMNQ4H47Y;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -506,7 +536,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -553,6 +583,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = KPMNQ4H47Y;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -564,7 +595,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -582,7 +613,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"StudentWallet/Preview Content\"";
+				DEVELOPMENT_TEAM = KPMNQ4H47Y;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Student-Wallet-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Student Wallet";
@@ -616,7 +655,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"StudentWallet/Preview Content\"";
+				DEVELOPMENT_TEAM = KPMNQ4H47Y;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+					"$(PROJECT_DIR)/bbs-core/BBSCoreIOS",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Student-Wallet-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Student Wallet";
@@ -760,13 +807,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		D99F329C2D2D46F000C1BDC8 /* BBSCoreIOS */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = BBSCoreIOS;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D9FFD0932CE785CA00A1EA84 /* Project object */;
 }

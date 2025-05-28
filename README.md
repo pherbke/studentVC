@@ -1,248 +1,252 @@
-# StudentVC: Privacy-Preserving Academic Credential Management
+# StudentVC - Verifiable Credentials Platform
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Platform: Android](https://img.shields.io/badge/Platform-Android-brightgreen.svg)](https://shields.io/)
-[![Platform: iOS](https://img.shields.io/badge/Platform-iOS-lightgray.svg)](https://shields.io/)
-[![BBS+: Signatures](https://img.shields.io/badge/BBS+-Signatures-orange.svg)](https://shields.io/)
+A production-ready, multi-tenant verifiable credentials system implementing W3C VC Data Model 2.0 with BBS+ signatures for selective disclosure. Integrates X.509 certificates with DIDs following the HAVID specification.
 
-## Abstract
+## Architecture
 
-StudentVC implements a cryptographically secure, cross-platform mobile ecosystem for academic credential management based on W3C Verifiable Credentials and BBS+ signature schemes. The system enables selective disclosure through zero-knowledge proofs while maintaining compliance with educational privacy standards. This research prototype demonstrates practical deployment of privacy-preserving digital identity solutions in academic environments.
-
-*Developed at the Internet of Services Lab (IoSL), TU Berlin, Winter 2024/25*  
-*Principal Investigator: Prof. Dr. Axel Küpper | Research Associate: Patrick Herbke*
-
-## System Architecture
-
-StudentVC operates as a multi-tenant SaaS platform serving Berlin's major universities:
-
-### **Production Deployments**
-- **🔴 TU Berlin Instance**: Branded with institutional identity, serving technical university students
-- **🟢 FU Berlin Instance**: Customized for humanities and social sciences credentials  
-
-Each tenant maintains cryptographic isolation while sharing the underlying infrastructure, ensuring scalability and operational efficiency.
-
-## Core Features & Capabilities
-
-### 🔐 **Cryptographic Foundation**
-- **BBS+ Signatures**: Implements pairing-based cryptography for selective disclosure [[Camenisch et al., 2016]](https://eprint.iacr.org/2016/663.pdf)
-- **Zero-Knowledge Proofs**: Enables attribute revelation without exposing entire credentials
-- **Unlinkable Presentations**: Prevents correlation attacks across verification sessions
-
-### 📱 **Cross-Platform Implementation**
-- **Native Android**: Kotlin-based implementation with secure enclave integration
-- **Native iOS**: Swift implementation leveraging CryptoKit framework
-- **Unified Backend**: Multi-tenant Flask service with OID4VC/OID4VP protocol support
-
-### 🎓 **Academic Use Cases**
-- Student ID card issuance and verification
-- Academic transcript management with selective disclosure
-- Campus access control integration
-- Inter-institutional credential transfer
-
-### 🌐 **Standards Compliance**
-- [W3C Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/)
-- [OpenID for Verifiable Credential Issuance](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html)
-- [OpenID for Verifiable Presentations](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html)
+- **Multi-Tenant SaaS**: Single codebase serving multiple universities
+- **Dual Trust Model**: X.509 PKI + DID-based verification
+- **Selective Disclosure**: BBS+ signatures for privacy-preserving presentations
+- **OID4VC/VP Compliant**: OpenID for Verifiable Credentials protocol implementation
 
 ## Quick Start
 
-### **Multi-Tenant Development Environment**
+### Prerequisites
+
+- Docker & Docker Compose
+- Node.js 18+ (for CI/CD testing)
+- Git
+
+### Local Development
 
 ```bash
-# Clone and setup
-git clone https://github.com/pherbke/studentVC.git
+# Clone repository
+git clone <repository-url>
 cd studentVC
 
-# Start both university instances
-docker compose up --build
+# Start TU Berlin instance (single tenant)
+make local
 
-# Access endpoints
+# Start multi-tenant (TU Berlin + FU Berlin)
+make dev
+
+# Access applications
 # TU Berlin: http://localhost:8080
-# FU Berlin: http://localhost:8081
+# FU Berlin: http://localhost:8081 (multi-tenant only)
 ```
 
-### **Mobile Applications**
+## Production Deployment
 
-**Android:**
+### Environment Configuration
+
+Each tenant requires specific environment variables:
+
+```bash
+# Required for all deployments
+TENANT_NAME=tu-berlin                    # or fu-berlin
+UNIVERSITY_TYPE=technical               # or research
+SERVER_URL=https://your-domain.com
+ENVIRONMENT=production                  # testing, staging, production
+
+# Security
+SECRET_KEY=<strong-secret-key>
+BBS_PRIVATE_KEY_PATH=/app/instance/bbs_private.pem
+SSL_CERT_PATH=/app/instance/certs/server.crt
+SSL_KEY_PATH=/app/instance/certs/server.key
+
+# Database
+DATABASE_URL=sqlite:///instance/database.db
+
+# External Authentication (optional)
+SHIBBOLETH_ENABLED=true
+KEYCLOAK_URL=https://auth.university.edu
+```
+
+### TU Berlin Instance
+
+```bash
+# Production deployment
+docker compose -f docker-compose.yml --profile production up -d
+
+# Environment variables
+export TENANT_NAME=tu-berlin
+export UNIVERSITY_TYPE=technical
+export SERVER_URL=https://studentvc.tu-berlin.de
+export ENVIRONMENT=production
+```
+
+### FU Berlin Instance
+
+```bash
+# Production deployment  
+docker compose -f docker-compose.yml --profile production up -d
+
+# Environment variables
+export TENANT_NAME=fu-berlin
+export UNIVERSITY_TYPE=research
+export SERVER_URL=https://studentvc.fu-berlin.de
+export ENVIRONMENT=production
+```
+
+### Kubernetes Deployment
+
+```bash
+# Deploy to testing environment
+kubectl apply -f k8s/testing/
+
+# Deploy to staging environment  
+kubectl apply -f k8s/staging/
+
+# Deploy to production environment
+kubectl apply -f k8s/production/
+```
+
+## CI/CD Pipeline
+
+### Local Testing
+
+```bash
+# Test CI/CD pipeline locally
+make test-ci
+
+# Full CI/CD simulation with Act
+make test-full
+
+# Quick validation
+make test-quick
+```
+
+### Deployment Environments
+
+#### Testing Environment
+- **Purpose**: Feature testing and integration validation
+- **URL Pattern**: `https://test-studentvc-{tenant}.example.com`
+- **Database**: Isolated test data
+- **SSL**: Self-signed certificates acceptable
+
+#### Staging Environment  
+- **Purpose**: Production replica for final validation
+- **URL Pattern**: `https://staging-studentvc-{tenant}.example.com`
+- **Database**: Production-like data
+- **SSL**: Valid certificates required
+
+#### Production Environment
+- **Purpose**: Live system serving end users
+- **URL Pattern**: `https://studentvc-{tenant}.edu`
+- **Database**: Persistent production data
+- **SSL**: Valid certificates required
+- **Monitoring**: Full observability stack
+
+## Security Requirements
+
+### SSL/TLS Configuration
+
+```bash
+# Generate SSL certificates
+./generate_ssl_certs.sh
+
+# For production, obtain certificates from CA:
+# - Let's Encrypt (automated)
+# - University CA (manual)
+# - Commercial CA (manual)
+```
+
+### BBS+ Key Management
+
+```bash
+# Generate BBS+ signing keys (automatic on first run)
+cd backend/bbs-core/python
+./build.sh
+```
+
+### X.509 Certificate Management
+
+- Certificate-DID binding in SubjectAlternativeName
+- Automatic certificate lifecycle monitoring
+- CRL distribution for revocation checking
+
+## API Endpoints
+
+### Core OID4VC Endpoints
+
+- `GET /.well-known/openid-credential-issuer` - Issuer metadata
+- `GET /.well-known/openid-configuration` - OAuth configuration
+- `POST /token` - Token exchange
+- `POST /credential` - Credential issuance
+- `POST /presentations/submission` - Presentation verification
+
+### Management Endpoints
+
+- `GET /stats` - System statistics dashboard
+- `GET /validate` - Credential status management
+- `POST /validate/credential/toggle/{id}` - Revoke/reactivate credentials
+
+## Mobile Applications
+
+### Android
 ```bash
 cd android
-./gradlew build && ./gradlew installDebug
+./gradlew build
+./gradlew installDebug
 ```
 
-**iOS:**
+### iOS
 ```bash
-cd ios && pod install
-open StudentWallet.xcworkspace
+cd ios
+xcodebuild -scheme "Student Wallet" build
 ```
 
-## Research Contributions
+## Monitoring & Observability
 
-### **Privacy-Preserving Selective Disclosure**
-- Implements BBS+ signature schemes for minimal disclosure protocols
-- Enables students to prove enrollment without revealing grades
-- Supports composite predicates (e.g., "enrolled AND semester >= 3")
+### Health Checks
 
-### **Multi-Tenant Architecture**
-- Cryptographic tenant isolation with shared infrastructure
-- University-specific branding and credential schemas
-- Horizontal scaling with Kubernetes deployment
+- `GET /health` - Application health
+- `GET /stats` - Detailed system metrics
+- WebSocket connections for real-time monitoring
 
-### **Mobile Security Integration**
-- Hardware security module integration on supported devices  
-- Biometric authentication with credential access control
-- Offline verification capabilities with cached revocation lists
+### Logging
 
-## Future Work & X.509 Integration
+- Structured JSON logging
+- Category-based log levels
+- Performance metrics collection
+- Security event tracking
 
-**⚠️ In Preparation**: Advanced PKI-DID hybrid trust models are under active development:
+## Development
 
-- **Dual-Path Verification**: Traditional X.509 chains combined with DID-based verification
-- **Certificate Transparency**: Integration with CT logs for educational credentials
-- **Cross-Domain Trust**: Bridging academic and professional credential ecosystems
-
-*Current implementation focuses on pure DID-based verification with BBS+ signatures.*
-
-## Project Structure
-
-```
-studentVC/
-├── android/          # Android application (Kotlin)
-├── ios/             # iOS application (Swift)  
-├── backend/         # Multi-tenant Flask backend
-├── bbs-core/        # Rust-based BBS+ implementation
-├── k8s/            # Kubernetes deployment manifests
-└── .github/        # CI/CD pipeline automation
-```
-
-## Professional Environment Structure
-
-StudentVC follows a **clean, scalable, and professional server setup** with tiered environments for optimal development and deployment workflows:
-
-### **🔧 Environment Tiers**
-
-| Environment | Purpose | Example Hostname | Git Branch | Notes |
-|-------------|---------|------------------|------------|-------|
-| **local** | Developer machines | `localhost:8080` | `feature/*` | Local development with Docker |
-| **dev** | Shared development/testing | `tu-berlin.dev.studentvc.example.com` | `develop` | Internal testing, frequent resets |
-| **staging** | Pre-production simulation | `tu-berlin.staging.studentvc.example.com` | `release/*` | Realistic data, final QA |
-| **production** | Live system | `tu-berlin.studentvc.example.com` | `main` | Stable, secure, monitored |
-
-### **🏠 Local Development**
+### Testing
 
 ```bash
-# Default local development
-docker compose up  # TU Berlin: http://localhost:8080
+# Backend tests
+cd backend
+python -m pytest
 
-# Multi-tenant local development  
-docker compose --profile multi-tenant up
-# TU Berlin: http://localhost:8080
-# FU Berlin: http://localhost:8081
+# Integration tests
+python -m pytest tests/integration/
+
+# End-to-end X.509 flow
+./run_x509_tests.sh
 ```
 
-### **🧪 Development Environment**
-
-Shared development server for integration testing and early QA:
+### Security Scanning
 
 ```bash
-# Start development environment locally
-docker compose --profile dev up
-# TU Berlin Dev: http://localhost:8082 (+ debug port 9092)
-# FU Berlin Dev: http://localhost:8083 (+ debug port 9093)
-
-# Deploy to shared dev server
-gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=dev
+# Security analysis
+bandit -r src/ -f json -o bandit_report.json
 ```
 
-**Dev Features:**
-- **Feature flags** enabled for experimental features
-- **Mock external services** for isolated testing
-- **Debug logging** and enhanced error reporting
-- **Frequent resets** - ephemeral storage
-- **Insecure connections** allowed for testing
+## Configuration Files
 
-### **🎯 Staging Environment**
+- `docker-compose.yml` - Local/development
+- `k8s/*/` - Kubernetes deployments
+- `backend/gunicorn.conf.py` - Production WSGI configuration
+- `backend/pytest.ini` - Test configuration
 
-Pre-production simulation with realistic data and production-like configuration:
+## Support
 
-```bash
-# Start staging environment locally
-docker compose --profile staging up
-# TU Berlin Staging: http://localhost:8084
-# FU Berlin Staging: http://localhost:8085
+- **Documentation**: Complete API documentation in `/docs`
+- **Issues**: Report via GitHub Issues
+- **Security**: Security issues to security@university.edu
 
-# Deploy to staging server
-gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=staging
-```
+## License
 
-**Staging Features:**
-- **Production-like configuration** with test data
-- **Audit logging** enabled
-- **Performance monitoring** active
-- **SSL enforcement** and security hardening
-- **Final QA** before production deployment
-
-### **🚀 Production Environment**
-
-Live university instances serving actual students:
-
-```bash
-# Production deployment (requires approval)
-gh workflow run "StudentVC Multi-Tenant CI/CD" -f environment=production -f university=tu-berlin
-```
-
-**Production Endpoints:**
-- **TU Berlin**: `tu-berlin.studentvc.example.com`
-- **FU Berlin**: `fu-berlin.studentvc.example.com`
-
-### **🛡️ Security & Best Practices**
-
-- **Environment isolation**: Separate databases, secrets, and API keys per environment
-- **Feature flags**: Toggle production vs. test features via `.env` settings
-- **Monitoring**: Sentry error tracking and performance monitoring on dev/staging/production
-- **OIDC credentials**: Isolated per environment for security
-- **CI/CD automation**: 
-  - `develop → dev`
-  - `release/* → staging`  
-  - `main → production`
-
-### **Automated CI/CD Pipeline**
-- Multi-architecture Docker builds (AMD64/ARM64)
-- Automated security scanning with Bandit and Safety
-- Environment-specific deployment triggers
-- Horizontal pod autoscaling and health monitoring
-
-## Open Research Directions
-
-- **Post-Quantum Cryptography**: Migration strategies for quantum-resistant signature schemes
-- **Credential Archival**: Long-term preservation of cryptographic proofs
-- **Revocation Mechanisms**: Efficient status list management for large-scale deployments  
-- **Cross-Chain Interoperability**: Integration with blockchain-based identity networks
-- **Privacy Metrics**: Quantitative analysis of information leakage in selective disclosure
-
-## Documentation & Resources
-
-- [📱 Demo Video](https://tubcloud.tu-berlin.de/s/TjFbGbmHfp6twQH)
-- [📄 Technical Report](docs/Mobile_Wallet-Final_Report.pdf)
-- [🔧 Backend API Documentation](backend/README.md)
-- [📱 Mobile App Guides](ios/README.md)
-
-## License & Attribution
-
-Licensed under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-**Citation:**
-```bibtex
-@software{herbke2024studentvc,
-  author = {Herbke, Patrick and Ritter, Christopher},
-  title = {StudentVC: Privacy-Preserving Academic Credential Management},
-  year = {2024},
-  institution = {Technical University of Berlin},
-  supervisor = {Küpper, Axel},
-  url = {https://github.com/pherbke/studentVC}
-}
-```
-
----
-
-**Contact**: Patrick Herbke | p.herbke@tu-berlin.de | [SNET Research Group](https://www.tu.berlin/snet)
+This project implements standards-compliant verifiable credentials infrastructure for educational institutions.

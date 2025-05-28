@@ -4,6 +4,7 @@ from .. import db
 from flask import current_app as app
 import random
 import secrets
+import os
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -31,8 +32,18 @@ def get_offer_url(credential_data):
         db.session.rollback()
         raise
 
-    # Generate the credential offer URI
-    credential_offer_uri = f"openid-credential-offer://?credential_offer_uri={app.config['SERVER_URL']}/credential-offer/{uuid}"
+    # Generate the credential offer URI with ngrok support
+    ngrok_issuer_url = app.config.get('NGROK_ISSUER_URL', '').strip()
+    if ngrok_issuer_url:
+        base_url = ngrok_issuer_url
+        source = 'ngrok'
+    else:
+        base_url = app.config['SERVER_URL']
+        source = 'SERVER_URL'
+    
+    credential_offer_uri = f"openid-credential-offer://?credential_offer_uri={base_url}/credential-offer/{uuid}"
+    
+    logger.info(f"Generated credential offer URI using {source}: {credential_offer_uri}")
     return credential_offer_uri
 
 

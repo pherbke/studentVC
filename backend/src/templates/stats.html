@@ -4,426 +4,398 @@
 
 <!-- Page Header -->
 <div class="mb-6">
-  <h1 class="text-2xl font-bold text-tenant-text mb-2">System Statistics</h1>
-  <p class="text-gray-600 text-sm">Comprehensive overview of system performance, wallet connections, and operational metrics</p>
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-tenant-text mb-2 flex items-center">
+        <i class="fas fa-chart-line mr-3 text-tenant-primary"></i>
+        System Statistics
+        <span class="ml-3 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+          <i class="fas fa-circle text-green-500 mr-1 animate-pulse"></i>Live
+        </span>
+      </h1>
+      <p class="text-gray-600 text-sm">Comprehensive overview of system performance, wallet connections, and operational metrics</p>
+    </div>
+    <div class="text-right">
+      <p class="text-sm text-gray-500">Last updated</p>
+      <p class="text-sm font-medium text-gray-700" id="last-updated">Loading...</p>
+    </div>
+  </div>
 </div>
 
-<!-- Stats Overview Cards -->
+<!-- Server Health Overview Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-  <!-- Server Health -->
+  <!-- CPU Usage -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-    <div class="flex items-center">
-      <div class="bg-green-100 p-3 rounded-lg mr-3">
-        <i class="fas fa-server text-green-600 text-lg"></i>
-      </div>
+    <div class="flex items-center justify-between">
       <div>
-        <p class="text-xs text-gray-500 uppercase font-medium">Server Health</p>
-        <p class="text-xl font-bold text-gray-900">{{ "%.1f"|format(stats.server.cpu_percent) }}%</p>
-        <p class="text-xs text-gray-600">CPU Usage</p>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">CPU Usage</h3>
+        <p class="text-2xl font-bold text-blue-600">{{ stats.server.cpu_usage }}%</p>
+      </div>
+      <div class="text-blue-500">
+        <i class="fas fa-microchip text-2xl"></i>
       </div>
     </div>
   </div>
 
   <!-- Active Wallets -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-    <div class="flex items-center">
-      <div class="bg-blue-100 p-3 rounded-lg mr-3">
-        <i class="fas fa-wallet text-blue-600 text-lg"></i>
-      </div>
+    <div class="flex items-center justify-between">
       <div>
-        <p class="text-xs text-gray-500 uppercase font-medium">Active Wallets</p>
-        <p class="text-xl font-bold text-gray-900">{{ stats.wallet.active_connections }}</p>
-        <p class="text-xs text-gray-600">Connected Now</p>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Active Wallets</h3>
+        <p class="text-2xl font-bold text-purple-600">{{ stats.wallet.active_connections }}</p>
+        <p class="text-xs text-gray-500">Connected Now</p>
+      </div>
+      <div class="text-purple-500">
+        <i class="fas fa-wallet text-2xl"></i>
       </div>
     </div>
   </div>
 
-  <!-- Performance -->
+  <!-- Avg Verification -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-    <div class="flex items-center">
-      <div class="bg-purple-100 p-3 rounded-lg mr-3">
-        <i class="fas fa-tachometer-alt text-purple-600 text-lg"></i>
-      </div>
+    <div class="flex items-center justify-between">
       <div>
-        <p class="text-xs text-gray-500 uppercase font-medium">Avg Verification</p>
-        <p class="text-xl font-bold text-gray-900">{{ stats.performance.avg_verification_time }}s</p>
-        <p class="text-xs text-gray-600">Response Time</p>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Avg Verification</h3>
+        <p class="text-2xl font-bold text-green-600">{{ stats.performance.avg_verification_time }}s</p>
+        <p class="text-xs text-gray-500">Response Time</p>
+      </div>
+      <div class="text-green-500">
+        <i class="fas fa-stopwatch text-2xl"></i>
       </div>
     </div>
   </div>
 
-  <!-- Database -->
+  <!-- Database Size -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-    <div class="flex items-center">
-      <div class="bg-orange-100 p-3 rounded-lg mr-3">
-        <i class="fas fa-database text-orange-600 text-lg"></i>
-      </div>
+    <div class="flex items-center justify-between">
       <div>
-        <p class="text-xs text-gray-500 uppercase font-medium">Database Size</p>
-        <p class="text-xl font-bold text-gray-900">{{ stats.database.size_mb }} MB</p>
-        <p class="text-xs text-gray-600">{{ stats.database.tables|length }} Tables</p>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Database Size</h3>
+        <p class="text-2xl font-bold text-orange-600">{{ stats.database.size_mb }} MB</p>
+        <p class="text-xs text-gray-500">{{ stats.database.table_count }} Tables</p>
+      </div>
+      <div class="text-orange-500">
+        <i class="fas fa-database text-2xl"></i>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Detailed Statistics -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
+<!-- Main Analytics Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
   <!-- Server Resources -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200">
     <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-tenant-text flex items-center">
-        <i class="fas fa-server text-tenant-primary mr-2"></i>
-        Server Resources
-      </h3>
+      <h3 class="text-lg font-semibold text-tenant-text">Server Resources</h3>
     </div>
     <div class="p-6 space-y-4">
       <!-- CPU Usage -->
       <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span class="text-gray-600">CPU Usage</span>
-          <span class="font-medium">{{ "%.1f"|format(stats.server.cpu_percent) }}%</span>
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm text-gray-600">CPU Usage</span>
+          <span class="font-bold text-blue-600">{{ stats.server.cpu_usage }}%</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-blue-500 h-2 rounded-full" style="width: {{ stats.server.cpu_percent }}%"></div>
+          <div class="bg-blue-500 h-2 rounded-full" style="width: {{ stats.server.cpu_usage }}%"></div>
         </div>
       </div>
-
+      
       <!-- Memory Usage -->
       <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span class="text-gray-600">Memory Usage</span>
-          <span class="font-medium">{{ "%.1f"|format(stats.server.memory_percent) }}% ({{ stats.server.memory_used }}/{{ stats.server.memory_total }} GB)</span>
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm text-gray-600">Memory Usage</span>
+          <span class="font-bold text-purple-600">{{ stats.server.memory_usage }}% ({{ stats.server.memory_used_gb }}/{{ stats.server.memory_total_gb }} GB)</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-green-500 h-2 rounded-full" style="width: {{ stats.server.memory_percent }}%"></div>
+          <div class="bg-purple-500 h-2 rounded-full" style="width: {{ stats.server.memory_usage }}%"></div>
         </div>
       </div>
-
+      
       <!-- Disk Usage -->
       <div>
-        <div class="flex justify-between text-sm mb-1">
-          <span class="text-gray-600">Disk Usage</span>
-          <span class="font-medium">{{ "%.1f"|format(stats.server.disk_percent) }}% ({{ stats.server.disk_used }}/{{ stats.server.disk_total }} GB)</span>
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm text-gray-600">Disk Usage</span>
+          <span class="font-bold text-orange-600">{{ stats.storage.usage_percentage }}% ({{ stats.storage.used_gb }}/{{ stats.storage.total_gb }} GB)</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-orange-500 h-2 rounded-full" style="width: {{ stats.server.disk_percent }}%"></div>
+          <div class="bg-orange-500 h-2 rounded-full" style="width: {{ stats.storage.usage_percentage }}%"></div>
         </div>
       </div>
-
-      <!-- Load Averages -->
-      <div class="grid grid-cols-3 gap-4 pt-2">
-        <div class="text-center">
-          <p class="text-xs text-gray-500">1 min</p>
-          <p class="font-semibold">{{ stats.server.load_avg_1m }}</p>
+      
+      <!-- Load Average -->
+      <div class="grid grid-cols-3 gap-4 pt-4">
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm font-bold text-blue-600">{{ stats.server.load_1min }}</p>
+          <p class="text-xs text-blue-600">1 min</p>
         </div>
-        <div class="text-center">
-          <p class="text-xs text-gray-500">5 min</p>
-          <p class="font-semibold">{{ stats.server.load_avg_5m }}</p>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm font-bold text-blue-600">{{ stats.server.load_5min }}</p>
+          <p class="text-xs text-blue-600">5 min</p>
         </div>
-        <div class="text-center">
-          <p class="text-xs text-gray-500">15 min</p>
-          <p class="font-semibold">{{ stats.server.load_avg_15m }}</p>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm font-bold text-blue-600">{{ stats.server.load_15min }}</p>
+          <p class="text-xs text-blue-600">15 min</p>
         </div>
       </div>
-
-      <!-- Uptime -->
-      <div class="pt-2 border-t border-gray-100">
-        <p class="text-sm text-gray-600">Uptime: <span class="font-medium">{{ stats.server.uptime_days }} days, {{ stats.server.uptime_hours }} hours</span></p>
-        <p class="text-xs text-gray-500">Boot time: {{ stats.server.boot_time }}</p>
+      
+      <div class="pt-4 text-sm text-gray-600">
+        <p><strong>Uptime:</strong> {{ stats.server.uptime_days }} days, {{ stats.server.uptime_hours }} hours</p>
+        <p><strong>Boot time:</strong> {{ stats.server.boot_time }}</p>
       </div>
     </div>
   </div>
 
-  <!-- Wallet Statistics -->
+  <!-- Wallet Connections -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200">
     <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-tenant-text flex items-center">
-        <i class="fas fa-wallet text-tenant-primary mr-2"></i>
-        Wallet Connections
-      </h3>
+      <h3 class="text-lg font-semibold text-tenant-text">Wallet Connections</h3>
     </div>
-    <div class="p-6 space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div class="text-center p-3 bg-blue-50 rounded-lg">
-          <p class="text-2xl font-bold text-blue-600">{{ stats.wallet.active_connections }}</p>
-          <p class="text-sm text-blue-600">Active Now</p>
+    <div class="p-6">
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="text-center p-4 bg-purple-50 rounded-lg">
+          <p class="text-3xl font-bold text-purple-600">{{ stats.wallet.active_connections }}</p>
+          <p class="text-sm text-purple-600">Active Now</p>
         </div>
-        <div class="text-center p-3 bg-green-50 rounded-lg">
-          <p class="text-2xl font-bold text-green-600">{{ stats.wallet.total_wallets_connected }}</p>
-          <p class="text-sm text-green-600">Total Connected</p>
+        <div class="text-center p-4 bg-blue-50 rounded-lg">
+          <p class="text-3xl font-bold text-blue-600">{{ stats.wallet.total_connected }}</p>
+          <p class="text-sm text-blue-600">Total Connected</p>
         </div>
       </div>
-
-      <div class="space-y-3">
+      
+      <div class="space-y-3 text-sm">
         <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Unique wallets (24h)</span>
-          <span class="font-medium">{{ stats.wallet.unique_wallets_24h }}</span>
+          <span class="text-gray-600">Unique wallets (24h)</span>
+          <span class="font-medium">{{ stats.wallet.unique_24h }}</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Connection errors (24h)</span>
-          <span class="font-medium text-red-600">{{ stats.wallet.connection_errors_24h }}</span>
+          <span class="text-gray-600">Connection errors (24h)</span>
+          <span class="font-medium text-red-600">{{ stats.wallet.errors_24h }}</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Avg session duration</span>
+          <span class="text-gray-600">Avg session duration</span>
           <span class="font-medium">{{ stats.wallet.avg_session_duration }} min</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Peak concurrent</span>
-          <span class="font-medium">{{ stats.wallet.peak_concurrent_connections }}</span>
-        </div>
-      </div>
-
-      <div class="pt-3 border-t border-gray-100">
-        <div class="flex justify-between mb-2">
-          <span class="text-sm text-gray-600">Mobile wallets</span>
-          <span class="font-medium">{{ stats.wallet.mobile_wallets }}</span>
+          <span class="text-gray-600">Peak concurrent</span>
+          <span class="font-medium">{{ stats.wallet.peak_concurrent }}</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Desktop wallets</span>
-          <span class="font-medium">{{ stats.wallet.desktop_wallets }}</span>
+          <span class="text-gray-600">Mobile wallets</span>
+          <span class="font-medium">{{ stats.wallet.mobile_count }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Desktop wallets</span>
+          <span class="font-medium">{{ stats.wallet.desktop_count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Performance Metrics -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <!-- Credential Issuance -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-tenant-text">Credential Issuance</h3>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-3 gap-4 mb-4">
+        <div class="text-center p-3 bg-green-50 rounded-lg">
+          <p class="text-lg font-bold text-green-600">{{ stats.performance.issuance_avg }}s</p>
+          <p class="text-xs text-green-600">Average</p>
+        </div>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-lg font-bold text-blue-600">{{ stats.performance.issuance_fastest }}s</p>
+          <p class="text-xs text-blue-600">Fastest</p>
+        </div>
+        <div class="text-center p-3 bg-red-50 rounded-lg">
+          <p class="text-lg font-bold text-red-600">{{ stats.performance.issuance_slowest }}s</p>
+          <p class="text-xs text-red-600">Slowest</p>
+        </div>
+      </div>
+      
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Issuance success rate</span>
+          <span class="font-medium text-green-600">{{ stats.performance.issuance_success_rate }}%</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Total issuances</span>
+          <span class="font-medium">{{ stats.performance.total_issuances }}</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Performance Metrics -->
+  <!-- Credential Verification -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200">
     <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-tenant-text flex items-center">
-        <i class="fas fa-chart-line text-tenant-primary mr-2"></i>
-        Performance Metrics
-      </h3>
+      <h3 class="text-lg font-semibold text-tenant-text">Credential Verification</h3>
     </div>
-    <div class="p-6 space-y-4">
-      <!-- Issuance Performance -->
-      <div>
-        <h4 class="font-medium text-gray-900 mb-2">Credential Issuance</h4>
-        <div class="grid grid-cols-3 gap-3 text-center">
-          <div class="bg-green-50 p-2 rounded">
-            <p class="text-lg font-bold text-green-600">{{ stats.performance.avg_issuance_time }}s</p>
-            <p class="text-xs text-green-600">Average</p>
-          </div>
-          <div class="bg-blue-50 p-2 rounded">
-            <p class="text-lg font-bold text-blue-600">{{ stats.performance.min_issuance_time }}s</p>
-            <p class="text-xs text-blue-600">Fastest</p>
-          </div>
-          <div class="bg-orange-50 p-2 rounded">
-            <p class="text-lg font-bold text-orange-600">{{ stats.performance.max_issuance_time }}s</p>
-            <p class="text-xs text-orange-600">Slowest</p>
-          </div>
+    <div class="p-6">
+      <div class="grid grid-cols-3 gap-4 mb-4">
+        <div class="text-center p-3 bg-green-50 rounded-lg">
+          <p class="text-lg font-bold text-green-600">{{ stats.performance.verification_avg }}s</p>
+          <p class="text-xs text-green-600">Average</p>
+        </div>
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <p class="text-lg font-bold text-blue-600">{{ stats.performance.verification_fastest }}s</p>
+          <p class="text-xs text-blue-600">Fastest</p>
+        </div>
+        <div class="text-center p-3 bg-red-50 rounded-lg">
+          <p class="text-lg font-bold text-red-600">{{ stats.performance.verification_slowest }}s</p>
+          <p class="text-xs text-red-600">Slowest</p>
         </div>
       </div>
-
-      <!-- Verification Performance -->
-      <div>
-        <h4 class="font-medium text-gray-900 mb-2">Credential Verification</h4>
-        <div class="grid grid-cols-3 gap-3 text-center">
-          <div class="bg-green-50 p-2 rounded">
-            <p class="text-lg font-bold text-green-600">{{ stats.performance.avg_verification_time }}s</p>
-            <p class="text-xs text-green-600">Average</p>
-          </div>
-          <div class="bg-blue-50 p-2 rounded">
-            <p class="text-lg font-bold text-blue-600">{{ stats.performance.min_verification_time }}s</p>
-            <p class="text-xs text-blue-600">Fastest</p>
-          </div>
-          <div class="bg-orange-50 p-2 rounded">
-            <p class="text-lg font-bold text-orange-600">{{ stats.performance.max_verification_time }}s</p>
-            <p class="text-xs text-orange-600">Slowest</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Success Rates -->
-      <div class="pt-3 border-t border-gray-100">
-        <div class="flex justify-between mb-2">
-          <span class="text-sm text-gray-600">Issuance success rate</span>
-          <span class="font-medium text-green-600">{{ stats.performance.success_rate_issuance }}%</span>
+      
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Verification success rate</span>
+          <span class="font-medium text-green-600">{{ stats.performance.verification_success_rate }}%</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Verification success rate</span>
-          <span class="font-medium text-green-600">{{ stats.performance.success_rate_verification }}%</span>
-        </div>
-      </div>
-
-      <!-- Totals -->
-      <div class="pt-3 border-t border-gray-100">
-        <div class="flex justify-between mb-2">
-          <span class="text-sm text-gray-600">Total issuances</span>
-          <span class="font-medium">{{ stats.performance.total_issuances }}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Total verifications</span>
+          <span class="text-gray-600">Total verifications</span>
           <span class="font-medium">{{ stats.performance.total_verifications }}</span>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Security & Network -->
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-tenant-text flex items-center">
-        <i class="fas fa-shield-alt text-tenant-primary mr-2"></i>
-        Security & Network
-      </h3>
-    </div>
-    <div class="p-6 space-y-4">
-      <!-- Security Events -->
-      <div>
-        <h4 class="font-medium text-gray-900 mb-2">Security Events (24h)</h4>
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Failed auth attempts</span>
-            <span class="font-medium text-red-600">{{ stats.security.failed_authentication_attempts }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Successful auths</span>
-            <span class="font-medium text-green-600">{{ stats.security.successful_authentications }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Security alerts</span>
-            <span class="font-medium text-yellow-600">{{ stats.security.security_alerts_24h }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Blocked IPs</span>
-            <span class="font-medium">{{ stats.security.blocked_ips }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Network Stats -->
-      <div class="pt-3 border-t border-gray-100">
-        <h4 class="font-medium text-gray-900 mb-2">Network Activity</h4>
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Bytes sent</span>
-            <span class="font-medium">{{ stats.network.bytes_sent_mb }} MB</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Bytes received</span>
-            <span class="font-medium">{{ stats.network.bytes_received_mb }} MB</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Active connections</span>
-            <span class="font-medium">{{ stats.network.active_ports }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Network errors</span>
-            <span class="font-medium text-red-600">{{ stats.network.network_errors }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- SSL Certificate -->
-      <div class="pt-3 border-t border-gray-100">
-        <div class="flex justify-between">
-          <span class="text-sm text-gray-600">SSL cert expires in</span>
-          <span class="font-medium {% if stats.security.ssl_certificate_expiry_days < 30 %}text-red-600{% elif stats.security.ssl_certificate_expiry_days < 60 %}text-yellow-600{% else %}text-green-600{% endif %}">
-            {{ stats.security.ssl_certificate_expiry_days }} days
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<!-- Storage and Database Details -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-
-  <!-- Database Details -->
+<!-- Security & Network -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <!-- Security Events -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200">
     <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-tenant-text flex items-center">
-        <i class="fas fa-database text-tenant-primary mr-2"></i>
-        Database Details
-      </h3>
-    </div>
-    <div class="p-6">
-      <div class="space-y-3">
-        {% for table in stats.database.tables %}
-        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span class="text-sm font-medium">{{ table.name }}</span>
-          <span class="text-sm text-gray-600">{{ table.rows }} rows</span>
-        </div>
-        {% endfor %}
-      </div>
-      <div class="mt-4 pt-4 border-t border-gray-100">
-        <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Database size</span>
-          <span class="font-medium">{{ stats.database.size_mb }} MB</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Storage and Logs -->
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-tenant-text flex items-center">
-        <i class="fas fa-hdd text-tenant-primary mr-2"></i>
-        Storage & Logs
-      </h3>
+      <h3 class="text-lg font-semibold text-tenant-text">Security Events (24h)</h3>
     </div>
     <div class="p-6 space-y-4">
-      <!-- File Counts -->
-      <div>
-        <h4 class="font-medium text-gray-900 mb-2">File Statistics</h4>
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Log files</span>
-            <span class="font-medium">{{ stats.storage.log_files }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Certificate files</span>
-            <span class="font-medium">{{ stats.storage.certificate_files }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Key files</span>
-            <span class="font-medium">{{ stats.storage.key_files }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Other files</span>
-            <span class="font-medium">{{ stats.storage.other_files }}</span>
-          </div>
-        </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Failed auth attempts</span>
+        <span class="font-medium text-red-600">{{ stats.security.failed_auth_24h }}</span>
       </div>
-
-      <!-- Log Statistics -->
-      <div class="pt-3 border-t border-gray-100">
-        <h4 class="font-medium text-gray-900 mb-2">Log Statistics</h4>
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Total log entries</span>
-            <span class="font-medium">{{ stats.logs.total_entries }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Log file size</span>
-            <span class="font-medium">{{ stats.logs.file_size_mb }} MB</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Error logs</span>
-            <span class="font-medium text-red-600">{{ stats.logs.error_logs }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-sm text-gray-600">Warning logs</span>
-            <span class="font-medium text-yellow-600">{{ stats.logs.warning_logs }}</span>
-          </div>
-        </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Successful auths</span>
+        <span class="font-medium text-green-600">{{ stats.security.successful_auth_24h }}</span>
       </div>
-
-      <!-- Storage Size -->
-      <div class="pt-3 border-t border-gray-100">
-        <div class="flex justify-between">
-          <span class="text-sm text-gray-600">Total storage used</span>
-          <span class="font-medium">{{ stats.storage.total_size_mb }} MB</span>
-        </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Security alerts</span>
+        <span class="font-medium text-yellow-600">{{ stats.security.security_alerts }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Blocked IPs</span>
+        <span class="font-medium text-red-600">{{ stats.security.blocked_ips }}</span>
       </div>
     </div>
   </div>
 
+  <!-- Network Activity -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-tenant-text">Network Activity</h3>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Bytes sent</span>
+        <span class="font-medium">{{ stats.network.bytes_sent_mb }} MB</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Bytes received</span>
+        <span class="font-medium">{{ stats.network.bytes_received_mb }} MB</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Active connections</span>
+        <span class="font-medium">{{ stats.network.active_connections }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Network errors</span>
+        <span class="font-medium text-red-600">{{ stats.network.network_errors }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">SSL cert expires in</span>
+        <span class="font-medium {% if stats.security.ssl_certificate_expiry_days < 30 %}text-red-600{% else %}text-green-600{% endif %}">{{ stats.security.ssl_certificate_expiry_days }} days</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Database Details -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-tenant-text">Database Details</h3>
+  </div>
+  <div class="p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      {% for table in stats.database.tables %}
+      <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+        <span class="text-sm font-medium text-gray-700">{{ table.name }}</span>
+        <span class="text-sm text-gray-600">{{ table.rows }} rows</span>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <div class="text-center p-4 bg-blue-50 rounded-lg">
+      <p class="text-lg font-bold text-blue-600">Database size</p>
+      <p class="text-2xl font-bold text-blue-600">{{ stats.database.size_mb }} MB</p>
+    </div>
+  </div>
+</div>
+
+<!-- Storage & Logs -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <!-- File Statistics -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-tenant-text">File Statistics</h3>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Log files</span>
+        <span class="font-medium">{{ stats.storage.log_files }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Certificate files</span>
+        <span class="font-medium">{{ stats.storage.cert_files }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Key files</span>
+        <span class="font-medium">{{ stats.storage.key_files }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Other files</span>
+        <span class="font-medium">{{ stats.storage.other_files }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log Statistics -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-tenant-text">Log Statistics</h3>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Total log entries</span>
+        <span class="font-medium">{{ stats.logs.total_entries }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Log file size</span>
+        <span class="font-medium">{{ stats.logs.file_size_mb }} MB</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Error logs</span>
+        <span class="font-medium text-red-600">{{ stats.logs.error_count }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Warning logs</span>
+        <span class="font-medium text-yellow-600">{{ stats.logs.warning_count }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">Total storage used</span>
+        <span class="font-medium">{{ stats.storage.total_size_mb }} MB</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Auto-refresh notice -->
@@ -438,13 +410,36 @@
 
 {% block javascript %}
 <script>
+  // Update timestamp every second
+  function updateTimestamp() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-US', { 
+      hour12: false, 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    });
+    const timestampElement = document.getElementById('last-updated');
+    if (timestampElement) {
+      timestampElement.textContent = timeString;
+    }
+  }
+  
+  // Update timestamp every second
+  setInterval(updateTimestamp, 1000);
+  
   // Auto-refresh the page every 30 seconds
   setInterval(() => {
     window.location.reload();
   }, 30000);
   
-  // Add loading indicators for real-time feel
+  // Initialize everything
   document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initializing comprehensive system statistics page...');
+    
+    // Initialize timestamp
+    updateTimestamp();
+    
     // Animate progress bars
     const progressBars = document.querySelectorAll('[style*="width:"]');
     progressBars.forEach(bar => {
@@ -454,6 +449,19 @@
         bar.style.width = width;
         bar.style.transition = 'width 1s ease-out';
       }, 100);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.bg-white');
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.02)';
+        this.style.transition = 'transform 0.2s ease';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+      });
     });
   });
 </script>
