@@ -16,7 +16,7 @@ ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 # Build bbs-core with optimization
-COPY ../bbs-core/ /bbs-core/
+COPY bbs-core/ /bbs-core/
 WORKDIR /bbs-core/python
 RUN chmod +x build.sh && ./build.sh
 
@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy requirements first for better layer caching
-COPY requirements.txt ./
+COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     pip cache purge
@@ -45,9 +45,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY --from=builder /bbs-core /app/bbs-core
 
 # Copy application files
-COPY main.py ./
-COPY gunicorn.conf.py ./
-COPY src/ ./src/
+COPY backend/main.py ./
+COPY backend/gunicorn.conf.py ./
+COPY backend/src/ ./src/
 
 # Create instance directory with proper permissions
 RUN mkdir -p /app/instance && chown -R app:app /app
